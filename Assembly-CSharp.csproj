@@ -48,6 +48,8 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\GroundGenerator.cs" />
      <Compile Include="Assets\Scripts\GroundSegregation.cs" />
+     <Compile Include="Assets\Scripts\RessourcesGenerator.cs" />
+     <Compile Include="Assets\Scripts\TreeSegregation.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>D:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

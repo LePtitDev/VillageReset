@@ -110,7 +110,7 @@ public class GroundGenerator : MonoBehaviour {
 
 			count++;
 			if (!NeedSegregate) {
-				Debug.Log ("Segregation terminée en " + count + " passes");
+				Debug.Log ("Segregation du terrain terminée en " + count + " passes");
 				if (SwapEnding) {
 					foreach (GameObject g in VoidList) {
 						GameObject tmp;
@@ -126,6 +126,7 @@ public class GroundGenerator : MonoBehaviour {
 					}
 					VoidList.Clear ();
 				}
+				GameObject.Find ("Ressources").SendMessage ("Init");
 			}
 		}
 	}
