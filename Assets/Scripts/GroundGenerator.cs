@@ -126,6 +126,10 @@ public class GroundGenerator : MonoBehaviour {
 					}
 					VoidList.Clear ();
 				}
+				foreach (GameObject g in GrassList)
+					Destroy (g.GetComponent<GroundSegregation> ());
+				foreach (GameObject g in WaterList)
+					Destroy (g.GetComponent<GroundSegregation> ());
 				GameObject.Find ("Ressources").SendMessage ("Init");
 			}
 		}

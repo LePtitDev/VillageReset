@@ -75,8 +75,11 @@ public class RessourcesGenerator : MonoBehaviour {
 				g.SendMessage ("Shuffle");
 			time = Time.time;
 			count++;
-			if (!NeedSegregate)
+			if (!NeedSegregate) {
+				foreach (GameObject t in TreeList)
+					Destroy (t.GetComponent<TreeSegregation> ());
 				Debug.Log ("Segregation des arbres terminée en " + count + " passes");
+			}
 		}
 	}
 

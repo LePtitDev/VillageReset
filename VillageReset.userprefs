@@ -1,9 +1,10 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\RessourcesGenerator.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\CameraController.cs">
     <Files>
-      <File FileName="Assets\Scripts\GroundGenerator.cs" Line="111" Column="12" />
-      <File FileName="Assets\Scripts\RessourcesGenerator.cs" Line="78" Column="23" />
+      <File FileName="Assets\Scripts\AgentController.cs" Line="23" Column="23" />
+      <File FileName="Assets\Scripts\CameraController.cs" Line="71" Column="4" />
+      <File FileName="Assets\OutlineEffect\Outline.cs" Line="71" Column="14" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
