@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour {
 
+	// The map center
 	public Vector3 MapCenter;
+
+	// The distance to the map center with a normal zoom
 	public float Distance;
 
 	[Header("Key inputs")]
@@ -22,10 +25,14 @@ public class CameraController : MonoBehaviour {
 	public float MaxZoom;
 	public float MinZoom;
 
+	// Target of the camera
 	GameObject target;
 
+	// The center of the camera lookAt
 	Vector3 center;
+	// The camera rotation
 	float rotation;
+	// The zoom level
 	float zoom;
 
 	// Use this for initialization
@@ -75,7 +82,7 @@ public class CameraController : MonoBehaviour {
 		if (newCenter.magnitude > TranslationSpeed)
 			newCenter = newCenter.normalized * TranslationSpeed;
 		center += newCenter;
-		transform.position = center + new Vector3 (-Mathf.Sin(rad), 1f, -Mathf.Cos(rad)) * Distance * (zoom > 0 ? 1f / (1f + zoom) : 1f - zoom);
-		transform.rotation = Quaternion.LookRotation (new Vector3 (Mathf.Sin(rad), -Mathf.Deg2Rad * 45f, Mathf.Cos(rad)));
+		transform.position = center + new Vector3 (-Mathf.Sin(rad), (zoom >= 0 ? 1f / (1f + zoom) : 2f - 1f / (1f - zoom)), -Mathf.Cos(rad)) * Distance * (zoom > 0 ? 1f / (1f + zoom) : 1f - zoom);
+		transform.rotation = Quaternion.LookRotation (new Vector3 (Mathf.Sin(rad), -Mathf.Deg2Rad * 45f * (zoom >= 0 ? 1f / (1f + zoom) : 2f - 1f / (1f - zoom)), Mathf.Cos(rad)));
 	}
 }
