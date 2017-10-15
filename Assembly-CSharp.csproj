@@ -53,6 +53,7 @@
      <Compile Include="Assets\Scripts\CameraController.cs" />
      <Compile Include="Assets\Scripts\GroundGenerator.cs" />
      <Compile Include="Assets\Scripts\GroundSegregation.cs" />
+     <Compile Include="Assets\Scripts\Navigation.cs" />
      <Compile Include="Assets\Scripts\RessourcesGenerator.cs" />
      <Compile Include="Assets\Scripts\TreeSegregation.cs" />
      <None Include="Assets\OutlineEffect\Resources\OutlineShader.shader" />
