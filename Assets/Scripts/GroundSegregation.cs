@@ -11,6 +11,14 @@ public class GroundSegregation : MonoBehaviour {
 	// Material for group displaying
 	private static Material lineMaterial = null;
 
+	// lineMaterial accessor
+	public static Material LineMaterial {
+		get {
+			CreateLineMaterial();
+			return lineMaterial;
+		}
+	}
+
 	// Group ID
 	public int Group;
 
@@ -89,7 +97,7 @@ public class GroundSegregation : MonoBehaviour {
 	}
 
 	// Draw the patch group
-	void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f)
+	public static void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.2f, float width = 0.1f)
 	{
 		GameObject myLine = new GameObject();
 		myLine.transform.position = start;
@@ -98,8 +106,8 @@ public class GroundSegregation : MonoBehaviour {
 		lr.material = lineMaterial;
 		lr.startColor = color;
 		lr.endColor = color;
-		lr.startWidth = 0.1f;
-		lr.endWidth = 0.1f;
+		lr.startWidth = width;
+		lr.endWidth = width;
 		lr.SetPosition(0, start);
 		lr.SetPosition(1, end);
 		GameObject.Destroy(myLine, duration);

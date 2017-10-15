@@ -7,13 +7,7 @@ public class Navigation : MonoBehaviour {
 
 	public bool DisplayNodes = false;
 
-	public bool DisplayPath = false;
-
-	public bool ResetPath = false;
-
 	Graph graph = null;
-
-	Vector3[] path;
 
 	// Use this for initialization
 	void Start () {
@@ -22,14 +16,18 @@ public class Navigation : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if (DisplayNodes) {
+			if (graph == null)
+				CreateNavigationGraph ();
+			Color color = new Color (0f, 1f, 1f);
+			foreach (Graph.Node n in graph.nodes) {
+				foreach (Graph.Node l in n.links)
+					GroundSegregation.DrawLine (n.position, l.position, color, 0.1f, 0.05f);
+			}
+		}
 	}
 
 	void OnDrawGizmos() {
-		if (ResetPath) {
-			graph = null;
-			path = null;
-		}
 		if (DisplayNodes) {
 			if (graph == null)
 				CreateNavigationGraph ();
@@ -40,25 +38,9 @@ public class Navigation : MonoBehaviour {
 					Gizmos.DrawLine (n.position, l.position);
 			}
 		}
-		if (DisplayPath) {
-			if (graph == null) {
-				float t = Time.realtimeSinceStartup;
-				CreateNavigationGraph ();
-				Debug.Log ("Graph creation = " + (Time.realtimeSinceStartup - t));
-			}
-			if (path == null) {
-				float t = Time.realtimeSinceStartup;
-				path = graph.FindPath (new Vector3 (29f, 0f, 0f), new Vector3 (14f, 0f, 24f));
-				Debug.Log ("Pathfinding = " + (Time.realtimeSinceStartup - t));
-			}
-			if (path != null) {
-				Gizmos.color = new Color (1f, 0.5f, 0f);
-				for (int i = 1; i < path.Length; i++)
-					Gizmos.DrawLine (path[i - 1], path[i]);
-			}
-		}
 	}
 
+	// Create the navigation graph
 	void CreateNavigationGraph() {
 		int[,] map = new int[30, 30];
 		int count = 0;
@@ -99,6 +81,7 @@ public class Navigation : MonoBehaviour {
 		}
 	}
 
+	// Navigation graph
 	public class Graph {
 
 		// Node list
@@ -122,33 +105,26 @@ public class Navigation : MonoBehaviour {
 			return res;
 		}
 
+		// Execute the pathfinding
 		public Vector3[] FindPath(Vector3 src, Vector3 dest) {
-			List<Node> exp = new List<Node> ();
-			List<Node> unexp = new List<Node> (nodes);
-			foreach (Node n in unexp) {
+			List<Node> unexp = new List<Node> ();
+			foreach (Node n in nodes) {
 				n.cost = float.MaxValue;
 				n.parent = null;
+				n.flag = 0;
 			}
 			Node current = Nearest (src);
 			Node target = Nearest (dest);
 			if (current == target)
 				return new Vector3[1] { dest };
 			current.cost = 0f;
-			exp.Add (current);
-			unexp.Remove (current);
+			current.flag = 2;
+			foreach (Node n in current.links)
+				unexp.Add(n);
 			while (current != target && unexp.Count > 0) {
-				List<Node> tmpList = new List<Node> ();
-				foreach (Node p in exp) {
+				foreach (Node p in unexp) {
 					foreach (Node neigh in p.links) {
-						if (unexp.Contains (neigh) && !tmpList.Contains (neigh))
-							tmpList.Add (neigh);
-					}
-				}
-				if (tmpList.Count == 0)
-					break;
-				foreach (Node p in tmpList) {
-					foreach (Node neigh in p.links) {
-						if (exp.Contains (neigh)) {
+						if (neigh.flag == 2) {
 							float tmp = neigh.cost + neigh.costs [Array.IndexOf (neigh.links, p)];
 							if (tmp < p.cost) {
 								p.cost = tmp;
@@ -157,13 +133,19 @@ public class Navigation : MonoBehaviour {
 						}
 					}
 				}
-				current = tmpList [0];
-				for (int i = 1; i < tmpList.Count; i++) {
-					if (tmpList [i].cost < current.cost)
-						current = tmpList [i];
+				current = unexp [0];
+				for (int i = 1; i < unexp.Count; i++) {
+					if (unexp [i].cost < current.cost)
+						current = unexp [i];
 				}
-				exp.Add (current);
 				unexp.Remove (current);
+				current.flag = 2;
+				foreach (Node n in current.links) {
+					if (n.flag == 0) {
+						n.flag = 1;
+						unexp.Add (n);
+					}
+				}
 			}
 			if (current != target)
 				return null;
@@ -177,6 +159,7 @@ public class Navigation : MonoBehaviour {
 			return res.ToArray ();
 		}
 
+		// Graph node
 		public class Node {
 
 			// Node position
@@ -193,6 +176,9 @@ public class Navigation : MonoBehaviour {
 
 			// Parent node, null if source
 			public Node parent;
+
+			// Pathfinding flag
+			public int flag;
 
 		}
 
