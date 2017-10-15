@@ -53,9 +53,12 @@
      <Compile Include="Assets\Scripts\CameraController.cs" />
      <Compile Include="Assets\Scripts\GroundGenerator.cs" />
      <Compile Include="Assets\Scripts\GroundSegregation.cs" />
+     <Compile Include="Assets\Scripts\Memory.cs" />
      <Compile Include="Assets\Scripts\Navigation.cs" />
      <Compile Include="Assets\Scripts\RessourcesGenerator.cs" />
      <Compile Include="Assets\Scripts\TreeSegregation.cs" />
+     <Compile Include="Assets\Sources\Database.cs" />
+     <Compile Include="Assets\Sources\Graph.cs" />
      <None Include="Assets\OutlineEffect\Resources\OutlineShader.shader" />
      <None Include="Assets\OutlineEffect\Resources\OutlineBufferShader.shader" />
  <Reference Include="UnityEngine.UI">
