@@ -3,12 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Graph {
+public class NavGraph {
 
-	// Node list
+	// Nodes list
 	public Node[] nodes = null;
 
-	// Return the neareast node from the target position
+	/// <summary>
+	/// Return the neareast node from the target position
+	/// </summary>
+	/// <param name="target">Target position</param>
 	public Node Nearest(Vector3 target) {
 		if (nodes == null || nodes.Length == 0)
 			return null;
@@ -26,7 +29,12 @@ public class Graph {
 		return res;
 	}
 
-	// Execute the pathfinding
+	/// <summary>
+	/// Find the shortest path between to points
+	/// </summary>
+	/// <returns>The path if exist and null otherwise</returns>
+	/// <param name="src">Source position</param>
+	/// <param name="dest">Destination position</param>
 	public Vector3[] FindPath(Vector3 src, Vector3 dest) {
 		List<Node> unexp = new List<Node> ();
 		foreach (Node n in nodes) {

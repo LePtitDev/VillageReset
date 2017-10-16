@@ -8,16 +8,11 @@ public class RessourcesGenerator : MonoBehaviour {
 	// Current instance of RessourcesGenerator
 	public static RessourcesGenerator Instance;
 
-	// Tree, stone and iron prefabs
-	public GameObject TreePrefab, StonePrefab, IronPrefab;
+	[Header("Density")]
 
 	// The tree density needed
 	[Range(0.0f, 1.0f)]
 	public float TreeDensity;
-
-	// The tree segregation threshold
-	[Range(0, 100)]
-	public int TreeSegregationThreshold;
 
 	// The stone density
 	[Range(0.0f, 1.0f)]
@@ -27,19 +22,40 @@ public class RessourcesGenerator : MonoBehaviour {
 	[Range(0.0f, 1.0f)]
 	public float IronDensity;
 
+	[Header("Prefabs")]
+
+	// Tree, stone and iron prefabs
+	public GameObject TreePrefab;
+	public GameObject StonePrefab;
+	public GameObject IronPrefab;
+
+	[Header("Segregation")]
+
+	// The tree segregation threshold
+	[Range(0, 100)]
+	public int TreeSegregationThreshold;
+
+	// Max number of steps
+	public int StepThreshold;
+
 	// Patches map (ressources)
+	[HideInInspector]
 	public GameObject[,] Patches;
 
 	// Void coordinates list
+	[HideInInspector]
 	public List<Vector3> VoidList;
 
 	// Trees list
+	[HideInInspector]
 	public List<GameObject> TreeList;
 
 	// Stones list
+	[HideInInspector]
 	public List<GameObject> StoneList;
 
 	// Irons list
+	[HideInInspector]
 	public List<GameObject> IronList;
 
 	// Indicate if we need to segregate
@@ -57,8 +73,7 @@ public class RessourcesGenerator : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Instance = this;
-		GroundGenerator ground = GameObject.Find ("Ground").GetComponent<GroundGenerator> ();
-		Patches = new GameObject[ground.Width, ground.Height];
+		Patches = new GameObject[Manager.Instance.Width, Manager.Instance.Height];
 		VoidList = new List<Vector3> ();
 		TreeList = new List<GameObject> ();
 		StoneList = new List<GameObject> ();
@@ -67,19 +82,18 @@ public class RessourcesGenerator : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (NeedSegregate && count >= StepThreshold)
+			StopSegregation ();
 		if (isInit && NeedSegregate && Time.time - time > GroundGenerator.Instance.StepDelay) {
 			NeedSegregate = false;
 			List<GameObject> list = new List<GameObject> (TreeList);
-			list = list.OrderBy(item => GroundGenerator.Instance.Randomizer.Next()).ToList();
+			list = list.OrderBy(item => Manager.Instance.Randomizer.Next()).ToList();
 			foreach (GameObject g in list)
 				g.SendMessage ("Shuffle");
 			time = Time.time;
 			count++;
-			if (!NeedSegregate) {
-				foreach (GameObject t in TreeList)
-					Destroy (t.GetComponent<TreeSegregation> ());
-				Debug.Log ("Segregation des arbres terminée en " + count + " passes");
-			}
+			if (!NeedSegregate)
+				StopSegregation ();
 		}
 	}
 
@@ -87,7 +101,7 @@ public class RessourcesGenerator : MonoBehaviour {
 	void Init() {
 		isInit = true;
 		List<GameObject> list = new List<GameObject> (GroundGenerator.Instance.GrassList);
-		list = list.OrderBy(item => GroundGenerator.Instance.Randomizer.Next()).ToList();
+		list = list.OrderBy(item => Manager.Instance.Randomizer.Next()).ToList();
 		int max = (int)(list.Count * TreeDensity);
 		int i;
 		for (i = 0; i < max; i++) {
@@ -108,6 +122,14 @@ public class RessourcesGenerator : MonoBehaviour {
 		for (int sz = list.Count; i < sz; i++)
 			VoidList.Add (list [i].transform.position);
 		time = Time.time;
+	}
+
+	// Stop the segregation
+	void StopSegregation() {
+		NeedSegregate = false;
+		foreach (GameObject t in TreeList)
+			Destroy (t.GetComponent<TreeSegregation> ());
+		Debug.Log ("Segregation des arbres terminée en " + count + " passes");
 	}
 
 }

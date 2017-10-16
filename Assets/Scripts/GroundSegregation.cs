@@ -51,7 +51,7 @@ public class GroundSegregation : MonoBehaviour {
 	// Apply a segregation shuffle if needed
 	void Shuffle() {
 		if (Group != 0) {
-			int Width = GroundGenerator.Instance.Width, Height = GroundGenerator.Instance.Height;
+			int Width = Manager.Instance.Width, Height = Manager.Instance.Height;
 			int groupCount = 0, otherGroupCount = 0;
 			for (int z = (int)transform.position.z - 1, h = z + 2; z <= h; z++) {
 				for (int x = (int)transform.position.x - 1, w = x + 2; x <= w; x++) {
@@ -67,7 +67,7 @@ public class GroundSegregation : MonoBehaviour {
 			if (otherGroupCount == 0)
 				otherGroupCount++;
 			if (groupCount * 100 / otherGroupCount < GroundGenerator.Instance.SegregationThreshold) {
-				GameObject new_place = GroundGenerator.Instance.VoidList [(int)(GroundGenerator.Instance.Randomizer.NextDouble() * GroundGenerator.Instance.VoidList.Count)];
+				GameObject new_place = GroundGenerator.Instance.VoidList [(int)(Manager.Instance.Randomizer.NextDouble() * GroundGenerator.Instance.VoidList.Count)];
 				Vector3 tmp = new_place.transform.position;
 				new_place.transform.position = transform.position;
 				GroundGenerator.Instance.Patches [(int)transform.position.x, (int)transform.position.z] = new_place;
@@ -80,7 +80,7 @@ public class GroundSegregation : MonoBehaviour {
 
 	// Return the neighbors group majority
 	public int GroupMajority() {
-		int Width = GroundGenerator.Instance.Width, Height = GroundGenerator.Instance.Height;
+		int Width = Manager.Instance.Width, Height = Manager.Instance.Height;
 		int grassCount = 0, waterCount = 0;
 		for (int z = (int)transform.position.z - 1, h = z + 2; z <= h; z++) {
 			for (int x = (int)transform.position.x - 1, w = x + 2; x <= w; x++) {

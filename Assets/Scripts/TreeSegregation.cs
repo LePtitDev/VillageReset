@@ -6,7 +6,7 @@ public class TreeSegregation : MonoBehaviour {
 
 	// Apply a segregation shuffle if needed
 	void Shuffle() {
-		int Width = GroundGenerator.Instance.Width, Height = GroundGenerator.Instance.Height;
+		int Width = Manager.Instance.Width, Height = Manager.Instance.Height;
 		int groupCount = 0;
 		for (int z = (int)transform.position.z - 1, h = z + 2; z <= h; z++) {
 			for (int x = (int)transform.position.x - 1, w = x + 2; x <= w; x++) {
@@ -18,7 +18,7 @@ public class TreeSegregation : MonoBehaviour {
 			}
 		}
 		if (groupCount * 100 / 8 < RessourcesGenerator.Instance.TreeSegregationThreshold) {
-			int index = (int)(GroundGenerator.Instance.Randomizer.NextDouble () * RessourcesGenerator.Instance.VoidList.Count);
+			int index = (int)(Manager.Instance.Randomizer.NextDouble () * RessourcesGenerator.Instance.VoidList.Count);
 			Vector3 new_place = RessourcesGenerator.Instance.VoidList [index];
 			RessourcesGenerator.Instance.VoidList [index] = transform.position;
 			RessourcesGenerator.Instance.Patches [(int)transform.position.x, (int)transform.position.z] = null;
