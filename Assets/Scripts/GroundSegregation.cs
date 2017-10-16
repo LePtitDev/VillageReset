@@ -57,7 +57,7 @@ public class GroundSegregation : MonoBehaviour {
 				for (int x = (int)transform.position.x - 1, w = x + 2; x <= w; x++) {
 					if ((z == h - 1 && x == w - 1) || z < 0 || z >= Height || x < 0 || x >= Width)
 						continue;
-					int other = GroundGenerator.Instance.Patches [x, z].GetComponent<GroundSegregation> ().Group;
+					int other = Manager.Instance.Patches [x, z].GetComponent<GroundSegregation> ().Group;
 					if (other == Group)
 						groupCount++;
 					else if (other != 0)
@@ -70,9 +70,9 @@ public class GroundSegregation : MonoBehaviour {
 				GameObject new_place = GroundGenerator.Instance.VoidList [(int)(Manager.Instance.Randomizer.NextDouble() * GroundGenerator.Instance.VoidList.Count)];
 				Vector3 tmp = new_place.transform.position;
 				new_place.transform.position = transform.position;
-				GroundGenerator.Instance.Patches [(int)transform.position.x, (int)transform.position.z] = new_place;
+				Manager.Instance.Patches [(int)transform.position.x, (int)transform.position.z] = new_place;
 				transform.position = tmp;
-				GroundGenerator.Instance.Patches [(int)transform.position.x, (int)transform.position.z] = this.gameObject;
+				Manager.Instance.Patches [(int)transform.position.x, (int)transform.position.z] = this.gameObject;
 				GroundGenerator.Instance.NeedSegregate = true;
 			}
 		}
@@ -86,7 +86,7 @@ public class GroundSegregation : MonoBehaviour {
 			for (int x = (int)transform.position.x - 1, w = x + 2; x <= w; x++) {
 				if ((z == h - 1 && x == w - 1) || z < 0 || z >= Height || x < 0 || x >= Width)
 					continue;
-				int other = GroundGenerator.Instance.Patches [x, z].GetComponent<GroundSegregation> ().Group;
+				int other = Manager.Instance.Patches [x, z].GetComponent<GroundSegregation> ().Group;
 				if (other == 1)
 					grassCount++;
 				else if (other == 2)

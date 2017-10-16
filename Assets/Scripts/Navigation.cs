@@ -36,16 +36,16 @@ public class Navigation : MonoBehaviour {
 			map [(int)t.position.x, (int)t.position.z] = (t.gameObject.name == "Grass(Clone)") ? count++ : -1;
 		NavigationGraph = new NavGraph ();
 		NavigationGraph.nodes = new NavGraph.Node[count];
-		for (int i = 0; i < Manager.Instance.Height; i++) {
-			for (int j = 0; j < Manager.Instance.Width; j++) {
+		for (int i = 0; i < Manager.Instance.Width; i++) {
+			for (int j = 0; j < Manager.Instance.Height; j++) {
 				if (map [i, j] == -1)
 					continue;
 				NavigationGraph.nodes [map [i, j]] = new NavGraph.Node ();
 			}
 		}
 		float Sqrt2 = Mathf.Sqrt (2f);
-		for (int i = 0; i < Manager.Instance.Height; i++) {
-			for (int j = 0; j < Manager.Instance.Width; j++) {
+		for (int i = 0; i < Manager.Instance.Width; i++) {
+			for (int j = 0; j < Manager.Instance.Height; j++) {
 				if (map [i, j] == -1)
 					continue;
 				NavigationGraph.nodes [map [i, j]].position = new Vector3 (i, 0f, j);

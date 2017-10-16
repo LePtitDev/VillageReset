@@ -27,10 +27,6 @@ public class GroundGenerator : MonoBehaviour {
 	public GameObject WaterPrefab;
 	public GameObject VoidPrefab;
 
-	// Patches map
-	[HideInInspector]
-	public GameObject[,] Patches;
-
 	[Header("Displaying")]
 
 	// Display or not the patch groups
@@ -73,7 +69,6 @@ public class GroundGenerator : MonoBehaviour {
 	void Start () {
 		Instance = this;
 		manager = Manager.Instance;
-		Patches = new GameObject[manager.Width, manager.Height];
 		List<Vector2> voidCoords = new List<Vector2> ();
 		List<Vector2> waterCoords = new List<Vector2> ();
 		List<Vector2> grassCoords = new List<Vector2> ();
@@ -105,7 +100,7 @@ public class GroundGenerator : MonoBehaviour {
 					tmp = Instantiate (GrassPrefab, new Vector3 (x, 0, z), Quaternion.identity, transform);
 					GrassList.Add (tmp);
 				}
-				Patches [x, z] = tmp;
+				Manager.Instance.Patches [x, z] = tmp;
 			}
 		}
 		time = Time.time;
@@ -145,7 +140,7 @@ public class GroundGenerator : MonoBehaviour {
 					tmp = Instantiate (WaterPrefab, g.transform.position, Quaternion.identity, transform);
 					WaterList.Add (tmp);
 				}
-				Patches [(int)g.transform.position.x, (int)g.transform.position.y] = tmp;
+				Manager.Instance.Patches [(int)g.transform.position.x, (int)g.transform.position.y] = tmp;
 				Destroy (g);
 			}
 			VoidList.Clear ();

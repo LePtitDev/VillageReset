@@ -73,7 +73,6 @@ public class RessourcesGenerator : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Instance = this;
-		Patches = new GameObject[Manager.Instance.Width, Manager.Instance.Height];
 		VoidList = new List<Vector3> ();
 		TreeList = new List<GameObject> ();
 		StoneList = new List<GameObject> ();
@@ -100,6 +99,7 @@ public class RessourcesGenerator : MonoBehaviour {
 	// Initialisation callback after ground creation
 	void Init() {
 		isInit = true;
+		Patches = new GameObject[Manager.Instance.Width, Manager.Instance.Height];
 		List<GameObject> list = new List<GameObject> (GroundGenerator.Instance.GrassList);
 		list = list.OrderBy(item => Manager.Instance.Randomizer.Next()).ToList();
 		int max = (int)(list.Count * TreeDensity);
@@ -127,9 +127,16 @@ public class RessourcesGenerator : MonoBehaviour {
 	// Stop the segregation
 	void StopSegregation() {
 		NeedSegregate = false;
-		foreach (GameObject t in TreeList)
+		foreach (GameObject t in TreeList) {
+			t.AddComponent<Ressource> ();
 			Destroy (t.GetComponent<TreeSegregation> ());
+		}
+		foreach (GameObject g in StoneList)
+			g.AddComponent<Ressource> ();
+		foreach (GameObject g in IronList)
+			g.AddComponent<Ressource> ();
 		Debug.Log ("Segregation des arbres terminée en " + count + " passes");
+		GameObject.Find ("Village").AddComponent<Village> ();
 	}
 
 }
