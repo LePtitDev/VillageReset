@@ -49,7 +49,7 @@ public class Manager : MonoBehaviour {
 	public GameObject[,] Patches;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		Instance = this;
 		Randomizer = new System.Random(Seed);
 		Patches = new GameObject[Width, Height];
