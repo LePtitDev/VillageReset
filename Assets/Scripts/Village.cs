@@ -14,27 +14,28 @@ public class Village : MonoBehaviour {
 	public Vector3 Center;
 
 	// Indicate if the village is init
-	bool isInit;
+	public bool Initialized = false;
 
 	// Step density counter
 	int densityCounter;
 
 	// Use this for initialization
 	void Start () {
-		Instance = this;
-		isInit = false;
-		densityCounter = 0;
-		for (int i = 0; i < Manager.Instance.Width; i++) {
-			for (int j = 0; j < Manager.Instance.Height; j++) {
-				Manager.Instance.Patches [i, j].GetComponent<Density> ().ResetDensity ();
-			}
-		}
+        if (!Initialized) {
+            Instance = this;
+            densityCounter = 0;
+            for (int i = 0; i < Manager.Instance.Width; i++) {
+                for (int j = 0; j < Manager.Instance.Height; j++) {
+                    Manager.Instance.Patches[i, j].GetComponent<Density>().ResetDensity();
+                }
+            }
+        }
 	}
 
 	// Update is called once per frame
 	void Update() {
-		if (!isInit && densityCounter++ > Density.StepThreshold) {
-			isInit = true;
+		if (!Initialized && densityCounter++ > Density.StepThreshold) {
+            Initialized = true;
 			Density[] density = GameObject.Find ("Ground").GetComponentsInChildren<Density> ();
 			float[] ratios = new float [density.Length];
 			for (int i = 0; i < density.Length; i++)

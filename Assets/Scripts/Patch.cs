@@ -12,9 +12,9 @@ public class Patch : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		innerObjects = new List<GameObject> ();
-		if (Manager.Instance.Patches [(int)transform.position.x, (int)transform.position.z] != this.gameObject)
-			Manager.Instance.Patches [(int)transform.position.x, (int)transform.position.z] = this.gameObject;
+        innerObjects = new List<GameObject>();
+        if (Manager.Instance.Patches[(int)transform.position.x, (int)transform.position.z] != this.gameObject)
+            Manager.Instance.Patches[(int)transform.position.x, (int)transform.position.z] = this.gameObject;
 	}
 
 	/// <summary>
