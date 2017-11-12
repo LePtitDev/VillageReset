@@ -53,6 +53,10 @@ public class Manager : MonoBehaviour {
 		Instance = this;
 		Randomizer = new System.Random(Seed);
 		Patches = new GameObject[Width, Height];
+		BoxCollider collider = gameObject.AddComponent<BoxCollider> ();
+		collider.center = new Vector3 ((float)Width / 2.0f - 0.5f, 0.5f, (float)Height / 2.0f - 0.5f);
+		collider.size = new Vector3 ((float)Width, 2, (float)Height);
+		collider.isTrigger = true;
 	}
 	
 	// Update is called once per frame

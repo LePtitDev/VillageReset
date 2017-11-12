@@ -58,13 +58,13 @@ public class AgentController : MonoBehaviour {
 	private SphereCollider perceptionCollider;
 
 
-	/// GESTION DES TACHES
-	 
+	/// GESTION DE TACHES
+
 
 	/// <summary>
-	/// Tache courante
+	/// Tâche courante
 	/// </summary>
-	public Action<GameObject> Task;
+	public MonoBehaviour Task;
 
 
 	/// EDITEUR
@@ -95,8 +95,6 @@ public class AgentController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		perceptionCollider.radius = PerceptionRadius;
-		if (Task != null)
-			Task (gameObject);
 	}
 
 	void OnDrawGizmos() {
@@ -133,6 +131,7 @@ public class AgentController : MonoBehaviour {
 		health -= count;
 		if (health <= 0.0f) {
 			OnDeath (gameObject);
+			Destroy (gameObject);
 			return false;
 		}
 		return true;
@@ -150,7 +149,7 @@ public class AgentController : MonoBehaviour {
 		Entity en = other.GetComponent<Entity> ();
 		if (en != null && !percepts.Contains (en) && en.Collider == other) {
 			percepts.Add (en);
-			Debug.Log (name + " percept " + other.gameObject.name);
+			Debug.Log (GetComponent<Entity> ().Name + " voit " + en.Name);
 		}
 	}
 
@@ -162,7 +161,7 @@ public class AgentController : MonoBehaviour {
 		Entity en = other.GetComponent<Entity> ();
 		if (en != null && percepts.Contains (en) && en.Collider == other) {
 			percepts.Remove (en);
-			Debug.Log (name + " don't percept " + other.gameObject.name);
+			Debug.Log (GetComponent<Entity> ().Name + " ne voit plus " + en.Name);
 		}
 	}
 

@@ -5,9 +5,10 @@ using UnityEngine;
 public class Entity : MonoBehaviour {
 
 	public enum EntityType {
-		AGENT,
+		VILLAGER,
 		RESSOURCE,
-		BUILDING
+		BUILDING,
+		OTHER
 	}
 
 	/// <summary>

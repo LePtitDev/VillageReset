@@ -33,4 +33,25 @@ public class Patch : MonoBehaviour {
 		innerObjects.Remove (obj);
 	}
 
+	/// <summary>
+	/// Gets the patch.
+	/// </summary>
+	/// <returns>The patch.</returns>
+	/// <param name="i">The x coordinate</param>
+	/// <param name="j">The z coordinate</param>
+	public static GameObject GetPatch(int x, int z) {
+		if (x < 0 || z < 0 || Manager.Instance == null || Manager.Instance.Patches == null || x >= Manager.Instance.Patches.GetLength(0) || z >= Manager.Instance.Patches.GetLength(1))
+			return null;
+		return Manager.Instance.Patches [x, z];
+	}
+
+	/// <summary>
+	/// Gets the patch.
+	/// </summary>
+	/// <returns>The patch.</returns>
+	/// <param name="pos">Position.</param>
+	public static GameObject GetPatch(Vector3 pos) {
+		return GetPatch ((int)Mathf.Round (pos.x), (int)Mathf.Round (pos.z));
+	}
+
 }
