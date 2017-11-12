@@ -1,35 +1,80 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using NUnit.Framework;
 using UnityEngine;
 
 public class Task_ChopWood : MonoBehaviour {
 
-	AgentController agent;
-	Memory memory;
-	Moving moving;
+	private AgentController _agent;
+	private Memory _memory;
+	private Moving _moving;
+	private Inventory _inventory;
 
-	Action step;
+	private Action _step;
+
+	private Entity _target;
+
+	private float _nextcut = 0f;
 
 	// Use this for initialization
-	void Start () {
-		agent = GetComponent<AgentController> ();
-		agent.Task = this;
-		memory = GetComponent<Memory> ();
-		moving = GetComponent<Moving> ();
-		step = SearchTrees;
+	private void Start ()
+	{
+		_agent = GetComponent<AgentController> ();
+		_agent.Task = this;
+		_memory = GetComponent<Memory> ();
+		_moving = GetComponent<Moving> ();
+		_inventory = GetComponent<Inventory>();
+		_step = SearchTrees;
+		_target = null;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		step ();
+	private void Update ()
+	{
+		_step ();
 	}
 
-	void SearchTrees() {
-		if (moving.Direction == new Vector3 ())
-			moving.Direction = new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
-		if (moving.Collision)
-			moving.Direction = new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
+	private void SearchTrees()
+	{
+		foreach (var en in _agent.Percepts)
+		{
+			if (en.Name != "Tree") continue;
+			_target = en;
+			_step = TargetTree;
+			_moving.SetDestination(_target.transform.position);
+			return;
+		}
+		if (_moving.Direction == new Vector3 ())
+			_moving.Direction = new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
+		if (_moving.Collision)
+			_moving.Direction = new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
+	}
+
+	private void TargetTree()
+	{
+		if ((_target.transform.position - transform.position).magnitude < Moving.DISTANCE_THRESHOLD)
+			_step = CutTree;
+	}
+
+	private void CutTree()
+	{
+		if (_nextcut > Time.time)
+			return;
+		Ressource res = _target.GetComponent<Ressource>();
+		string resName = res.Type.ToString();
+		// A MODIFIER, LA VALEUR DE RECOLTE
+		int resValue = res.Harvest(10);
+		if (res.Count <= 0)
+		{
+			_agent.RemovePercept(_target);
+			_target = null;
+			_step = SearchTrees;
+		}
+		_inventory.AddElement(resName, resValue);
+		// MODIFIER LA VITESSE DE COUPE
+		_nextcut = Time.time + 1f;
+		Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
 	}
 
 }

@@ -165,4 +165,13 @@ public class AgentController : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Remove a percept
+	/// </summary>
+	/// <param name="en">Percept to remove</param>
+	public void RemovePercept(Entity en)
+	{
+		percepts.Remove(en);
+	}
+
 }

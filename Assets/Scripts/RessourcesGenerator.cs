@@ -128,13 +128,13 @@ public class RessourcesGenerator : MonoBehaviour {
 	void StopSegregation() {
 		NeedSegregate = false;
 		foreach (GameObject t in TreeList) {
-			t.AddComponent<Ressource> ();
+			t.GetComponent<Ressource> ().FixRessource();
 			Destroy (t.GetComponent<TreeSegregation> ());
 		}
 		foreach (GameObject g in StoneList)
-			g.AddComponent<Ressource> ();
+			g.GetComponent<Ressource> ().FixRessource();
 		foreach (GameObject g in IronList)
-			g.AddComponent<Ressource> ();
+			g.GetComponent<Ressource> ().FixRessource();
 		Debug.Log ("Segregation des arbres terminée en " + count + " passes");
 		GameObject.Find ("Village").AddComponent<Village> ();
 	}

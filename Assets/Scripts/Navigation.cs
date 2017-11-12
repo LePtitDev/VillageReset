@@ -3,10 +3,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Navigation : MonoBehaviour {
+public class Navigation : MonoBehaviour
+{
 
 	// Current instance of Navigation
-	public static Navigation Instance;
+	private static Navigation _instance = null;
+	
+	// Current instance of Navigation
+	public static Navigation Instance
+	{
+		get
+		{
+			if (_instance != null) return _instance;
+			GameObject manager = GameObject.Find("Manager");
+			_instance = manager.AddComponent<Navigation>();
+			_instance.CreateNavigationGraph();
+			return _instance;
+		}
+	}
+
+	// Indicate if navigation graph is init
+	private bool _isinit = false;
 
 	// Navigation graph
 	[HideInInspector]
@@ -14,8 +31,10 @@ public class Navigation : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		Instance = this;
-		CreateNavigationGraph ();
+		if (_isinit) return;
+		_instance = this;
+		CreateNavigationGraph();
+		_isinit = true;
 	}
 
 	/// <summary>
