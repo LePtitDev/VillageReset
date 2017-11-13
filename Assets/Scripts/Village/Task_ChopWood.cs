@@ -17,6 +17,8 @@ public class Task_ChopWood : MonoBehaviour {
 
 	private float _nextcut = 0f;
 
+	private GameObject _stockpile;
+
 	// Use this for initialization
 	private void Start ()
 	{
@@ -71,10 +73,36 @@ public class Task_ChopWood : MonoBehaviour {
 			_target = null;
 			_step = SearchTrees;
 		}
-		_inventory.AddElement(resName, resValue);
+		if (!_inventory.AddElement(resName, resValue))
+		{
+			_stockpile = GameObject.Find("StockPile(Clone)");
+			_moving.SetDestination(_stockpile.transform.position);
+			_step = StockWood;
+		}
 		// MODIFIER LA VITESSE DE COUPE
 		_nextcut = Time.time + 1f;
 		Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
+	}
+
+	private void StockWood()
+	{
+		Entity stockentity = _stockpile.GetComponent<Entity>();
+		foreach (Entity entity in _agent.Percepts)
+		{
+			if (entity.Collider == stockentity.Collider)
+			{
+				_stockpile.GetComponent<Inventory>()
+					.AddElement("Wood", _inventory.RemoveElement("Wood", _inventory.GetElement("Wood")));
+				if (_target == null)
+					_step = SearchTrees;
+				else
+				{
+					_moving.SetDestination(_target.transform.position);
+					_step = TargetTree;
+				}
+				break;
+			}
+		}
 	}
 
 }

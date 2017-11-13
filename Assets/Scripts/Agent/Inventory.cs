@@ -17,9 +17,25 @@ public class Inventory : MonoBehaviour
 	/// </summary>
 	public KeyValuePair<string, int>[] Content { get { return _inventory.ToArray(); } }
 
+	/// <summary>
+	/// Poids maximum supportable
+	/// </summary>
+	public float MaxWeight;
+
+	/// <summary>
+	/// Poids actuel
+	/// </summary>
+	private float _weight;
+
+	/// <summary>
+	/// Poids actuel
+	/// </summary>
+	public float Weight { get { return _weight; } }
+	
 	// Use this for initialization
 	private void Start () {
 		_inventory = new Dictionary<string, int>();
+		_weight = 0;
 	}
 
 	/// <summary>
@@ -27,11 +43,32 @@ public class Inventory : MonoBehaviour
 	/// </summary>
 	/// <param name="elementName">Nom de l'élément</param>
 	/// <param name="value">Quantité</param>
-	public void AddElement(string elementName, int value)
+	/// <returns>True si réussi et false sinon</returns>
+	public bool AddElement(string elementName, int value)
 	{
 		if (!_inventory.ContainsKey(elementName))
 			_inventory.Add(elementName, 0);
+		YamlLoader.PropertyElement prop = Manager.Instance.Properties.GetElement("RessourcesWeight." + elementName);
+		if (prop == null)
+			return false;
+		float w = (float)prop.Value;
+		if (w * value + _weight > MaxWeight)
+			return false;
 		_inventory[elementName] += value;
+		_weight += w * value;
+		return true;
+	}
+
+	/// <summary>
+	/// Retourne la quantité de l'élément dans l'inventaire
+	/// </summary>
+	/// <param name="elementName">Nom de l'élément</param>
+	/// <returns>Quantité de l'élément</returns>
+	public int GetElement(string elementName)
+	{
+		if (!_inventory.ContainsKey(elementName))
+			_inventory.Add(elementName, 0);
+		return _inventory[elementName];
 	}
 
 	/// <summary>
@@ -51,9 +88,11 @@ public class Inventory : MonoBehaviour
 			if (needAll)
 				return 0;
 			_inventory[elementName] = 0;
+			_weight -= tmp * (float)Manager.Instance.Properties.GetElement("RessourcesWeight." + elementName).Value;
 			return tmp;
 		}
 		_inventory[elementName] -= value;
+		_weight -= value * (float)Manager.Instance.Properties.GetElement("RessourcesWeight." + elementName).Value;
 		return value;
 	}
 	

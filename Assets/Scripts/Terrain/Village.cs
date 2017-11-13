@@ -30,6 +30,8 @@ public class Village : MonoBehaviour {
                 }
             }
         }
+        else
+	        PlaceVillage();
 	}
 
 	// Update is called once per frame
@@ -52,7 +54,34 @@ public class Village : MonoBehaviour {
 			Center = density [Array.IndexOf (ratios, Mathf.Max (ratios))].transform.position;
 			GroundSegregation.DrawLine (Center, Center + new Vector3 (0f, 1f, 0f), Color.cyan, 100f, 0.3f);
 			Debug.Log ("Placement du village en " + Center);
+			PlaceVillage();
 		}
+	}
+
+	public GameObject GetPrefab(string prefabName)
+	{
+		GameObject prefabs = null;
+		foreach (Transform t in GetComponentsInChildren<Transform>())
+		{
+			if (t.name == "Prefabs")
+				prefabs = t.gameObject;
+		}
+		if (prefabs == null)
+			return null;
+		foreach (Transform t in prefabs.GetComponentsInChildren<Transform>(true))
+		{
+			if (t.name == prefabName)
+				return t.gameObject;
+		}
+		return null;
+	}
+
+	/// <summary>
+	/// Place the village
+	/// </summary>
+	void PlaceVillage()
+	{
+		Instantiate(GetPrefab("StockPile"), Center, Quaternion.identity, transform).SetActive(true);
 	}
 
 }

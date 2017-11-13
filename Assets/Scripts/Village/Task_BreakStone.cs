@@ -16,6 +16,8 @@ public class Task_BreakStone : MonoBehaviour {
 
 	private float _nextbreak = 0f;
 
+	private GameObject _stockpile;
+
 	// Use this for initialization
 	private void Start ()
 	{
@@ -70,10 +72,36 @@ public class Task_BreakStone : MonoBehaviour {
 			_target = null;
 			_step = SearchStone;
 		}
-		_inventory.AddElement(resName, resValue);
+		if (!_inventory.AddElement(resName, resValue))
+		{
+			_stockpile = GameObject.Find("StockPile(Clone)");
+			_moving.SetDestination(_stockpile.transform.position);
+			_step = StockStone;
+		}
 		// MODIFIER LA VITESSE DE COUPE
 		_nextbreak = Time.time + 1f;
 		Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
+	}
+
+	private void StockStone()
+	{
+		Entity stockentity = _stockpile.GetComponent<Entity>();
+		foreach (Entity entity in _agent.Percepts)
+		{
+			if (entity.Collider == stockentity.Collider)
+			{
+				_stockpile.GetComponent<Inventory>()
+					.AddElement("Stone", _inventory.RemoveElement("Stone", _inventory.GetElement("Stone")));
+				if (_target == null)
+					_step = SearchStone;
+				else
+				{
+					_moving.SetDestination(_target.transform.position);
+					_step = TargetStone;
+				}
+				break;
+			}
+		}
 	}
 	
 }

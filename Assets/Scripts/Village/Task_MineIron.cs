@@ -16,6 +16,8 @@ public class Task_MineIron : MonoBehaviour {
 
 	private float _nextmining = 0f;
 
+	private GameObject _stockpile;
+
 	// Use this for initialization
 	private void Start ()
 	{
@@ -70,10 +72,36 @@ public class Task_MineIron : MonoBehaviour {
 			_target = null;
 			_step = SearchIron;
 		}
-		_inventory.AddElement(resName, resValue);
+		if (!_inventory.AddElement(resName, resValue))
+		{
+			_stockpile = GameObject.Find("StockPile(Clone)");
+			_moving.SetDestination(_stockpile.transform.position);
+			_step = StockIron;
+		}
 		// MODIFIER LA VITESSE DE COUPE
 		_nextmining = Time.time + 1f;
 		Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
+	}
+
+	private void StockIron()
+	{
+		Entity stockentity = _stockpile.GetComponent<Entity>();
+		foreach (Entity entity in _agent.Percepts)
+		{
+			if (entity.Collider == stockentity.Collider)
+			{
+				_stockpile.GetComponent<Inventory>()
+					.AddElement("Iron", _inventory.RemoveElement("Iron", _inventory.GetElement("Iron")));
+				if (_target == null)
+					_step = SearchIron;
+				else
+				{
+					_moving.SetDestination(_target.transform.position);
+					_step = TargetIron;
+				}
+				break;
+			}
+		}
 	}
 	
 }
