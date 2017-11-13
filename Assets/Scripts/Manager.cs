@@ -47,21 +47,41 @@ public class Manager : MonoBehaviour {
 	// Patches map
 	[HideInInspector]
 	public GameObject[,] Patches;
-
+	
+	// Properties
+	[HideInInspector]
+	public YamlLoader Properties;
+	
 	// Use this for initialization
-	void Awake () {
+	private void Awake () {
 		Instance = this;
 		Randomizer = new System.Random(Seed);
 		Patches = new GameObject[Width, Height];
-		BoxCollider collider = gameObject.AddComponent<BoxCollider> ();
-		collider.center = new Vector3 ((float)Width / 2.0f - 0.5f, 0.5f, (float)Height / 2.0f - 0.5f);
-		collider.size = new Vector3 ((float)Width, 2, (float)Height);
-		collider.isTrigger = true;
+		BoxCollider boxcollider = gameObject.AddComponent<BoxCollider> ();
+		boxcollider.center = new Vector3 ((float)Width / 2.0f - 0.5f, 0.5f, (float)Height / 2.0f - 0.5f);
+		boxcollider.size = new Vector3 ((float)Width, 2, (float)Height);
+		boxcollider.isTrigger = true;
+		Properties = System.IO.File.Exists(@"properties.yml") ? new YamlLoader(@"properties.yml") : CreateProperties();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
+
+	/// <summary>
+	/// Create properties
+	/// </summary>
+	/// <returns>Properties</returns>
+	private static YamlLoader CreateProperties()
+	{
+		YamlLoader loader = new YamlLoader();
+		// POIDS DES ELEMENTS
+		loader.AddElement(new YamlLoader.PropertyElement("RessourcesWeight",
+			new YamlLoader.PropertyElement[]
+			{
+				new YamlLoader.PropertyElement("Wood", 1.0f),
+				new YamlLoader.PropertyElement("Stone", 1.0f),
+				new YamlLoader.PropertyElement("Iron", 1.0f)
+			}
+		));
+		loader.Save(@"properties.yml");
+		return loader;
 	}
 
 }
