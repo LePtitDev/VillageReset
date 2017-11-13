@@ -6,8 +6,15 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
+
+	/// <summary>
+	/// Inventaire
+	/// </summary>
 	private Dictionary<string, int> _inventory;
 	
+	/// <summary>
+	/// Contenu de l'inventaire
+	/// </summary>
 	public KeyValuePair<string, int>[] Content { get { return _inventory.ToArray(); } }
 
 	// Use this for initialization
@@ -15,6 +22,11 @@ public class Inventory : MonoBehaviour
 		_inventory = new Dictionary<string, int>();
 	}
 
+	/// <summary>
+	/// Ajoute un (ou des) élément(s) à l'inventaire
+	/// </summary>
+	/// <param name="elementName">Nom de l'élément</param>
+	/// <param name="value">Quantité</param>
 	public void AddElement(string elementName, int value)
 	{
 		if (!_inventory.ContainsKey(elementName))
@@ -22,6 +34,13 @@ public class Inventory : MonoBehaviour
 		_inventory[elementName] += value;
 	}
 
+	/// <summary>
+	/// Retire un (ou des) élément(s) de l'inventaire
+	/// </summary>
+	/// <param name="elementName">Nom de l'élément</param>
+	/// <param name="value">Quanité</param>
+	/// <param name="needAll">Indique si le retrait doit être exactement la quantité</param>
+	/// <returns>Quantité retirée</returns>
 	public int RemoveElement(string elementName, int value, bool needAll = false)
 	{
 		if (!_inventory.ContainsKey(elementName))

@@ -15,10 +15,5 @@ public class Memory : MonoBehaviour {
 	void Start () {
 		db = new Database ();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
 }

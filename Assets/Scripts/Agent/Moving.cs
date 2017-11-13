@@ -4,16 +4,34 @@ using UnityEngine;
 
 public class Moving : MonoBehaviour {
 	
+	/// <summary>
+	/// Seuil de distance avant objectif atteint
+	/// </summary>
 	public static readonly float DISTANCE_THRESHOLD = 0.3f;
 
+	/// <summary>
+	/// Direction vers laquelle l'agent se déplace
+	/// </summary>
 	public Vector3 Direction;
 
+	/// <summary>
+	/// Vitesse de déplacement
+	/// </summary>
 	public float Speed;
 
+	/// <summary>
+	/// Indique si l'agent ne peut plus avancer
+	/// </summary>
 	public bool Collision;
 
+	/// <summary>
+	/// Chemin à parcourir
+	/// </summary>
 	private List<Vector3> _path = null;
 	
+	/// <summary>
+	/// Chemin à parcourir
+	/// </summary>
 	public Vector3[] Path { get { return _path.ToArray(); } }
 
 	// Use this for initialization
@@ -50,16 +68,28 @@ public class Moving : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Réinitialise le chemin à parcourir
+	/// </summary>
 	public void ResetPath()
 	{
 		_path = null;
 	}
 
+	/// <summary>
+	/// Initialise le chemin à parcourir
+	/// </summary>
+	/// <param name="path">Points de contrôle</param>
 	public void SetPath(IEnumerable<Vector3> path)
 	{
 		_path = new List<Vector3>(path);
 	}
 
+	/// <summary>
+	/// Définit une destination à atteindre
+	/// (le chemin sera déduit avec le graph de navigation)
+	/// </summary>
+	/// <param name="dest">Destination</param>
 	public void SetDestination(Vector3 dest)
 	{
 		SetPath(Navigation.Instance.FindPath(transform.position, dest));

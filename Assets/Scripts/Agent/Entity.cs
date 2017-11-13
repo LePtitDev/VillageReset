@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour {
 
+	/// <summary>
+	/// Types d'entitées
+	/// </summary>
 	public enum EntityType {
 		VILLAGER,
 		RESSOURCE,
