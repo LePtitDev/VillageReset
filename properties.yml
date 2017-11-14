@@ -1,6 +1,26 @@
 ### YamlLoader C# Class ###
 
-RessourcesWeight:
-    Wood: 1.0
+RessourcesWeight: 
+    Wood: 1
     Stone: 1.5
-    Iron: 2.0
+    Iron: 2
+BuildingCost: 
+    StockPile: 
+        Wood: 20
+        Duration: 10
+    House: 
+        Wood: 100
+        Stone: 50
+        Duration: 20
+    Cornfield: 
+        Duration: 10
+    StonePit: 
+        Duration: 10
+    FishermanHut: 
+        Wood: 50
+        Stone: 10
+        Duration: 20
+    LoggerHut: 
+        Wood: 50
+        Stone: 10
+        Duration: 20

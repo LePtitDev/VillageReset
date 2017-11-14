@@ -76,8 +76,45 @@ public class Manager : MonoBehaviour {
 			new YamlLoader.PropertyElement[]
 			{
 				new YamlLoader.PropertyElement("Wood", 1.0f),
-				new YamlLoader.PropertyElement("Stone", 1.0f),
-				new YamlLoader.PropertyElement("Iron", 1.0f)
+				new YamlLoader.PropertyElement("Stone", 1.5f),
+				new YamlLoader.PropertyElement("Iron", 2.0f)
+			}
+		));
+		// COUT DE CONSTRUCTION
+		loader.AddElement(new YamlLoader.PropertyElement("BuildingCost",
+			new YamlLoader.PropertyElement[]
+			{
+				new YamlLoader.PropertyElement("StockPile", new YamlLoader.PropertyElement[]
+				{
+					new YamlLoader.PropertyElement("Wood", 20.0f),
+					new YamlLoader.PropertyElement("Duration", 10.0f)
+				}),
+				new YamlLoader.PropertyElement("House", new YamlLoader.PropertyElement[]
+				{
+					new YamlLoader.PropertyElement("Wood", 100.0f),
+					new YamlLoader.PropertyElement("Stone", 50.0f),
+					new YamlLoader.PropertyElement("Duration", 20.0f)
+				}),
+				new YamlLoader.PropertyElement("Cornfield", new YamlLoader.PropertyElement[]
+				{
+					new YamlLoader.PropertyElement("Duration", 10.0f)
+				}),
+				new YamlLoader.PropertyElement("StonePit", new YamlLoader.PropertyElement[]
+				{
+					new YamlLoader.PropertyElement("Duration", 10.0f)
+				}),
+				new YamlLoader.PropertyElement("FishermanHut", new YamlLoader.PropertyElement[]
+				{
+					new YamlLoader.PropertyElement("Wood", 50.0f),
+					new YamlLoader.PropertyElement("Stone", 10.0f),
+					new YamlLoader.PropertyElement("Duration", 20.0f)
+				}),
+				new YamlLoader.PropertyElement("LoggerHut", new YamlLoader.PropertyElement[]
+				{
+					new YamlLoader.PropertyElement("Wood", 50.0f),
+					new YamlLoader.PropertyElement("Stone", 10.0f),
+					new YamlLoader.PropertyElement("Duration", 20.0f)
+				})
 			}
 		));
 		loader.Save(@"properties.yml");
