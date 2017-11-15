@@ -81,7 +81,7 @@ public class Task_ChopWood : MonoBehaviour {
 		}
 		// MODIFIER LA VITESSE DE COUPE
 		_nextcut = Time.time + 1f;
-		Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
+		//Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
 	}
 
 	private void StockWood()

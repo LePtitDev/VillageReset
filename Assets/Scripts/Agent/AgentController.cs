@@ -149,7 +149,7 @@ public class AgentController : MonoBehaviour {
 		Entity en = other.GetComponent<Entity> ();
 		if (en != null && !percepts.Contains (en) && en.Collider == other) {
 			percepts.Add (en);
-			Debug.Log (GetComponent<Entity> ().Name + " voit " + en.Name);
+			//Debug.Log (GetComponent<Entity> ().Name + " voit " + en.Name);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class AgentController : MonoBehaviour {
 		Entity en = other.GetComponent<Entity> ();
 		if (en != null && percepts.Contains (en) && en.Collider == other) {
 			percepts.Remove (en);
-			Debug.Log (GetComponent<Entity> ().Name + " ne voit plus " + en.Name);
+			//Debug.Log (GetComponent<Entity> ().Name + " ne voit plus " + en.Name);
 		}
 	}
 
