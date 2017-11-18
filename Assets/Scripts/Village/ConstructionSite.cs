@@ -26,6 +26,11 @@ public class ConstructionSite : MonoBehaviour
 	/// Construction timer
 	/// </summary>
 	private float _constructTimer;
+	
+	/// <summary>
+	/// Construction timer
+	/// </summary>
+	public float Release { get { return _constructTimer; } }
 
 	// Use this for initialization
 	private void Start()

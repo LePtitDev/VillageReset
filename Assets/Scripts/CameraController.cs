@@ -100,6 +100,17 @@ public class CameraController : MonoBehaviour {
 			case Entity.EntityType.RESSOURCE:
 				UIGetEntityInfo("Ressource").SetActive(true);
 				break;
+			case Entity.EntityType.BUILDING:
+				switch (_target.GetComponent<Entity>().Name)
+				{
+					case "Stock Pile":
+						UIGetEntityInfo("StockPile").SetActive(true);
+						break;
+					case "Construction Site":
+						UIGetEntityInfo("ConstructionSite").SetActive(true);
+						break;
+				}
+				break;
 		}
 	}
 
