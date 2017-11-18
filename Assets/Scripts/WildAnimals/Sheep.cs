@@ -13,7 +13,6 @@ public class Sheep : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		
 		animalS.AvoidObjects ();
 	}
 
