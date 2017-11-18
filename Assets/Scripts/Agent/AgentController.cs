@@ -29,7 +29,7 @@ public class AgentController : MonoBehaviour {
 	/// <summary>
 	/// Age de l'agent
 	/// </summary>
-	public int Age { get { return (int)_created / 60 + 16; } }
+	public int Age { get { return (int)(Time.time - _created) / 60 + 16; } }
 
 
 	/// GESTION DE LA SANTE
@@ -119,6 +119,7 @@ public class AgentController : MonoBehaviour {
 		_perceptionCollider.center = new Vector3 ();
 		_perceptionCollider.radius = PerceptionRadius;
 		Task = null;
+		GameObject.Find("Village").GetComponent<Village>().AddVillager(gameObject);
 	}
 	
 	// Update is called once per frame
@@ -187,7 +188,6 @@ public class AgentController : MonoBehaviour {
 		Entity en = other.GetComponent<Entity> ();
 		if (en != null && !_percepts.Contains (en) && en.Collider == other) {
 			_percepts.Add (en);
-			//Debug.Log (GetComponent<Entity> ().Name + " voit " + en.Name);
 		}
 	}
 
@@ -199,7 +199,6 @@ public class AgentController : MonoBehaviour {
 		Entity en = other.GetComponent<Entity> ();
 		if (en != null && _percepts.Contains (en) && en.Collider == other) {
 			_percepts.Remove (en);
-			//Debug.Log (GetComponent<Entity> ().Name + " ne voit plus " + en.Name);
 		}
 	}
 

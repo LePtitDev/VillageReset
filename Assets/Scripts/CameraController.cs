@@ -106,6 +106,9 @@ public class CameraController : MonoBehaviour {
 					case "Stock Pile":
 						UIGetEntityInfo("StockPile").SetActive(true);
 						break;
+					case "House":
+						UIGetEntityInfo("House").SetActive(true);
+						break;
 					case "Construction Site":
 						UIGetEntityInfo("ConstructionSite").SetActive(true);
 						break;

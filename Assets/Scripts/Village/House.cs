@@ -58,7 +58,7 @@ public class House : MonoBehaviour
 			if (Time.time >= _childs[i])
 			{
 				_childs.RemoveAt(i);
-				_village.AddVillager(transform.position);
+				_village.CreateVillager(transform.position);
 			}
 		}
 		for (int i = _villagers.Count - 1; i >= 0; i--)
@@ -83,7 +83,10 @@ public class House : MonoBehaviour
 		if (male && female)
 			_childTimer -= Time.deltaTime * _villagers.Count;
 		if (_childTimer <= 0.0f)
+		{
 			_childs.Add(Time.time + ChildMaturity);
+			_childTimer = ChildDuration;
+		}
 	}
 	
 }

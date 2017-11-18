@@ -54,6 +54,7 @@ public class Village : MonoBehaviour {
 	private void Start () {
 		_building = new List<GameObject>();
 		_villagers = new List<GameObject>();
+		_sdf = new List<GameObject>();
         if (!Initialized) {
             Instance = this;
             _densityCounter = 0;
@@ -147,10 +148,10 @@ public class Village : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Add a villager to the village
+	/// Create a villager in the village
 	/// </summary>
 	/// <returns>The villager</returns>
-	public GameObject AddVillager(Vector3 pos)
+	public GameObject CreateVillager(Vector3 pos)
 	{
 		Transform villagerparent = null;
 		foreach (Transform t in GetComponentsInChildren<Transform>())
@@ -159,8 +160,17 @@ public class Village : MonoBehaviour {
 				villagerparent = t;
 		}
 		GameObject v = Instantiate(VillagerPrefab, pos, Quaternion.identity, villagerparent);
-		_villagers.Add(v);
 		return v;
+	}
+
+	/// <summary>
+	/// Ajoute un villageois un village
+	/// </summary>
+	/// <param name="g"></param>
+	public void AddVillager(GameObject g)
+	{
+		_villagers.Add(g);
+		_sdf.Add(g);
 	}
 
 	/// <summary>

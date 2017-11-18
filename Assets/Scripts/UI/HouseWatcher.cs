@@ -1,10 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ConstructionWatcher : MonoBehaviour {
+public class HouseWatcher : MonoBehaviour {
 
 	// Main camera
 	private CameraController _camera;
@@ -12,14 +11,14 @@ public class ConstructionWatcher : MonoBehaviour {
 	// Main panel
 	private RectTransform _panel;
 
-	// Quantity slider
-	private Slider _slider;
-
 	// Text for wood
 	private GameObject _textName;
 
 	// Text for stone
-	private GameObject _textQuantity;
+	private GameObject _textAge;
+
+	// Text for child count
+	private Text _textChilds;
 
 	// Panel default height
 	private float _defaultHeight;
@@ -28,8 +27,8 @@ public class ConstructionWatcher : MonoBehaviour {
 	private List<Text> _additionalName;
 
 	// Additionnal texts for quantities
-	private List<Text> _additionalQuantity;
-	
+	private List<Text> _additionalAge;
+
 	// Use this for initialization
 	void Start () {
 		_camera = Camera.main.GetComponent<CameraController>();
@@ -38,15 +37,16 @@ public class ConstructionWatcher : MonoBehaviour {
 		{
 			if (t.name == "Name")
 				_textName = t.gameObject;
-			else if (t.name == "Quantity")
-				_textQuantity = t.gameObject;
+			else if (t.name == "Age")
+				_textAge = t.gameObject;
+			else if (t.name == "ChildCount")
+				_textChilds = t;
 		}
 		_textName.SetActive(false);
-		_textQuantity.SetActive(false);
-		_slider = GetComponentInChildren<Slider>();
+		_textAge.SetActive(false);
 		_defaultHeight = _panel.rect.height;
 		_additionalName = new List<Text>();
-		_additionalQuantity = new List<Text>();
+		_additionalAge = new List<Text>();
 	}
 	
 	// Update is called once per frame
@@ -57,20 +57,19 @@ public class ConstructionWatcher : MonoBehaviour {
 			return;
 		}
 		Entity entity = _camera.Target.GetComponent<Entity>();
-		if (entity.Type != Entity.EntityType.BUILDING || entity.Name != "Construction Site")
+		if (entity.Type != Entity.EntityType.BUILDING || entity.Name != "House")
 		{
 			gameObject.SetActive(false);
 			return;
 		}
-		ConstructionSite construction = entity.GetComponent<ConstructionSite>();
-		Inventory inventory = entity.GetComponent<Inventory>();
-		List<string> keys = new List<string>(construction.Needed.Keys);
-		for (int i = 0; i < keys.Count; i++)
+		House house = entity.GetComponent<House>();
+		GameObject[] villagers = house.Villagers;
+		for (int i = 0; i < villagers.Length; i++)
 		{
 			if (i >= _additionalName.Count)
 			{
 				GameObject aName = Instantiate(_textName, transform);
-				GameObject aQuantity = Instantiate(_textQuantity, transform);
+				GameObject aQuantity = Instantiate(_textAge, transform);
 				aName.SetActive(true);
 				aQuantity.SetActive(true);
 				RectTransform tr = aName.GetComponent<RectTransform>();
@@ -78,24 +77,23 @@ public class ConstructionWatcher : MonoBehaviour {
 				tr = aQuantity.GetComponent<RectTransform>();
 				tr.position = new Vector3(tr.position.x, tr.position.y - i * 20.0f);
 				_additionalName.Add(aName.GetComponent<Text>());
-				_additionalQuantity.Add(aQuantity.GetComponent<Text>());
+				_additionalAge.Add(aQuantity.GetComponent<Text>());
 			}
-			_additionalName[i].text = keys[i] + " :";
-			_additionalQuantity[i].text =
-				inventory.GetElement(keys[i]).ToString() + "/" + construction.Needed[keys[i]].ToString();
+			AgentController agent = villagers[i].GetComponent<AgentController>();
+			_additionalName[i].text = agent.FirstName;
+			_additionalAge[i].text = agent.Age.ToString();
 		}
-		if (keys.Count < _additionalName.Count)
+		if (villagers.Length < _additionalName.Count)
 		{
-			for (int i = keys.Count; i < _additionalName.Count; i++)
+			for (int i = villagers.Length; i < _additionalName.Count; i++)
 			{
 				Destroy(_additionalName[i].gameObject);
-				Destroy(_additionalQuantity[i].gameObject);
+				Destroy(_additionalAge[i].gameObject);
 			}
-			_additionalName.RemoveRange(keys.Count, _additionalName.Count - keys.Count);
-			_additionalQuantity.RemoveRange(keys.Count, _additionalName.Count - keys.Count);
+			_additionalName.RemoveRange(villagers.Length, _additionalName.Count - villagers.Length);
+			_additionalAge.RemoveRange(villagers.Length, _additionalName.Count - villagers.Length);
 		}
-		_slider.maxValue = construction.Duration;
-		_slider.value = construction.Duration - construction.Release;
-		_panel.sizeDelta = new Vector2(_panel.sizeDelta.x, _defaultHeight + (keys.Count - 1) * 20.0f);
+		_panel.sizeDelta = new Vector2(_panel.sizeDelta.x, _defaultHeight + (villagers.Length - 1) * 20.0f);
+		_textChilds.text = house.ChildCount.ToString();
 	}
 }

@@ -98,7 +98,11 @@ public class Task_Build : MonoBehaviour {
 		{
 			_target = _village.AddBuilding(_construction, ChooseEmplacement())
 				.GetComponent<ConstructionSite>();
-			_target.Building = _village.GetPrefab("bFishermanHut");
+			_target.Building = _village.GetPrefab("FishermanHut");
+		}
+		else
+		{
+			return;
 		}
 		string[] props = Manager.Instance.Properties.GetElement("BuildingCost." + _target.Building.name).GetElements();
 		for (int i = 1; i < props.Length; i++)
