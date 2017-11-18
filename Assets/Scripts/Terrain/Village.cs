@@ -29,9 +29,31 @@ public class Village : MonoBehaviour {
 	// Step density counter
 	private int _densityCounter;
 
+	// Villagers list
+	private List<GameObject> _villagers;
+
+	/// <summary>
+	/// Villagers list
+	/// </summary>
+	public GameObject[] Villagers { get { return _villagers.ToArray(); } }
+
+	/// <summary>
+	/// The villager prefab
+	/// </summary>
+	public GameObject VillagerPrefab;
+
+	// Villagers without houses
+	private List<GameObject> _sdf;
+	
+	/// <summary>
+	/// Villagers without houses
+	/// </summary>
+	public GameObject[] SdfList { get { return _sdf.ToArray(); } }
+
 	// Use this for initialization
 	private void Start () {
 		_building = new List<GameObject>();
+		_villagers = new List<GameObject>();
         if (!Initialized) {
             Instance = this;
             _densityCounter = 0;
@@ -102,13 +124,13 @@ public class Village : MonoBehaviour {
 	/// <param name="pos">Position</param>
 	public GameObject AddBuilding(GameObject g, Vector3 pos)
 	{
-		GameObject _buildparent = null;
+		Transform buildparent = null;
 		foreach (Transform t in GetComponentsInChildren<Transform>())
 		{
 			if (t.name == "Buildings")
-				_buildparent = t.gameObject;
+				buildparent = t;
 		}
-		GameObject b = Instantiate(g, pos, Quaternion.identity, _buildparent.transform);
+		GameObject b = Instantiate(g, pos, Quaternion.identity, buildparent);
 		b.SetActive(true);
 		_building.Add(b);
 		Patch.GetPatch(b.transform.position).GetComponent<Patch>().AddInnerObject(b);
@@ -122,6 +144,41 @@ public class Village : MonoBehaviour {
 	public void RemoveBuilding(GameObject g)
 	{
 		_building.Remove(g);
+	}
+
+	/// <summary>
+	/// Add a villager to the village
+	/// </summary>
+	/// <returns>The villager</returns>
+	public GameObject AddVillager(Vector3 pos)
+	{
+		Transform villagerparent = null;
+		foreach (Transform t in GetComponentsInChildren<Transform>())
+		{
+			if (t.name == "Villagers")
+				villagerparent = t;
+		}
+		GameObject v = Instantiate(VillagerPrefab, pos, Quaternion.identity, villagerparent);
+		_villagers.Add(v);
+		return v;
+	}
+
+	/// <summary>
+	/// Remove a villager in the village
+	/// </summary>
+	/// <param name="g">The villager</param>
+	public void RemoveVillager(GameObject g)
+	{
+		_villagers.Remove(g);
+	}
+
+	/// <summary>
+	/// Remove a villager without house
+	/// </summary>
+	/// <param name="g">The villager</param>
+	public void RemoveSdf(GameObject g)
+	{
+		_sdf.Remove(g);
 	}
 
 }
