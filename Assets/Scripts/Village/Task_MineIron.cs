@@ -80,7 +80,7 @@ public class Task_MineIron : MonoBehaviour {
 		}
 		// MODIFIER LA VITESSE DE COUPE
 		_nextmining = Time.time + 1f;
-		Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
+		//Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
 	}
 
 	private void StockIron()
