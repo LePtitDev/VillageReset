@@ -13,17 +13,28 @@ public class Village : MonoBehaviour {
 	/// </summary>
 	public Vector3 Center;
 
-	// Indicate if the village is init
+	/// <summary>
+	/// Indicate if the village is initialized
+	/// </summary>
 	public bool Initialized = false;
 
+	// List of buildings
+	private List<GameObject> _building;
+	
+	/// <summary>
+	/// List of buildings
+	/// </summary>
+	public GameObject[] Building { get { return _building.ToArray(); } }
+
 	// Step density counter
-	int densityCounter;
+	private int _densityCounter;
 
 	// Use this for initialization
-	void Start () {
+	private void Start () {
+		_building = new List<GameObject>();
         if (!Initialized) {
             Instance = this;
-            densityCounter = 0;
+            _densityCounter = 0;
             for (int i = 0; i < Manager.Instance.Width; i++) {
                 for (int j = 0; j < Manager.Instance.Height; j++) {
                     Manager.Instance.Patches[i, j].GetComponent<Density>().ResetDensity();
@@ -35,8 +46,8 @@ public class Village : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update() {
-		if (!Initialized && densityCounter++ > Density.StepThreshold) {
+	private void Update() {
+		if (!Initialized && _densityCounter++ > Density.StepThreshold) {
             Initialized = true;
 			Density[] density = GameObject.Find ("Ground").GetComponentsInChildren<Density> ();
 			float[] ratios = new float [density.Length];
@@ -79,9 +90,38 @@ public class Village : MonoBehaviour {
 	/// <summary>
 	/// Place the village
 	/// </summary>
-	void PlaceVillage()
+	private void PlaceVillage()
 	{
-		Instantiate(GetPrefab("StockPile"), Center, Quaternion.identity, transform).SetActive(true);
+		AddBuilding(GetPrefab("StockPile"), Center);
+	}
+
+	/// <summary>
+	/// Add a building to the village
+	/// </summary>
+	/// <param name="g">The building GameObject</param>
+	/// <param name="pos">Position</param>
+	public GameObject AddBuilding(GameObject g, Vector3 pos)
+	{
+		GameObject _buildparent = null;
+		foreach (Transform t in GetComponentsInChildren<Transform>())
+		{
+			if (t.name == "Buildings")
+				_buildparent = t.gameObject;
+		}
+		GameObject b = Instantiate(g, pos, Quaternion.identity, _buildparent.transform);
+		b.SetActive(true);
+		_building.Add(b);
+		Patch.GetPatch(b.transform.position).GetComponent<Patch>().AddInnerObject(b);
+		return b;
+	}
+
+	/// <summary>
+	/// Remove a building of the village
+	/// </summary>
+	/// <param name="g">The building</param>
+	public void RemoveBuilding(GameObject g)
+	{
+		_building.Remove(g);
 	}
 
 }

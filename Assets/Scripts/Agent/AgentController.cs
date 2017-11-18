@@ -95,6 +95,11 @@ public class AgentController : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		perceptionCollider.radius = PerceptionRadius;
+		for (int i = percepts.Count - 1; i >= 0; i--)
+		{
+			if (percepts[i] == null)
+				percepts.RemoveAt(i);
+		}
 	}
 
 	void OnDrawGizmos() {
