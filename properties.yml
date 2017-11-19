@@ -1,26 +1,53 @@
 ### YamlLoader C# Class ###
 
+FoodValue: 
+    Corn: 8
+    Fish: 10
+    Meat: 50
+Harvest: 
+    Tree: 50
+    Stone: 100
+    Iron: 20
+    Cornfield: 200
+Delay: 
+    Season: 60
+    Tree: 30
+    Stone: 120
+    Iron: 60
+    Cornfield: 
+        Seeding: 20
+        Growing: 100
+        Harvest: 30
+    Fishing: 2
+    Log: 50
+    Hungry: 50
+    Starving: 50
+    Heal: 50
+Agent: 
+    Health: 50
+    Hunger: 50
+    Life: 60
 RessourcesWeight: 
     Wood: 1
     Stone: 1.5
     Iron: 2
 BuildingCost: 
-    StockPile:
+    StockPile: 
         Wood: 20
         Duration: 10
-    House:
+    House: 
         Wood: 100
         Stone: 50
         Duration: 20
-    Cornfield:
+    Cornfield: 
         Duration: 10
-    StonePit:
+    StonePit: 
         Duration: 10
-    FishermanHut:
+    FishermanHut: 
         Wood: 50
         Stone: 10
         Duration: 20
-    LoggerHut:
+    LoggerHut: 
         Wood: 50
         Stone: 10
         Duration: 20

@@ -98,7 +98,7 @@ public class ConstructionWatcher : MonoBehaviour {
 				Destroy(_additionalQuantity[i].gameObject);
 			}
 			_additionalName.RemoveRange(keys.Count, _additionalName.Count - keys.Count);
-			_additionalQuantity.RemoveRange(keys.Count, _additionalName.Count - keys.Count);
+			_additionalQuantity.RemoveRange(keys.Count, _additionalQuantity.Count - keys.Count);
 		}
 		_slider.maxValue = construction.Duration;
 		_slider.value = construction.Duration - construction.Release;

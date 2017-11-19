@@ -67,6 +67,13 @@ public class StockPileWatcher : MonoBehaviour
 		_slider.maxValue = inventory.MaxWeight;
 		_slider.value = inventory.Weight;
 		KeyValuePair<string, int>[] content = inventory.Content;
+		List<KeyValuePair<string, int>> tmp = new List<KeyValuePair<string, int>>();
+		foreach (KeyValuePair<string,int> pair in content)
+		{
+			if (pair.Value != 0)
+				tmp.Add(pair);
+		}
+		content = tmp.ToArray();
 		for (int i = 0; i < content.Length; i++)
 		{
 			if (i >= _additionalName.Count)
@@ -93,7 +100,7 @@ public class StockPileWatcher : MonoBehaviour
 				Destroy(_additionalQuantity[i].gameObject);
 			}
 			_additionalName.RemoveRange(content.Length, _additionalName.Count - content.Length);
-			_additionalQuantity.RemoveRange(content.Length, _additionalName.Count - content.Length);
+			_additionalQuantity.RemoveRange(content.Length, _additionalQuantity.Count - content.Length);
 		}
 		_panel.sizeDelta = new Vector2(_panel.sizeDelta.x, _defaultHeight + (content.Length - 1) * 20.0f);
 	}

@@ -91,7 +91,7 @@ public class HouseWatcher : MonoBehaviour {
 				Destroy(_additionalAge[i].gameObject);
 			}
 			_additionalName.RemoveRange(villagers.Length, _additionalName.Count - villagers.Length);
-			_additionalAge.RemoveRange(villagers.Length, _additionalName.Count - villagers.Length);
+			_additionalAge.RemoveRange(villagers.Length, _additionalAge.Count - villagers.Length);
 		}
 		_panel.sizeDelta = new Vector2(_panel.sizeDelta.x, _defaultHeight + (villagers.Length - 1) * 20.0f);
 		_textChilds.text = house.ChildCount.ToString();
