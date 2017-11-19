@@ -12,13 +12,16 @@ public class ConstructionWatcher : MonoBehaviour {
 	// Main panel
 	private RectTransform _panel;
 
+	// Building name
+	private Text _textBuilding;
+
 	// Quantity slider
 	private Slider _slider;
 
-	// Text for wood
+	// Text for ressource name
 	private GameObject _textName;
 
-	// Text for stone
+	// Text for ressource quantity
 	private GameObject _textQuantity;
 
 	// Panel default height
@@ -36,7 +39,9 @@ public class ConstructionWatcher : MonoBehaviour {
 		_panel = GetComponent<RectTransform>();
 		foreach (Text t in GetComponentsInChildren<Text>())
 		{
-			if (t.name == "Name")
+			if (t.name == "Building")
+				_textBuilding = t;
+			else if (t.name == "Name")
 				_textName = t.gameObject;
 			else if (t.name == "Quantity")
 				_textQuantity = t.gameObject;
@@ -63,6 +68,7 @@ public class ConstructionWatcher : MonoBehaviour {
 			return;
 		}
 		ConstructionSite construction = entity.GetComponent<ConstructionSite>();
+		_textBuilding.text = construction.Building.GetComponent<Entity>().Name;
 		Inventory inventory = entity.GetComponent<Inventory>();
 		List<string> keys = new List<string>(construction.Needed.Keys);
 		for (int i = 0; i < keys.Count; i++)
