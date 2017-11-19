@@ -74,6 +74,10 @@ public class Task_Build : MonoBehaviour {
 				case "Logger's Hut":
 					bLoggerHut++;
 					break;
+				case "Construction Site":
+					_target = o.GetComponent<ConstructionSite>();
+					_step = FindRessources;
+					return;
 			}
 		}
 		if (bStockpile == 0)
@@ -96,7 +100,7 @@ public class Task_Build : MonoBehaviour {
 		}
 		else if (bFishermanHut == 0)
 		{
-			_target = _village.AddBuilding(_construction, ChooseEmplacement())
+			_target = _village.AddBuilding(_construction, ChooseEmplacement(true))
 				.GetComponent<ConstructionSite>();
 			_target.Building = _village.GetPrefab("FishermanHut");
 		}
@@ -113,7 +117,7 @@ public class Task_Build : MonoBehaviour {
 		_step = FindRessources;
 	}
 
-	private Vector3 ChooseEmplacement()
+	private Vector3 ChooseEmplacement(bool water = false)
 	{
 		for (int i = 0; i < Manager.Instance.Width; i++)
 		{
@@ -122,7 +126,7 @@ public class Task_Build : MonoBehaviour {
 				for (int z = (int)_village.Center.z - i, zmax = (int)_village.Center.z + i; z <= zmax && z >= 0 && z < Manager.Instance.Height; z++)
 				{
 					Patch p = Patch.GetPatch(x, z).GetComponent<Patch>();
-					if (p.name != "Water(Clone)" && p.InnerObjects.Length == 0)
+					if ((p.name == "Water(Clone)") == water && p.InnerObjects.Length == 0)
 						return p.transform.position;
 				}
 			}

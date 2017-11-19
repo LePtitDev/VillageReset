@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CornfielWatcher : MonoBehaviour {
+public class CornfieldWatcher : MonoBehaviour {
 
 	// Main camera
 	private CameraController _camera;

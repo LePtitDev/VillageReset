@@ -10,31 +10,44 @@ public class StockPileWatcher : MonoBehaviour
 	// Main camera
 	private CameraController _camera;
 
+	// Main panel
+	private RectTransform _panel;
+
 	// Quantity slider
 	private Slider _slider;
 
 	// Text for wood
-	private Text _textWood;
+	private GameObject _textName;
 
 	// Text for stone
-	private Text _textStone;
+	private GameObject _textQuantity;
 
-	// Text for iron
-	private Text _textIron;
+	// Panel default height
+	private float _defaultHeight;
+
+	// Additionnal texts for names
+	private List<Text> _additionalName;
+
+	// Additionnal texts for quantities
+	private List<Text> _additionalQuantity;
 	
 	// Use this for initialization
 	void Start () {
 		_camera = Camera.main.GetComponent<CameraController>();
+		_panel = GetComponent<RectTransform>();
 		_slider = GetComponentInChildren<Slider>();
 		foreach (Text t in GetComponentsInChildren<Text>())
 		{
-			if (t.name == "Wood")
-				_textWood = t;
-			else if (t.name == "Stone")
-				_textStone = t;
-			else if (t.name == "Iron")
-				_textIron = t;
+			if (t.name == "Name")
+				_textName = t.gameObject;
+			else if (t.name == "Quantity")
+				_textQuantity = t.gameObject;
 		}
+		_textName.SetActive(false);
+		_textQuantity.SetActive(false);
+		_defaultHeight = _panel.rect.height;
+		_additionalName = new List<Text>();
+		_additionalQuantity = new List<Text>();
 	}
 	
 	// Update is called once per frame
@@ -53,8 +66,35 @@ public class StockPileWatcher : MonoBehaviour
 		Inventory inventory = entity.GetComponent<Inventory>();
 		_slider.maxValue = inventory.MaxWeight;
 		_slider.value = inventory.Weight;
-		_textWood.text = inventory.GetElement("Wood").ToString();
-		_textStone.text = inventory.GetElement("Stone").ToString();
-		_textIron.text = inventory.GetElement("Iron").ToString();
+		KeyValuePair<string, int>[] content = inventory.Content;
+		for (int i = 0; i < content.Length; i++)
+		{
+			if (i >= _additionalName.Count)
+			{
+				GameObject aName = Instantiate(_textName, transform);
+				GameObject aQuantity = Instantiate(_textQuantity, transform);
+				aName.SetActive(true);
+				aQuantity.SetActive(true);
+				RectTransform tr = aName.GetComponent<RectTransform>();
+				tr.position = new Vector3(tr.position.x, tr.position.y - i * 20.0f);
+				tr = aQuantity.GetComponent<RectTransform>();
+				tr.position = new Vector3(tr.position.x, tr.position.y - i * 20.0f);
+				_additionalName.Add(aName.GetComponent<Text>());
+				_additionalQuantity.Add(aQuantity.GetComponent<Text>());
+			}
+			_additionalName[i].text = content[i].Key;
+			_additionalQuantity[i].text = content[i].Value.ToString();
+		}
+		if (content.Length < _additionalName.Count)
+		{
+			for (int i = content.Length; i < _additionalName.Count; i++)
+			{
+				Destroy(_additionalName[i].gameObject);
+				Destroy(_additionalQuantity[i].gameObject);
+			}
+			_additionalName.RemoveRange(content.Length, _additionalName.Count - content.Length);
+			_additionalQuantity.RemoveRange(content.Length, _additionalName.Count - content.Length);
+		}
+		_panel.sizeDelta = new Vector2(_panel.sizeDelta.x, _defaultHeight + (content.Length - 1) * 20.0f);
 	}
 }
