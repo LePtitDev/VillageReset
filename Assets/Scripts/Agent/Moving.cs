@@ -66,6 +66,10 @@ public class Moving : MonoBehaviour {
 			transform.position = current;
 			this.Collision = true;
 		}
+		transform.rotation = Quaternion.LookRotation(Direction);
+		Animator animator = GetComponent<Animator>();
+		if (animator != null)
+			animator.SetBool("Moving", Direction != new Vector3());
 	}
 
 	/// <summary>
