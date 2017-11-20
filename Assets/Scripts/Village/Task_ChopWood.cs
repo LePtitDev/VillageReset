@@ -4,14 +4,12 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
-public class Task_ChopWood : MonoBehaviour {
+public class Task_ChopWood : Task {
 
 	private AgentController _agent;
 	private Memory _memory;
 	private Moving _moving;
 	private Inventory _inventory;
-
-	private Action _step;
 
 	private Entity _target;
 
@@ -22,19 +20,14 @@ public class Task_ChopWood : MonoBehaviour {
 	// Use this for initialization
 	private void Start ()
 	{
+		_name = "Chop tree";
 		_agent = GetComponent<AgentController> ();
 		_agent.Task = this;
 		_memory = GetComponent<Memory> ();
 		_moving = GetComponent<Moving> ();
 		_inventory = GetComponent<Inventory>();
-		_step = SearchTrees;
+		_action = SearchTrees;
 		_target = null;
-	}
-	
-	// Update is called once per frame
-	private void Update ()
-	{
-		_step ();
 	}
 
 	private void SearchTrees()
@@ -43,7 +36,7 @@ public class Task_ChopWood : MonoBehaviour {
 		{
 			if (en.Name != "Tree") continue;
 			_target = en;
-			_step = TargetTree;
+			_action = TargetTree;
 			_moving.SetDestination(_target.transform.position);
 			return;
 		}
@@ -56,7 +49,7 @@ public class Task_ChopWood : MonoBehaviour {
 	private void TargetTree()
 	{
 		if ((_target.transform.position - transform.position).magnitude < Moving.DISTANCE_THRESHOLD)
-			_step = CutTree;
+			_action = CutTree;
 	}
 
 	private void CutTree()
@@ -71,13 +64,13 @@ public class Task_ChopWood : MonoBehaviour {
 		{
 			_agent.RemovePercept(_target);
 			_target = null;
-			_step = SearchTrees;
+			_action = SearchTrees;
 		}
 		if (!_inventory.AddElement(resName, resValue))
 		{
 			_stockpile = GameObject.Find("StockPile(Clone)");
 			_moving.SetDestination(_stockpile.transform.position);
-			_step = StockWood;
+			_action = StockWood;
 		}
 		// MODIFIER LA VITESSE DE COUPE
 		_nextcut = Time.time + 1f;
@@ -94,11 +87,11 @@ public class Task_ChopWood : MonoBehaviour {
 				_stockpile.GetComponent<Inventory>()
 					.AddElement("Wood", _inventory.RemoveElement("Wood", _inventory.GetElement("Wood")));
 				if (_target == null)
-					_step = SearchTrees;
+					_action = SearchTrees;
 				else
 				{
 					_moving.SetDestination(_target.transform.position);
-					_step = TargetTree;
+					_action = TargetTree;
 				}
 				break;
 			}

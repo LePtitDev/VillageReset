@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Task_MineIron : MonoBehaviour {
+public class Task_MineIron : Task {
 
 	private AgentController _agent;
 	private Memory _memory;
 	private Moving _moving;
 	private Inventory _inventory;
-
-	private Action _step;
 
 	private Entity _target;
 
@@ -21,19 +19,14 @@ public class Task_MineIron : MonoBehaviour {
 	// Use this for initialization
 	private void Start ()
 	{
+		_name = "Mine iron";
 		_agent = GetComponent<AgentController> ();
 		_agent.Task = this;
 		_memory = GetComponent<Memory> ();
 		_moving = GetComponent<Moving> ();
 		_inventory = GetComponent<Inventory>();
-		_step = SearchIron;
+		_action = SearchIron;
 		_target = null;
-	}
-	
-	// Update is called once per frame
-	private void Update ()
-	{
-		_step ();
 	}
 
 	private void SearchIron()
@@ -42,7 +35,7 @@ public class Task_MineIron : MonoBehaviour {
 		{
 			if (en.Name != "Iron") continue;
 			_target = en;
-			_step = TargetIron;
+			_action = TargetIron;
 			_moving.SetDestination(_target.transform.position);
 			return;
 		}
@@ -55,7 +48,7 @@ public class Task_MineIron : MonoBehaviour {
 	private void TargetIron()
 	{
 		if ((_target.transform.position - transform.position).magnitude < Moving.DISTANCE_THRESHOLD)
-			_step = MineIron;
+			_action = MineIron;
 	}
 
 	private void MineIron()
@@ -70,13 +63,13 @@ public class Task_MineIron : MonoBehaviour {
 		{
 			_agent.RemovePercept(_target);
 			_target = null;
-			_step = SearchIron;
+			_action = SearchIron;
 		}
 		if (!_inventory.AddElement(resName, resValue))
 		{
 			_stockpile = GameObject.Find("StockPile(Clone)");
 			_moving.SetDestination(_stockpile.transform.position);
-			_step = StockIron;
+			_action = StockIron;
 		}
 		// MODIFIER LA VITESSE DE COUPE
 		_nextmining = Time.time + 1f;
@@ -93,11 +86,11 @@ public class Task_MineIron : MonoBehaviour {
 				_stockpile.GetComponent<Inventory>()
 					.AddElement("Iron", _inventory.RemoveElement("Iron", _inventory.GetElement("Iron")));
 				if (_target == null)
-					_step = SearchIron;
+					_action = SearchIron;
 				else
 				{
 					_moving.SetDestination(_target.transform.position);
-					_step = TargetIron;
+					_action = TargetIron;
 				}
 				break;
 			}

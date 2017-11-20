@@ -6,7 +6,7 @@ using System.Timers;
 using UnityEngine;
 using UnityEngine.XR.WSA;
 
-public class Task_Build : MonoBehaviour {
+public class Task_Build : Task {
 
 	private AgentController _agent;
 	private Memory _memory;
@@ -14,8 +14,6 @@ public class Task_Build : MonoBehaviour {
 	private Inventory _inventory;
 	private Village _village;
 	private GameObject _construction;
-
-	private Action _step;
 
 	private ConstructionSite _target;
 
@@ -26,6 +24,7 @@ public class Task_Build : MonoBehaviour {
 	// Use this for initialization
 	private void Start ()
 	{
+		_name = "Build";
 		_agent = GetComponent<AgentController> ();
 		_agent.Task = this;
 		_memory = GetComponent<Memory> ();
@@ -33,14 +32,8 @@ public class Task_Build : MonoBehaviour {
 		_inventory = GetComponent<Inventory>();
 		_village = GameObject.Find("Village").GetComponent<Village>();
 		_construction = _village.GetPrefab("ConstructionSite");
-		_step = ChooseBuilding;
+		_action = ChooseBuilding;
 		_target = null;
-	}
-	
-	// Update is called once per frame
-	private void Update ()
-	{
-		_step();
 	}
 
 	private void ChooseBuilding()
@@ -76,7 +69,7 @@ public class Task_Build : MonoBehaviour {
 					break;
 				case "Construction Site":
 					_target = o.GetComponent<ConstructionSite>();
-					_step = FindRessources;
+					_action = FindRessources;
 					return;
 			}
 		}
@@ -114,7 +107,7 @@ public class Task_Build : MonoBehaviour {
 		for (int i = 1; i < props.Length - 1; i++)
 			_target.Needed[props[i]] = (int)(float)Manager.Instance.Properties.GetElement("BuildingCost." + _target.Building.name + "." + props[i]).Value;
 		_target.Duration = (float)Manager.Instance.Properties.GetElement("BuildingCost." + _target.Building.name + ".Duration").Value;
-		_step = FindRessources;
+		_action = FindRessources;
 	}
 
 	private Vector3 ChooseEmplacement(bool water = false)
@@ -138,14 +131,14 @@ public class Task_Build : MonoBehaviour {
 	{
 		if (_target == null)
 		{
-			_step = ChooseBuilding;
+			_action = ChooseBuilding;
 			return;
 		}
 		foreach (Entity en in _agent.Percepts)
 		{
 			if (en != null && en.gameObject == _target.gameObject)
 			{
-				_step = Construct;
+				_action = Construct;
 				break;
 			}
 		}
@@ -155,7 +148,7 @@ public class Task_Build : MonoBehaviour {
 	{
 		if (_target == null)
 		{
-			_step = ChooseBuilding;
+			_action = ChooseBuilding;
 			return;
 		}
 		Dictionary<string, int> need = new Dictionary<string, int>();
@@ -174,7 +167,7 @@ public class Task_Build : MonoBehaviour {
 					inv.AddElement(key, _inventory.RemoveElement(key, need[key]));
 				}
 			}
-			_step = FindRessources;
+			_action = FindRessources;
 		}
 		else
 		{
@@ -186,7 +179,7 @@ public class Task_Build : MonoBehaviour {
 	{
 		if (_target == null)
 		{
-			_step = ChooseBuilding;
+			_action = ChooseBuilding;
 			return;
 		}
 		_stockpile = null;
@@ -200,7 +193,7 @@ public class Task_Build : MonoBehaviour {
 		if (need.Count == 0)
 		{
 			GetComponent<Moving>().SetDestination(_target.transform.position);
-			_step = GotoConstruct;
+			_action = GotoConstruct;
 			return;
 		}
 		foreach (GameObject g in _village.Building)
@@ -227,7 +220,7 @@ public class Task_Build : MonoBehaviour {
 		if (_stockpile != null)
 		{
 			GetComponent<Moving>().SetDestination(_stockpile.transform.position);
-			_step = GotoStockpile;
+			_action = GotoStockpile;
 		}
 	}
 
@@ -235,7 +228,7 @@ public class Task_Build : MonoBehaviour {
 	{
 		if (_target == null)
 		{
-			_step = ChooseBuilding;
+			_action = ChooseBuilding;
 			return;
 		}
 		if ((_stockpile.transform.position - transform.position).magnitude < 0.5f)
@@ -258,7 +251,7 @@ public class Task_Build : MonoBehaviour {
 						break;
 				}
 			}
-			_step = GotoConstruct;
+			_action = GotoConstruct;
 			GetComponent<Moving>().SetDestination(_target.transform.position);
 		}
 	}

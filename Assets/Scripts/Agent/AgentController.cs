@@ -86,7 +86,7 @@ public class AgentController : MonoBehaviour {
 	/// <summary>
 	/// Tâche courante
 	/// </summary>
-	public MonoBehaviour Task;
+	public Task Task;
 
 
 	/// EDITEUR

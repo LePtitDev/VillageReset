@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Task_BreakStone : MonoBehaviour {
+public class Task_BreakStone : Task {
 
 	private AgentController _agent;
 	private Memory _memory;
 	private Moving _moving;
 	private Inventory _inventory;
-
-	private Action _step;
 
 	private Entity _target;
 
@@ -21,19 +19,14 @@ public class Task_BreakStone : MonoBehaviour {
 	// Use this for initialization
 	private void Start ()
 	{
+		_name = "Break stone";
 		_agent = GetComponent<AgentController> ();
 		_agent.Task = this;
 		_memory = GetComponent<Memory> ();
 		_moving = GetComponent<Moving> ();
 		_inventory = GetComponent<Inventory>();
-		_step = SearchStone;
+		_action = SearchStone;
 		_target = null;
-	}
-	
-	// Update is called once per frame
-	private void Update ()
-	{
-		_step();
 	}
 
 	private void SearchStone()
@@ -42,7 +35,7 @@ public class Task_BreakStone : MonoBehaviour {
 		{
 			if (en.Name != "Stone") continue;
 			_target = en;
-			_step = TargetStone;
+			_action = TargetStone;
 			_moving.SetDestination(_target.transform.position);
 			return;
 		}
@@ -55,7 +48,7 @@ public class Task_BreakStone : MonoBehaviour {
 	private void TargetStone()
 	{
 		if ((_target.transform.position - transform.position).magnitude < Moving.DISTANCE_THRESHOLD)
-			_step = BreakStone;
+			_action = BreakStone;
 	}
 
 	private void BreakStone()
@@ -70,13 +63,13 @@ public class Task_BreakStone : MonoBehaviour {
 		{
 			_agent.RemovePercept(_target);
 			_target = null;
-			_step = SearchStone;
+			_action = SearchStone;
 		}
 		if (!_inventory.AddElement(resName, resValue))
 		{
 			_stockpile = GameObject.Find("StockPile(Clone)");
 			_moving.SetDestination(_stockpile.transform.position);
-			_step = StockStone;
+			_action = StockStone;
 		}
 		// MODIFIER LA VITESSE DE COUPE
 		_nextbreak = Time.time + 1f;
@@ -93,11 +86,11 @@ public class Task_BreakStone : MonoBehaviour {
 				_stockpile.GetComponent<Inventory>()
 					.AddElement("Stone", _inventory.RemoveElement("Stone", _inventory.GetElement("Stone")));
 				if (_target == null)
-					_step = SearchStone;
+					_action = SearchStone;
 				else
 				{
 					_moving.SetDestination(_target.transform.position);
-					_step = TargetStone;
+					_action = TargetStone;
 				}
 				break;
 			}
