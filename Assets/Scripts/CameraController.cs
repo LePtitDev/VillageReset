@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.UIElements;
+using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour {
 
@@ -49,19 +51,32 @@ public class CameraController : MonoBehaviour {
 	
 	// Update is called once per frame
 	private void Update () {
-		if (Input.GetMouseButtonDown (0)) {
-			_target = null;
-			Ray ray = Camera.main.ScreenPointToRay (Input.mousePosition);
-			RaycastHit[] hits;
-			if ((hits = Physics.RaycastAll(ray)).Length != 0)
+		if (Input.GetMouseButtonDown (0))
+		{
+			bool notUi = true;
+			foreach (RectTransform rect in GameObject.Find("Canvas").GetComponentsInChildren<RectTransform>())
 			{
-				foreach (RaycastHit hit in hits)
+				if (!IgnoreUI(rect.name) && RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition))
 				{
-					if (hit.collider.gameObject.GetComponent<Entity>() != null)
+					notUi = false;
+					break;
+				}
+			}
+			if (notUi)
+			{
+				_target = null;
+				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+				RaycastHit[] hits;
+				if ((hits = Physics.RaycastAll(ray)).Length != 0)
+				{
+					foreach (RaycastHit hit in hits)
 					{
-						_target = hit.collider.gameObject;
-						UIRefresh();
-						break;
+						if (hit.collider.gameObject.GetComponent<Entity>() != null)
+						{
+							_target = hit.collider.gameObject;
+							UIRefresh();
+							break;
+						}
 					}
 				}
 			}
@@ -129,6 +144,12 @@ public class CameraController : MonoBehaviour {
 				return t.gameObject;
 		}
 		return null;
+	}
+
+	// Return true if UI GameObject is ignored
+	private bool IgnoreUI(string uiName)
+	{
+		return uiName == "Canvas" || uiName == "EntityInfo";
 	}
 	
 }
