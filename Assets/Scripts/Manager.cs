@@ -71,6 +71,79 @@ public class Manager : MonoBehaviour {
 	private static YamlLoader CreateProperties()
 	{
 		YamlLoader loader = new YamlLoader();
+		// VALEURS DE NOURRITURE
+		loader.AddElement(new YamlLoader.PropertyElement("FoodValue",
+			new YamlLoader.PropertyElement[]
+			{
+				// Valeur nutritionnelle du blé
+				new YamlLoader.PropertyElement("Corn", 8.0f),
+				// Valeur nutritionnelle du poisson
+				new YamlLoader.PropertyElement("Fish", 10.0f),
+				// Valeur nutritionnelle de la viande
+				new YamlLoader.PropertyElement("Meat", 50.0f)
+			}
+		));
+		// VALEURS DES RECOLTES
+		loader.AddElement(new YamlLoader.PropertyElement("Harvest",
+			new YamlLoader.PropertyElement[]
+			{
+				// Quantité totale de ressources sur un arbre
+				new YamlLoader.PropertyElement("Tree", 50.0f),
+				// Quantité totale de ressources sur un rocher
+				new YamlLoader.PropertyElement("Stone", 100.0f),
+				// Quantité totale de ressources sur un minerai de fer
+				new YamlLoader.PropertyElement("Iron", 20.0f),
+				// Quantité totale de ressources sur un champs de blé
+				new YamlLoader.PropertyElement("Cornfield", 200.0f)
+			}
+		));
+		// VALEURS DE DIVERS DELAIS (EN SECONDES)
+		loader.AddElement(new YamlLoader.PropertyElement("Delay",
+			new YamlLoader.PropertyElement[]
+			{
+				// Durée d'une saison
+				new YamlLoader.PropertyElement("Season", 60.0f),
+				// Durée de coupe complète d'un arbre
+				new YamlLoader.PropertyElement("Tree", 30.0f),
+				// Durée de minage complet d'un rocher
+				new YamlLoader.PropertyElement("Stone", 120.0f),
+				// Durée de minage complet d'un minerai de fer
+				new YamlLoader.PropertyElement("Iron", 60.0f),
+				// Durées relatives à un champs de blé
+				new YamlLoader.PropertyElement("Cornfield", 
+					new YamlLoader.PropertyElement[]
+					{
+						// Durée d'ensemencement
+						new YamlLoader.PropertyElement("Seeding", 20.0f),
+						// Durée de croissance
+						new YamlLoader.PropertyElement("Growing", 100.0f),
+						// Durée de récolte
+						new YamlLoader.PropertyElement("Harvest", 30.0f)
+					}),
+				// Durée de pêche d'un poisson
+				new YamlLoader.PropertyElement("Fishing", 2.0f),
+				// Durée de plantage d'un arbre
+				new YamlLoader.PropertyElement("Log", 50.0f),
+				// Durée nécessaire pour que le niveau de faim tombe à zero
+				new YamlLoader.PropertyElement("Hungry", 50.0f),
+				// Durée nécessaire pour que le niveau de vie tombe à zero à cause de la faim
+				new YamlLoader.PropertyElement("Starving", 50.0f),
+				// Durée nécessaire pour que le niveau de vie remonte entièrement
+				new YamlLoader.PropertyElement("Heal", 50.0f)
+			}
+		));
+		// VALEURS RELATIVES A L'AGENT
+		loader.AddElement(new YamlLoader.PropertyElement("Agent",
+			new YamlLoader.PropertyElement[]
+			{
+				// Niveau de vie
+				new YamlLoader.PropertyElement("Health", 50.0f),
+				// Niveau de faim
+				new YamlLoader.PropertyElement("Hunger", 50.0f),
+				// Age maximum avant le décès naturel
+				new YamlLoader.PropertyElement("Life", 60.0f)
+			}
+		));
 		// POIDS DES ELEMENTS
 		loader.AddElement(new YamlLoader.PropertyElement("RessourcesWeight",
 			new YamlLoader.PropertyElement[]

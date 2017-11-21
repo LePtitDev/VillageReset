@@ -42,6 +42,8 @@ public class Moving : MonoBehaviour {
 	
 	// Update is called once per frame
 	public void Update () {
+		if (Time.timeScale == 0)
+			return;
 		this.Collision = false;
 		Vector3 current = transform.position;
 		if (_path != null)
@@ -66,6 +68,11 @@ public class Moving : MonoBehaviour {
 			transform.position = current;
 			this.Collision = true;
 		}
+		if (Direction != new Vector3())
+			transform.rotation = Quaternion.LookRotation(Direction);
+		Animator animator = GetComponent<Animator>();
+		if (animator != null)
+			animator.SetBool("Moving", Direction != new Vector3());
 	}
 
 	/// <summary>
