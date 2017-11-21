@@ -15,9 +15,17 @@ public class Wolf : MonoBehaviour {
 	void Update () {
 		//moove
 
-		animalW.AvoidObjects ();
+		//animalW.AvoidObjects ();
 
 	}
+
+	void OnCollisionEnter(Collision col)
+	{
+		if (col.gameObject.name == "Tree(Clone)") {
+			Destroy (col.gameObject);
+		}
+	}
+
 
 }
 

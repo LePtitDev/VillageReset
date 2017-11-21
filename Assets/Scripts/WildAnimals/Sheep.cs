@@ -3,17 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Sheep : MonoBehaviour {
-	Animals animalS;
+	Animals AnimalS;
+
 
 	/// Use this for initialization
 	void Start () {
 		
-		animalS = GetComponent<Animals>();
+		AnimalS = GetComponent<Animals>();
 	}
 
 	// Update is called once per frame
 	void Update () {
-		animalS.AvoidObjects ();
+		//AnimalS.AvoidObjects ();
+
+	
+		/*
+		if (AnimalS.GetLife() <= 5) {
+
+
+		}*/
 	}
 
 }
