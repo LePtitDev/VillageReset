@@ -7,18 +7,20 @@ public class Spawn : MonoBehaviour {
 	//ground zone where we generate prefabs
 	private Manager SpawnZone;
 
-	//Prefabs wold and sheep
+	//Prefabs wold , sheep, brigand
 	[SerializeField] GameObject prefabSheep;
 	[SerializeField] GameObject prefabWolf;
+	[SerializeField] GameObject prefabBrigand;
    
 	// Use this for initialization
 	void Start () {
 		SpawnZone = Manager.Instance;
 
-
 		RandomNumberPrefab (prefabSheep);
 		RandomNumberPrefab (prefabWolf);
+		RandomNumberPrefab (prefabBrigand);
 	
+
 	}
 
 
@@ -41,14 +43,12 @@ public class Spawn : MonoBehaviour {
 	void RandomNumberPrefab(GameObject prefab)
 	{
 		int MaxNb;
-		MaxNb = Random.Range (5, 10);
-		//MaxNb = 1;
+		//MaxNb = Random.Range (5, 10);
+		MaxNb = 1;
 		for(int i=0; i< MaxNb; i++)
 		{
 			//Creation 
 			Instantiate(prefab,SpawnMe(),transform.rotation);
-
-
 		}
 	}
 

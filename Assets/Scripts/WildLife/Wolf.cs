@@ -13,9 +13,6 @@ public class Wolf : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		//moove
-
-		//animalW.AvoidObjects ();
 
 	}
 

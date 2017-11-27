@@ -29,22 +29,18 @@ public class Animals : MonoBehaviour {
 	public void Update () {
 		action ();
 	}
-
-	//ans action fonction
-	//dans update
-	//on appelle ce qu'il y a dans action
-	//
-	//permet d'attendre
+		
+	//time to eat
 	public void Waiting() {
 		if (Time.time > waiting) {
 			action = AvoidObjects;
 		}
 	}
 
-	// Avoid Objetcs (Tree,ore and don't go beyound limites of ground
+	// Avoid Objetcs (Tree,ore and don't go beyond limites of ground)
 	public void AvoidObjects()
 	{
-		//ilf life < 5
+		//if life < 5
 		//time to eat!
 		if (GetLife () < 5) {
 			LifeTimeMore ();
@@ -55,14 +51,14 @@ public class Animals : MonoBehaviour {
 
 		//move
 		Vector3 nextpos = transform.position + transform.forward * 2 * Time.deltaTime;
-		//transform.Translate (Vector3.forward * 2 * Time.deltaTime);
 		patch = Patch.GetPatch (nextpos);
 
 		if (!Manager.Instance.GetComponent<BoxCollider> ().bounds.Contains (nextpos)) {
+			//avoid bounds
 			transform.Rotate (Vector3.up * Random.Range (180, 200));
 
 		} else if (Physics.Raycast (nextpos, transform.forward, out Hit, 0.2f)) {
-			//if true, random rotate bewteen 50 and 200 (avoid object)
+			//random rotate bewteen 40 and 200 (avoid object)
 			transform.Rotate (Vector3.up * Random.Range (40, 200));
 		}
 
@@ -73,12 +69,7 @@ public class Animals : MonoBehaviour {
 			transform.position = nextpos;
 		
 	}
-
-
-	//faire un raycast sur tout
-	//un foreach
-
-
+		
 
 	//reduce the life
 	public void LifeTimeLess()
@@ -98,11 +89,7 @@ public class Animals : MonoBehaviour {
 	}
 
 
-	//avoid human
-	public void AvoidHuman()
-	{
-		
-	}
+
 
 
 }

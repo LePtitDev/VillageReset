@@ -14,14 +14,7 @@ public class Sheep : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		//AnimalS.AvoidObjects ();
 
-	
-		/*
-		if (AnimalS.GetLife() <= 5) {
-
-
-		}*/
 	}
 
 }
