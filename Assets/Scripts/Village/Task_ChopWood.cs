@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using UnityEngine;
 
+[Task.TaskName("Chop tree")]
 public class Task_ChopWood : Task {
 
 	private AgentController _agent;
@@ -12,15 +13,16 @@ public class Task_ChopWood : Task {
 	private Inventory _inventory;
 
 	private Entity _target;
+	private Action _action;
 
 	private float _nextcut = 0f;
 
 	private GameObject _stockpile;
 
 	// Use this for initialization
-	private void Start ()
+	protected override void Start ()
 	{
-		_name = "Chop tree";
+		base.Start();
 		_agent = GetComponent<AgentController> ();
 		_agent.Task = this;
 		_memory = GetComponent<Memory> ();
@@ -28,6 +30,13 @@ public class Task_ChopWood : Task {
 		_inventory = GetComponent<Inventory>();
 		_action = SearchTrees;
 		_target = null;
+	}
+
+	// Update is called once per frame
+	protected override void Update()
+	{
+		if (_action != null)
+			_action();
 	}
 
 	private void SearchTrees()

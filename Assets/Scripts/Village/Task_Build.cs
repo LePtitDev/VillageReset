@@ -6,6 +6,7 @@ using System.Timers;
 using UnityEngine;
 using UnityEngine.XR.WSA;
 
+[Task.TaskName("Build")]
 public class Task_Build : Task {
 
 	private AgentController _agent;
@@ -16,15 +17,16 @@ public class Task_Build : Task {
 	private GameObject _construction;
 
 	private ConstructionSite _target;
+	private Action _action;
 
 	private float _nextbreak = 0f;
 
 	private GameObject _stockpile;
 
 	// Use this for initialization
-	private void Start ()
+	protected override void Start ()
 	{
-		_name = "Build";
+		base.Start();
 		_agent = GetComponent<AgentController> ();
 		_agent.Task = this;
 		_memory = GetComponent<Memory> ();
@@ -34,6 +36,13 @@ public class Task_Build : Task {
 		_construction = _village.GetPrefab("ConstructionSite");
 		_action = ChooseBuilding;
 		_target = null;
+	}
+
+	// Update is called once per frame
+	protected override void Update()
+	{
+		if (_action != null)
+			_action();
 	}
 
 	private void ChooseBuilding()

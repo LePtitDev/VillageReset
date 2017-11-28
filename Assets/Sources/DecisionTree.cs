@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-public class DecisionTree<T>
+public class DecisionTree<T> where T : class
 {
 
     /// <summary>
@@ -47,6 +47,17 @@ public class DecisionTree<T>
             _name = name;
             _actions = actions;
             _weights = weights;
+        }
+
+        /// <summary>
+        /// Activate percept and change actions weight
+        /// </summary>
+        public void Activate()
+        {
+            for (int i = 0; i < _actions.Length; i++)
+            {
+                _actions[i].Activate(_weights[i]);
+            }
         }
         
     }
@@ -107,7 +118,7 @@ public class DecisionTree<T>
         /// <param name="weight"></param>
         public void Activate(float weight)
         {
-            _weight += weight;
+            _weight *= weight;
         }
 
         /// <summary>
@@ -176,6 +187,19 @@ public class DecisionTree<T>
     {
         _percepts.Add(percept);
     }
+        
+    /// <summary>
+    /// Get a percept
+    /// </summary>
+    /// <param name="name">Percept name</param>
+    /// <returns></returns>
+    public Percept GetPercept(string name) {
+        foreach (Percept p in _percepts) {
+            if (p.Name == name)
+                return p;
+        }
+        return null;
+    }
 
     /// <summary>
     /// Remove a percept
@@ -194,6 +218,19 @@ public class DecisionTree<T>
     {
         _actions.Add(action);
     }
+    
+    /// <summary>
+    /// Get an action
+    /// </summary>
+    /// <param name="name">Action name</param>
+    /// <returns></returns>
+    public Action GetAction(string name) {
+        foreach (Action a in _actions) {
+            if (a.Name == name)
+                return a;
+        }
+        return null;
+    }
 
     /// <summary>
     /// Remove an action
@@ -210,6 +247,8 @@ public class DecisionTree<T>
     /// <returns>The action content</returns>
     public T Decide()
     {
+        if (_actions.Count == 0)
+            return null;
         _actions.Sort();
         return _actions.Last().Content;
     }
