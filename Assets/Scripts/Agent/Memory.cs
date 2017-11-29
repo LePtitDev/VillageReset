@@ -517,7 +517,14 @@ public class Memory : MonoBehaviour {
 	// Use this for initialization
 	private void Start () {
 		_db = new Database ();
-		/*_db.Add("Villagers", new Database.Table(new string[]
+		_db.Add("Ressource", new Database.Table(new string[]
+		{
+			"Name", "Quantity", "PosX", "PosY"
+		}, new Type[]
+		{
+			typeof(string), typeof(int), typeof(int), typeof(int)
+		}));
+		_db.Add("Villagers", new Database.Table(new string[]
 		{
 			"ID", "Name", "Age", "Gender"
 		}, new Type[]
@@ -527,8 +534,8 @@ public class Memory : MonoBehaviour {
 		_db.Tables["Villagers"].Insert(new object[] { 1, "Jean", 18, true });
 		_db.Tables["Villagers"].Insert(new object[] { 2, "Alice", 22, false });
 		_db.Tables["Villagers"].Insert(new object[] { 3, "Arnaud", 20, true });
-		_db.Tables["Villagers"].Insert(new object[] { 4, "Eve", 24, false });
-		Answer answer = Request("SELECT Name, Age FROM Villagers WHERE Name = \"Jean\" AND Age < 20");
+		_db.Tables["Villagers"].Insert(new object[] { 4, "Eve", 24, false });/*
+		Answer answer = Request("SELECT Name, Age FROM Villagers WHERE Age < 22");
 		if (answer != null)
 		{
 			string str = "";
@@ -628,7 +635,7 @@ public class Memory : MonoBehaviour {
 				objects.RemoveAt(i);
 		}
 		if (objects.Count == 0)
-			return null;
+			return new Answer(new string[][] {}, new Type[0], new object[][] {});
 		string[][] anames = names.ToArray();
 		Type[] atypes = types.ToArray();
 		object[] tuple = new object[anames.Length];

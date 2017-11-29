@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO.Compression;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
@@ -39,11 +40,14 @@ public class CameraController : MonoBehaviour {
 	float _rotation;
 	// The zoom level
 	float _zoom;
+	// Indicate if UI has focus
+	private bool _uiFocus;
 
 	// Use this for initialization
 	private void Start () {
 		_target = null;
 		_rotation = 0;
+		_uiFocus = false;
 		_zoom = MinZoom;
 		_center = MapCenter;
 		transform.position = MapCenter + new Vector3 (0f, 1f, -1f) * Distance * (_zoom > 0 ? 1f / (1f + _zoom) : 1f - _zoom);
@@ -59,6 +63,7 @@ public class CameraController : MonoBehaviour {
 				if (!IgnoreUI(rect.name) && RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition))
 				{
 					notUi = false;
+					_uiFocus = true;
 					break;
 				}
 			}
@@ -79,6 +84,7 @@ public class CameraController : MonoBehaviour {
 						}
 					}
 				}
+				_uiFocus = false;
 			}
 		}
 		if (Input.GetMouseButton (1))
@@ -89,7 +95,7 @@ public class CameraController : MonoBehaviour {
 		Vector3 newCenter = (_target != null ? _target.transform.position : _center) - _center;
 		Vector3 forward = transform.rotation * Vector3.forward;
 		forward.y = 0;
-		if (_target == null) {
+		if (_target == null && !_uiFocus) {
 			if (Input.GetKey (MoveForward))
 				newCenter += forward;
 			if (Input.GetKey (MoveBackward))
@@ -131,6 +137,9 @@ public class CameraController : MonoBehaviour {
 						UIGetEntityInfo("ConstructionSite").SetActive(true);
 						break;
 				}
+				break;
+			case Entity.EntityType.VILLAGER:
+				UIGetEntityInfo("Villager").SetActive(true);
 				break;
 		}
 	}
