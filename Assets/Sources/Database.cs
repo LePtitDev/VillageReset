@@ -9,7 +9,7 @@ public class Database {
 	/////////////////
 
 	// Table names list
-	Dictionary<string, Table> tables = null;
+	private Dictionary<string, Table> _tables = null;
 
 	/////////////////
 	/// ACCESSORS ///
@@ -18,7 +18,7 @@ public class Database {
 	/// <summary>
 	/// Tables accessor
 	/// </summary>
-	Dictionary<string, Table> Tables { get { return tables; } }
+	public Dictionary<string, Table> Tables { get { return _tables; } }
 
 	///////////////
 	/// METHODS ///
@@ -28,7 +28,7 @@ public class Database {
 	/// Database constructor
 	/// </summary>
 	public Database() {
-		tables = new Dictionary<string, Table> ();
+		_tables = new Dictionary<string, Table> ();
 	}
 
 	/// <summary>
@@ -37,7 +37,7 @@ public class Database {
 	/// <param name="name">name</param>
 	/// <param name="t">content</param>
 	public void Add(string name, Table t) {
-		tables [name] = t;
+		_tables [name] = t;
 	}
 
 	/// <summary>
@@ -45,7 +45,7 @@ public class Database {
 	/// </summary>
 	/// <param name="name">name</param>
 	public void Remove(string name) {
-		tables.Remove (name);
+		_tables.Remove (name);
 	}
 
 	///////////////
@@ -85,6 +85,11 @@ public class Database {
 		/// Field names accessor
 		/// </summary>
 		public string[] Names { get { return (string[])fieldNames.Clone(); } }
+		
+		/// <summary>
+		/// Field data types
+		/// </summary>
+		public Type[] Types { get { return fieldTypes; } }
 
 		/// <summary>
 		/// List of entries
