@@ -106,9 +106,10 @@ public class Database {
 		///////////////
 
 		// Table constructor
-		Table(string[] names, Type[] types) {
+		public Table(string[] names, Type[] types) {
 			fieldNames = (string[])names.Clone();
 			fieldTypes = (Type[])types.Clone();
+			entries = new List<object[]>();
 		}
 
 		/// <summary>
