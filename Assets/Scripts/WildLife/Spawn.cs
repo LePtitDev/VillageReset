@@ -44,7 +44,7 @@ public class Spawn : MonoBehaviour {
 	{
 		int MaxNb;
 		//MaxNb = Random.Range (5, 10);
-		MaxNb = 1;
+		MaxNb = 2;
 		for(int i=0; i< MaxNb; i++)
 		{
 			//Creation 
