@@ -35,6 +35,10 @@ public class Manager : MonoBehaviour {
 	[Range(0, 10)]
 	public int MinimumIronDistance;
 
+    // Villagers count on start
+    [Range(1, 20)]
+    public int VillagersCount;
+
 	[Header("Displaying")]
 
 	// Display patches density
