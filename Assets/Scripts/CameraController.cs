@@ -160,5 +160,14 @@ public class CameraController : MonoBehaviour {
 	{
 		return uiName == "Canvas" || uiName == "EntityInfo";
 	}
+
+    /// <summary>
+    /// Set UI focus
+    /// </summary>
+    /// <param name="f">Focus value</param>
+    public void SetUIFocus(bool f = true)
+    {
+        _uiFocus = f;
+    }
 	
 }

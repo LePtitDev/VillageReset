@@ -517,48 +517,24 @@ public class Memory : MonoBehaviour {
 	// Use this for initialization
 	private void Start () {
 		_db = new Database ();
-		_db.Add("Ressource", new Database.Table(new string[]
+		_db.Add("Patch", new Database.Table(new string[]
 		{
-			"Name", "Quantity", "PosX", "PosY"
+			"Type", "Ressource", "Quantity", "PosX", "PosZ", "Explored"
 		}, new Type[]
 		{
-			typeof(string), typeof(int), typeof(int), typeof(int)
+			typeof(bool), typeof(string), typeof(int), typeof(int), typeof(int), typeof(bool)
 		}));
-		_db.Add("Villagers", new Database.Table(new string[]
-		{
-			"ID", "Name", "Age", "Gender"
-		}, new Type[]
-		{
-			typeof(int), typeof(string), typeof(int), typeof(bool)
-		}));
-		_db.Tables["Villagers"].Insert(new object[] { 1, "Jean", 18, true });
-		_db.Tables["Villagers"].Insert(new object[] { 2, "Alice", 22, false });
-		_db.Tables["Villagers"].Insert(new object[] { 3, "Arnaud", 20, true });
-		_db.Tables["Villagers"].Insert(new object[] { 4, "Eve", 24, false });/*
-		Answer answer = Request("SELECT Name, Age FROM Villagers WHERE Age < 22");
-		if (answer != null)
-		{
-			string str = "";
-			foreach (string[] name in answer.Names)
-			{
-				if (name[0] != "")
-					str += name[0] + ".";
-				str += name[1] + "    ";
-			}
-			Debug.Log(str);
-			foreach (object[] obj in answer.Columns)
-			{
-				str = "";
-				foreach (object o in obj)
-				{
-					str += o.ToString() + "    ";
-				}
-				Debug.Log(str);
-			}
-		}
-		else
-			Debug.Log(answer);*/
-	}
+        int mapWidth = Manager.Instance.GetComponent<Manager>().Width;
+        int mapHeight = Manager.Instance.GetComponent<Manager>().Height;
+        Database.Table t = _db.Tables["Patch"];
+        foreach (Patch patch in GameObject.Find("Ground").GetComponentsInChildren<Patch>())
+        {
+            t.Insert(new object[] {
+                patch.name == "Grass(Clone)", "None", 0,
+                (int)patch.transform.position.x, (int)patch.transform.position.z, false
+            });
+        }
+    }
 
 	/// <summary>
 	/// Request informations in memory
@@ -615,7 +591,7 @@ public class Memory : MonoBehaviour {
 			{
 				if (selections[i, 0] != "" && selections[i, 0] != table)
 					continue;
-				for (int j = 0, _j = t.Count; j < _j; j++)
+				for (int j = 0, _j = t.Names.Length; j < _j; j++)
 				{
 					if (selections[i, 1] != t.Names[j])
 						continue;
