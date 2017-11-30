@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Task.TaskName("Break stone")]
 public class Task_BreakStone : Task {
 
 	private AgentController _agent;
@@ -11,15 +12,16 @@ public class Task_BreakStone : Task {
 	private Inventory _inventory;
 
 	private Entity _target;
+	private Action _action;
 
 	private float _nextbreak = 0f;
 
 	private GameObject _stockpile;
 
 	// Use this for initialization
-	private void Start ()
+	protected override void Start ()
 	{
-		_name = "Break stone";
+		base.Start();
 		_agent = GetComponent<AgentController> ();
 		_agent.Task = this;
 		_memory = GetComponent<Memory> ();
@@ -27,6 +29,13 @@ public class Task_BreakStone : Task {
 		_inventory = GetComponent<Inventory>();
 		_action = SearchStone;
 		_target = null;
+	}
+
+	// Update is called once per frame
+	protected override void Update()
+	{
+		if (_action != null)
+			_action();
 	}
 
 	private void SearchStone()
