@@ -511,11 +511,15 @@ public class Memory : MonoBehaviour {
 	// Memory database
 	private Database _db = null;
 
+    // Agent controller
+    private AgentController _agent;
+
 	/// Database accessor
 	public Database DB { get { return _db; } }
 
 	// Use this for initialization
 	private void Start () {
+        _agent = GetComponent<AgentController>();
 		_db = new Database ();
 		_db.Add("Patch", new Database.Table(new string[]
 		{
@@ -536,12 +540,44 @@ public class Memory : MonoBehaviour {
         }
     }
 
-	/// <summary>
-	/// Request informations in memory
-	/// </summary>
-	/// <param name="request">The formated request</param>
-	/// <returns>The request answer if success and null otherwise</returns>
-	public Answer Request(string request)
+    // Update is called once per frame
+    private void Update()
+    {
+        int perc = (int)_agent.PerceptionRadius;
+        for (int i = (int)transform.position.x - perc, _i = (int)transform.position.x + perc; i <= _i; i++)
+        {
+            for (int j = (int)transform.position.z - perc, _j = (int)transform.position.z + perc; j <= _j; j++)
+            {
+                if (i < 0 || i >= Manager.Instance.Width || j < 0 || j >= Manager.Instance.Height)
+                    continue;
+                object[] tuple = GetPatch(i, j);
+                Patch patch = Patch.GetPatch(i, j).GetComponent<Patch>();
+                Ressource res = patch.InnerObjects.Length == 0 ? null : patch.InnerObjects[0] == null ? null : patch.InnerObjects[0].GetComponent<Ressource>();
+                tuple[1] = res == null ? "None" : Enum.GetName(typeof(Ressource.RessourceType), res.Type);
+                tuple[2] = res == null ? 0 : res.Count;
+                tuple[5] = true;
+            }
+        }
+    }
+
+    // Get a patch tuple
+    private object[] GetPatch(int x, int z)
+    {
+        Database.Table t = _db.Tables["Patch"];
+        foreach (object[] tuple in t.Entries)
+        {
+            if ((int)tuple[3] == x && (int)tuple[4] == z)
+                return tuple;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Request informations in memory
+    /// </summary>
+    /// <param name="request">The formated request</param>
+    /// <returns>The request answer if success and null otherwise</returns>
+    public Answer Request(string request)
 	{
 		string req = request.ToLower();
 		if (!RequestPatern.Match(req).Success)

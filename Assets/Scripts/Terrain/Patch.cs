@@ -17,11 +17,21 @@ public class Patch : MonoBehaviour {
             Manager.Instance.Patches[(int)transform.position.x, (int)transform.position.z] = this.gameObject;
 	}
 
-	/// <summary>
-	/// Add an object on this patch
-	/// </summary>
-	/// <param name="obj">The Object</param>
-	public void AddInnerObject(GameObject obj) {
+    // Update is called once per frame
+    private void Update()
+    {
+        for (int i = innerObjects.Count - 1; i >= 0; i--)
+        {
+            if (innerObjects[i] == null)
+                innerObjects.RemoveAt(i);
+        }
+    }
+
+    /// <summary>
+    /// Add an object on this patch
+    /// </summary>
+    /// <param name="obj">The Object</param>
+    public void AddInnerObject(GameObject obj) {
 		innerObjects.Add (obj);
 	}
 
