@@ -6,17 +6,11 @@ public class Animals : MonoBehaviour {
 	
 	private RaycastHit Hit;
     public int Life;
-
-	private Manager SpawnZone;
-
-	public GameObject patch;
-
 	float waiting = 0.0f;
 
-
+	private Manager SpawnZone;
+	public GameObject patch;
 	private System.Action action;
-
-
 
 	/// Use this for initialization
 	private void Start () {

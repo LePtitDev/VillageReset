@@ -7,6 +7,7 @@ public class Timer : MonoBehaviour {
 	float TimerInterval =5f;
 	float Tick;
 	Animals animalSW;
+	Brigand theBrigand;
 
 	void Awake()
 	{
@@ -16,6 +17,7 @@ public class Timer : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		animalSW = GetComponent<Animals>();
+		theBrigand = GetComponent<Brigand>();
 	}
 	
 	// Update is called once per frame
@@ -25,7 +27,10 @@ public class Timer : MonoBehaviour {
 
 		if (StartTimer == Tick) {
 			Tick = StartTimer + TimerInterval;
-			animalSW.LifeTimeLess();
+			if (animalSW != null)
+				animalSW.LifeTimeLess();
+			if (theBrigand != null)
+				theBrigand.EatLess();
 		}
 			
 	}
