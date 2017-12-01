@@ -17,6 +17,18 @@ public class Manager : MonoBehaviour {
 	// Width and height of map
 	public int Width, Height;
 
+    // Season duration
+    public float SeasonDuration;
+
+    // Time when game start
+    private float _gameStart;
+
+    // Current season
+    public int CurrentSeason { get { return (int)((Time.time - _gameStart) / SeasonDuration) % 4; } }
+
+    // Passed year count
+    public int YearCount { get { return (int)((Time.time - _gameStart) / (SeasonDuration * 4f)); } }
+
 	[Header("Village")]
 
 	// Minimum distance between the village center and water
@@ -59,7 +71,8 @@ public class Manager : MonoBehaviour {
 	// Use this for initialization
 	private void Awake () {
 		Instance = this;
-		Randomizer = new System.Random(Seed);
+        _gameStart = Time.time;
+        Randomizer = new System.Random(Seed);
 		Patches = new GameObject[Width, Height];
 		BoxCollider boxcollider = gameObject.AddComponent<BoxCollider> ();
 		boxcollider.center = new Vector3 ((float)Width / 2.0f - 0.5f, 0.5f, (float)Height / 2.0f - 0.5f);

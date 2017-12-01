@@ -558,6 +558,7 @@ public class Memory : MonoBehaviour {
                 tuple[5] = true;
             }
         }
+
     }
 
     // Get a patch tuple
