@@ -37,11 +37,6 @@ public class Village : MonoBehaviour {
 	/// </summary>
 	public GameObject[] Villagers { get { return _villagers.ToArray(); } }
 
-	/// <summary>
-	/// The villager prefab
-	/// </summary>
-	public GameObject VillagerPrefab;
-
 	// Villagers without houses
 	private List<GameObject> _sdf;
 	

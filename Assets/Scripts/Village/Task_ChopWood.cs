@@ -12,12 +12,12 @@ public class Task_ChopWood : Task {
 	private Moving _moving;
 	private Inventory _inventory;
 
-	private Entity _target;
-	private Action _action;
+	private Vector3? _target;
+    private GameObject _tree;
 
 	private float _nextcut = 0f;
 
-	private GameObject _stockpile;
+	private Vector3? _stockpile;
 
 	// Use this for initialization
 	protected override void Start ()
@@ -28,83 +28,150 @@ public class Task_ChopWood : Task {
 		_memory = GetComponent<Memory> ();
 		_moving = GetComponent<Moving> ();
 		_inventory = GetComponent<Inventory>();
-		_action = SearchTrees;
 		_target = null;
-	}
+        _tree = null;
+        _stockpile = null;
+    }
 
-	// Update is called once per frame
-	protected override void Update()
+    [ActionMethod]
+    public void SearchTrees()
 	{
-		if (_action != null)
-			_action();
-	}
-
-	private void SearchTrees()
-	{
-		foreach (var en in _agent.Percepts)
+		foreach (Entity en in _agent.Percepts)
 		{
 			if (en.Name != "Tree") continue;
-			_target = en;
-			_action = TargetTree;
-			_moving.SetDestination(_target.transform.position);
+			_target = en.transform.position;
+			_moving.SetDestination(_target.Value);
 			return;
 		}
-		if (_moving.Direction == new Vector3 ())
-			_moving.Direction = new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
-		if (_moving.Collision)
+        if (_target == null)
+        {
+            foreach (object[] tuple in _memory.DB.Tables["Patch"].Entries)
+            {
+                if ((string)tuple[1] == "Tree")
+                {
+                    _target = new Vector3((int)tuple[2], 0, (int)tuple[3]);
+                    _moving.SetDestination(_target.Value);
+                }
+            }
+        }
+		if (_moving.Direction == Vector3.zero || _moving.Collision)
 			_moving.Direction = new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
 	}
 
-	private void TargetTree()
+    [ActionMethod]
+	public void TargetTree()
 	{
-		if ((_target.transform.position - transform.position).magnitude < Moving.DISTANCE_THRESHOLD)
-			_action = CutTree;
+        if (_target == null)
+            return;
+        if ((_target.Value - transform.position).magnitude < Moving.DISTANCE_THRESHOLD)
+        {
+            foreach (Entity en in _agent.Percepts)
+            {
+                if (en.Name != "Tree") continue;
+                _tree = en.gameObject;
+                return;
+            }
+            _target = null;
+        }
 	}
 
-	private void CutTree()
-	{
-		if (_nextcut > Time.time)
+    [ActionMethod]
+    public void CutTree()
+    {
+        if (_tree == null || _nextcut > Time.time)
 			return;
-		Ressource res = _target.GetComponent<Ressource>();
+
+        Ressource res = _tree.GetComponent<Ressource>();
 		string resName = res.Type.ToString();
 		// A MODIFIER, LA VALEUR DE RECOLTE
 		int resValue = res.Harvest(10);
 		if (res.Count <= 0)
 		{
-			_agent.RemovePercept(_target);
+			_agent.RemovePercept(_tree.GetComponent<Entity>());
 			_target = null;
-			_action = SearchTrees;
 		}
-		if (!_inventory.AddElement(resName, resValue))
-		{
-			_stockpile = GameObject.Find("StockPile(Clone)");
-			_moving.SetDestination(_stockpile.transform.position);
-			_action = StockWood;
-		}
+        _inventory.AddElement(resName, resValue);
 		// MODIFIER LA VITESSE DE COUPE
 		_nextcut = Time.time + 1f;
 		//Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
 	}
 
-	private void StockWood()
+    [ActionMethod]
+	public void StockWood()
 	{
-		Entity stockentity = _stockpile.GetComponent<Entity>();
-		foreach (Entity entity in _agent.Percepts)
-		{
-			if (entity.Collider == stockentity.Collider)
-			{
-				_stockpile.GetComponent<Inventory>()
-					.AddElement("Wood", _inventory.RemoveElement("Wood", _inventory.GetElement("Wood")));
-				if (_target == null)
-					_action = SearchTrees;
-				else
-				{
-					_moving.SetDestination(_target.transform.position);
-					_action = TargetTree;
-				}
-				break;
-			}
-		}
+        if (_stockpile == null)
+        {
+            foreach (object[] tuple in _memory.DB.Tables["Patch"].Entries)
+            {
+                if ((string)tuple[1] == "Stock Pile")
+                {
+                    _stockpile = new Vector3((int)tuple[2], 0, (int)tuple[3]);
+                    break;
+                }
+            }
+            if (_stockpile == null)
+            {
+                if (_moving.Direction == Vector3.zero || _moving.Collision)
+                    _moving.Direction = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
+                return;
+            }
+        }
+        if (_moving.Direction == Vector3.zero || _moving.Collision)
+            _moving.SetDestination(_stockpile.Value);
+        foreach (Entity en in _agent.Percepts)
+        {
+            if (en.Name == "Stock Pile")
+            {
+                en.GetComponent<Inventory>()
+                    .AddElement("Wood", _inventory.RemoveElement("Wood", _inventory.GetElement("Wood")));
+                if (_target != null)
+                    _moving.SetDestination(_target.Value);
+                break;
+            }
+        }
 	}
+
+    [PerceptMethod]
+    [ActionLink("SearchTrees", 0f)]
+    [ActionLink("TargetTree", 0f)]
+    [ActionLink("CutTree", 0f)]
+    public bool BagFull()
+    {
+        return _inventory.Weight >= _inventory.MaxWeight - 1f;
+    }
+
+    [PerceptMethod]
+    [ActionLink("SearchTrees", 0f)]
+    [ActionLink("StockWood", 0f)]
+    public bool HasTarget()
+    {
+        return _target != null;
+    }
+
+    [PerceptMethod]
+    [ActionLink("SearchTrees", 0f)]
+    [ActionLink("TargetTree", 0f)]
+    [ActionLink("StockWood", 0f)]
+    public bool HasTree()
+    {
+        if (_tree != null && (_tree.transform.position - transform.position).magnitude <= Moving.DISTANCE_THRESHOLD)
+            return true;
+        _tree = null;
+        return false;
+    }
+
+    [PerceptMethod]
+    [ActionLink("TargetTree", 0f)]
+    public bool NoTarget()
+    {
+        return _target == null;
+    }
+
+    [PerceptMethod]
+    [ActionLink("CutTree", 0f)]
+    public bool NoTree()
+    {
+        return _tree == null;
+    }
 
 }
