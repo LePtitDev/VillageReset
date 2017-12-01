@@ -172,7 +172,7 @@ public class Village : MonoBehaviour {
 			if (t.name == "Villagers")
 				villagerparent = t;
 		}
-		GameObject v = Instantiate(VillagerPrefab, pos, Quaternion.identity, villagerparent);
+		GameObject v = Instantiate(GetPrefab("Villager"), pos, Quaternion.identity, villagerparent);
 		return v;
 	}
 
