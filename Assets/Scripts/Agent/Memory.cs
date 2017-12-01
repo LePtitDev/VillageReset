@@ -523,10 +523,10 @@ public class Memory : MonoBehaviour {
 		_db = new Database ();
 		_db.Add("Patch", new Database.Table(new string[]
 		{
-			"Type", "Ressource", "Quantity", "PosX", "PosZ", "Explored"
+			"Type", "Above", "PosX", "PosZ", "LastUpdate"
 		}, new Type[]
 		{
-			typeof(bool), typeof(string), typeof(int), typeof(int), typeof(int), typeof(bool)
+			typeof(bool), typeof(string), typeof(int), typeof(int), typeof(float)
 		}));
         int mapWidth = Manager.Instance.GetComponent<Manager>().Width;
         int mapHeight = Manager.Instance.GetComponent<Manager>().Height;
@@ -534,8 +534,7 @@ public class Memory : MonoBehaviour {
         foreach (Patch patch in GameObject.Find("Ground").GetComponentsInChildren<Patch>())
         {
             t.Insert(new object[] {
-                patch.name == "Grass(Clone)", "None", 0,
-                (int)patch.transform.position.x, (int)patch.transform.position.z, false
+                patch.name == "Grass(Clone)", "None", (int)patch.transform.position.x, (int)patch.transform.position.z, 0f
             });
         }
     }
@@ -552,10 +551,9 @@ public class Memory : MonoBehaviour {
                     continue;
                 object[] tuple = GetPatch(i, j);
                 Patch patch = Patch.GetPatch(i, j).GetComponent<Patch>();
-                Ressource res = patch.InnerObjects.Length == 0 ? null : patch.InnerObjects[0] == null ? null : patch.InnerObjects[0].GetComponent<Ressource>();
-                tuple[1] = res == null ? "None" : Enum.GetName(typeof(Ressource.RessourceType), res.Type);
-                tuple[2] = res == null ? 0 : res.Count;
-                tuple[5] = true;
+                Entity en = patch.InnerObjects.Length == 0 ? null : patch.InnerObjects[0] == null ? null : patch.InnerObjects[0].GetComponent<Entity>();
+                tuple[1] =  en == null ? "None" : en.Name;
+                tuple[4] = Time.time;
             }
         }
 
@@ -567,7 +565,7 @@ public class Memory : MonoBehaviour {
         Database.Table t = _db.Tables["Patch"];
         foreach (object[] tuple in t.Entries)
         {
-            if ((int)tuple[3] == x && (int)tuple[4] == z)
+            if ((int)tuple[2] == x && (int)tuple[3] == z)
                 return tuple;
         }
         return null;

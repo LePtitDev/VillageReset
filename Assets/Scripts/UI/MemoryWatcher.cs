@@ -113,10 +113,10 @@ public class MemoryWatcher : MonoBehaviour {
 			}
 			if (answer.Columns.Length < _additionalEntry[0].Count)
 			{
-				for (int i = answer.Columns.Length; i <= _additionalEntry[0].Count; i++)
+				for (int i = answer.Columns.Length; i < _additionalEntry[0].Count; i++)
 				{
-					for (int j = 0; j < answer.Columns[0].Length; j++)
-						Destroy(_additionalEntry[j][i].gameObject);
+                    for (int j = 0; j < _additionalEntry.Count; j++)
+                        Destroy(_additionalEntry[j][i].gameObject);
 				}
 				for (int j = 0; j < answer.Columns[0].Length; j++)
 					_additionalEntry[j].RemoveRange(answer.Columns.Length, _additionalEntry[j].Count - answer.Columns.Length);
