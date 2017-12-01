@@ -93,13 +93,6 @@ public class MemoryWatcher : MonoBehaviour {
 			}
 			_additionalHeader[i].text = answer.Names[i][1];
 		}
-		if (answer.Names.Length < _additionalHeader.Count)
-		{
-			for (int i = answer.Names.Length; i < _additionalHeader.Count; i++)
-				Destroy(_additionalHeader[i].gameObject);
-			_additionalHeader.RemoveRange(answer.Names.Length, _additionalHeader.Count - answer.Names.Length);
-			_additionalEntry.RemoveRange(answer.Names.Length, _additionalEntry.Count - answer.Names.Length);
-		}
 		if (answer.Columns.Length > 0)
 		{
 			for (int i = 0; i < answer.Columns.Length; i++)
@@ -137,8 +130,15 @@ public class MemoryWatcher : MonoBehaviour {
 					Destroy(text.gameObject);
                 _additionalEntry[i] = new List<Text>();
             }
-		}
-		RectTransform header = _textHeader.GetComponent<RectTransform>();
+        }
+        if (answer.Names.Length < _additionalHeader.Count)
+        {
+            for (int i = answer.Names.Length; i < _additionalHeader.Count; i++)
+                Destroy(_additionalHeader[i].gameObject);
+            _additionalHeader.RemoveRange(answer.Names.Length, _additionalHeader.Count - answer.Names.Length);
+            _additionalEntry.RemoveRange(answer.Names.Length, _additionalEntry.Count - answer.Names.Length);
+        }
+        RectTransform header = _textHeader.GetComponent<RectTransform>();
 		RectTransform entry = _textEntry.GetComponent<RectTransform>();
 		if (_additionalEntry.Count > 0)
 			_content.sizeDelta = new Vector2(header.position.x + header.sizeDelta.x * _additionalHeader.Count,
