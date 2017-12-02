@@ -138,15 +138,15 @@ public class Manager : MonoBehaviour {
 		loader.AddElement(new YamlLoader.PropertyElement("Start",
 			new YamlLoader.PropertyElement[]
 			{
-				// Valeur nutritionnelle du blé
+				// Nombre de villageois au départ
 				new YamlLoader.PropertyElement("Villagers", 4f),
-				// Valeur nutritionnelle du poisson
+				// Ressources dans la pile de stockage de départ
 				new YamlLoader.PropertyElement("Ressources",
 					new YamlLoader.PropertyElement[]
 					{
-						// Valeur nutritionnelle du blé
-						new YamlLoader.PropertyElement("Food", 200f),
-						// Valeur nutritionnelle du poisson
+						// Quantité de blé de départ
+						new YamlLoader.PropertyElement("Corn", 200f),
+						// Quantité de vêtements de départ
 						new YamlLoader.PropertyElement("Clothes", 20f)
 					})
 			}
@@ -208,8 +208,12 @@ public class Manager : MonoBehaviour {
 				new YamlLoader.PropertyElement("Hungry", 50f),
 				// Durée nécessaire pour que le niveau de vie tombe à zero à cause de la faim
 				new YamlLoader.PropertyElement("Starving", 50f),
+				// Durée nécessaire pour que le niveau de vie tombe à zero à cause du froid
+				new YamlLoader.PropertyElement("Freezing", 50f),
 				// Durée nécessaire pour que le niveau de vie remonte entièrement
-				new YamlLoader.PropertyElement("Heal", 50f)
+				new YamlLoader.PropertyElement("Heal", 50f),
+				// Durée nécessaire pour que des vêtements équipés soit détruits
+				new YamlLoader.PropertyElement("Clothes", 80f)
 			}
 		));
 		// VALEURS RELATIVES A L'AGENT

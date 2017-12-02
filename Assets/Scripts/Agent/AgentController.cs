@@ -10,11 +10,20 @@ public class AgentController : MonoBehaviour {
 	//////////////////
 
 
-	// Delay avant une faim complete
+	// Delai avant une faim complete
 	private float _pHungryDelay;
 	
-	// Delay avant de mourir de faim
+	// Delai avant de mourir de faim
 	private float _pStarvingDelay;
+
+	// Delai avant de mourir de froid
+	private float _pFreezingDelay;
+
+	// Delai avant de récupérer toute sa vie
+	private float _pRegenDelay;
+
+	// Maximum age
+	private int _pMaxAge;
 
 	
 	/////////////////
@@ -41,7 +50,7 @@ public class AgentController : MonoBehaviour {
 	/// <summary>
 	/// Age de l'agent
 	/// </summary>
-	public int Age { get { return (int)(Time.time - _created) / 60 + 16; } }
+	public int Age { get { return (int)((Time.time - _created) / (Manager.Instance.SeasonDuration * 4f)) + 16; } }
 
 
 	/// GESTION DE LA SANTE
@@ -76,6 +85,21 @@ public class AgentController : MonoBehaviour {
 	/// Niveau de faim courant
 	/// </summary>
 	public int Hunger { get { return (int)_hunger; } }
+
+	/// <summary>
+	/// Instant d'équipement des vêtements
+	/// </summary>
+	private float _clothesTakenTime;
+
+	/// <summary>
+	/// Indique si l'agent est équipé de vêtements
+	/// </summary>
+	private bool _clothesTaken;
+	
+	/// <summary>
+	/// Indique si l'agent est équipé de vêtements
+	/// </summary>
+	public bool HasClothes { get { return _clothesTaken; } }
 
 	/// <summary>
 	/// Evènement lors de la mort d'un agent
@@ -135,6 +159,9 @@ public class AgentController : MonoBehaviour {
 	{
 		_pHungryDelay = (float)Manager.Instance.Properties.GetElement("Delay.Hungry").Value;
 		_pStarvingDelay = (float)Manager.Instance.Properties.GetElement("Delay.Starving").Value;
+		_pFreezingDelay = (float)Manager.Instance.Properties.GetElement("Delay.Freezing").Value;
+		_pRegenDelay = (float)Manager.Instance.Properties.GetElement("Delay.Heal").Value;
+		_pMaxAge = (int)(float) Manager.Instance.Properties.GetElement("Agent.Life").Value;
 		MaleGender = AgentInfo.GetGender();
 		if (MaleGender)
 			FirstName = AgentInfo.GetMaleName();
@@ -145,6 +172,8 @@ public class AgentController : MonoBehaviour {
 		_created = Time.time;
 		_health = MaxHealth;
 		_hunger = MaxHunger;
+		_clothesTakenTime = 0f;
+		_clothesTaken = false;
 		_perceptionCollider = gameObject.AddComponent<SphereCollider> ();
 		_perceptionCollider.isTrigger = true;
 		_perceptionCollider.center = new Vector3 ();
@@ -162,6 +191,7 @@ public class AgentController : MonoBehaviour {
 				_percepts.RemoveAt(i);
 		}
 		_hunger -= Time.deltaTime * (MaxHunger / _pHungryDelay);
+		float curHealth = _health;
 		if (_hunger < 0f)
 		{
 			_hunger = 0f;
@@ -184,6 +214,39 @@ public class AgentController : MonoBehaviour {
 				}
 			}
 		}
+		if (Age >= _pMaxAge)
+			DecreaseHealth(MaxHealth);
+		if (Manager.Instance.CurrentSeason == 3)
+		{
+			if (!HasHouse())
+			{
+				DecreaseHealth(MaxHealth);
+				return;
+			}
+			if (!HasClothes)
+			{
+				foreach (GameObject o in Village.Instance.Building)
+				{
+					if (o.name == "StockPile(Clone)")
+					{
+						Inventory inv = o.GetComponent<Inventory>();
+						if (inv.GetElement("Clothes") > 0)
+						{
+							_clothesTaken = true;
+							_clothesTakenTime = Time.time;
+							inv.RemoveElement("Clothes", 1);
+							break;
+						}
+					}
+				}
+				if (!HasClothes && !DecreaseHealth(Time.deltaTime * MaxHealth / _pFreezingDelay))
+				{
+					// Mort de l'agent
+				}
+			}
+		}
+		if (_health < MaxHealth && curHealth == _health)
+			IncreaseHealth(Time.deltaTime * MaxHealth / _pRegenDelay);
 	}
 
 	void OnDrawGizmos() {
@@ -257,12 +320,26 @@ public class AgentController : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Remove a percept
+	/// Supprime un percept
 	/// </summary>
 	/// <param name="en">Percept to remove</param>
 	public void RemovePercept(Entity en)
 	{
 		_percepts.Remove(en);
+	}
+
+	/// <summary>
+	/// Indique si l'agent est lié à une maison
+	/// </summary>
+	/// <returns></returns>
+	public bool HasHouse()
+	{
+		foreach (GameObject o in Village.Instance.SdfList)
+		{
+			if (o == gameObject)
+				return false;
+		}
+		return true;
 	}
 
 }
