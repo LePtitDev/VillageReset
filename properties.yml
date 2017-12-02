@@ -36,6 +36,7 @@ Agent:
     Health: 50
     Hunger: 50
     Life: 60
+    HouseCapacity: 10
 RessourcesWeight: 
     Wood: 1
     Stone: 1.5

@@ -45,6 +45,7 @@ public class House : MonoBehaviour
 	// Use this for initialization
 	private void Start ()
 	{
+		MaxCount = (int)(float) Manager.Instance.Properties.GetElement("Agent.HouseCapacity").Value;
 		ChildDuration = (float)Manager.Instance.Properties.GetElement("Delay.Child").Value;
 		ChildMaturity = (float)Manager.Instance.Properties.GetElement("Delay.Maturity").Value;
 		_childTimer = ChildDuration;

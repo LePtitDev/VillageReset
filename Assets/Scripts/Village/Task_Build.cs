@@ -9,19 +9,36 @@ using UnityEngine.XR.WSA;
 [Task.TaskName("Build")]
 public class Task_Build : Task {
 
+	//////////////////
+	/// ATTRIBUTES ///
+	//////////////////
+	
+	// Agent controller
 	private AgentController _agent;
+	
+	// Agent memory
 	private Memory _memory;
+	
+	// Agent moving controller
 	private Moving _moving;
+	
+	// Agent inventory
 	private Inventory _inventory;
+	
+	// Village
 	private Village _village;
+	
+	// ConstructionSite prefab
 	private GameObject _construction;
 
+	// Construction site
 	private ConstructionSite _target;
-	private Action _action;
 
-	private float _nextbreak = 0f;
+	// Supposed position of stock pile
+	private Vector3? _stockpile;
 
-	private GameObject _stockpile;
+	// Decision tree for next building
+	private DecisionTree<GameObject> _buildingDecision;
 
 	// Use this for initialization
 	protected override void Start ()
@@ -34,130 +51,163 @@ public class Task_Build : Task {
 		_inventory = GetComponent<Inventory>();
 		_village = GameObject.Find("Village").GetComponent<Village>();
 		_construction = _village.GetPrefab("ConstructionSite");
-		_action = ChooseBuilding;
 		_target = null;
-	}
-
-	// Update is called once per frame
-	protected override void Update()
-	{
-		if (_action != null)
-			_action();
-	}
-
-	private void ChooseBuilding()
-	{
-		GameObject[] builds = _village.Building;
-		int bStockpile = 0,
-			bHouse = 0,
-			bCornfield = 0,
-			bStonepit = 0,
-			bFishermanHut = 0,
-			bLoggerHut = 0;
-		foreach (GameObject o in builds)
-		{
-			switch (o.GetComponent<Entity>().Name)
-			{
-				case "Stock Pile":
-					bStockpile++;
-					break;
-				case "House":
-					bHouse++;
-					break;
-				case "Cornfield":
-					bCornfield++;
-					break;
-				case "Stone Pit":
-					bStonepit++;
-					break;
-				case "Fisherman's Hut":
-					bFishermanHut++;
-					break;
-				case "Logger's Hut":
-					bLoggerHut++;
-					break;
-				case "Construction Site":
-					_target = o.GetComponent<ConstructionSite>();
-					_action = FindRessources;
-					return;
+		_buildingDecision = new DecisionTree<GameObject>();
+		System.Reflection.MethodInfo[] methods = this.GetType().GetMethods();
+		foreach (YamlLoader.PropertyElement element in (List<YamlLoader.PropertyElement>)Manager.Instance.Properties.GetElement("BuildingCost").Value)
+			_buildingDecision.AddAction(new DecisionTree<GameObject>.Action(element.Name, _village.GetPrefab(element.Name)));
+		foreach (System.Reflection.MethodInfo method in methods) {
+			if (((BuildingChoiceMethod[])method.GetCustomAttributes(typeof(BuildingChoiceMethod), true)).Length > 0) {
+				List<DecisionTree<GameObject>.Action> actions = new List<DecisionTree<GameObject>.Action>();
+				List<float> weights = new List<float>();
+				foreach (BuildingChoiceLink link in (BuildingChoiceLink[])method.GetCustomAttributes(typeof(BuildingChoiceLink), true)) {
+					DecisionTree<GameObject>.Action a = _buildingDecision.GetAction(link.Name);
+					if (a != null) {
+						actions.Add(a);
+						weights.Add(link.Weight);
+					}
+				}
+				if (actions.Count > 0)
+					_buildingDecision.AddPercept(new DecisionTree<GameObject>.Percept(method.Name, actions.ToArray(), weights.ToArray()));
 			}
 		}
-		if (bStockpile == 0)
+	}
+	
+	///////////////////////
+	/// BUILDING CHOICE ///
+	///////////////////////
+	
+	/// <summary>
+	/// Indicate if a method is a building choice
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Method)]
+	public class BuildingChoiceMethod : System.Attribute {}
+        
+	/// <summary>
+	/// Indicate building choice links with actions and weights
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+	public class BuildingChoiceLink : System.Attribute
+	{
+
+		// Action name
+		private string _name;
+            
+		// Link weight
+		private float _weight;
+		
+		/// <summary>
+		/// Action name
+		/// </summary>
+		public string Name { get { return _name; } }
+            
+		/// <summary>
+		/// Link weight
+		/// </summary>
+		public float Weight { get { return _weight; } }
+		
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		/// <param name="name">Action name</param>
+		/// <param name="weight">Link weight</param>
+		public BuildingChoiceLink(string name, float weight)
 		{
-			_target = _village.AddBuilding(_construction, ChooseEmplacement())
-				.GetComponent<ConstructionSite>();
-			_target.Building = _village.GetPrefab("StockPile");
+			this._name = name;
+			this._weight = weight;
 		}
-		else if (bHouse == 0)
+
+	}
+
+	/// <summary>
+	/// Percept for house choice
+	/// </summary>
+	[BuildingChoiceMethod]
+	[BuildingChoiceLink("House", 3f)]
+	public bool ChoiceHouse()
+	{
+		foreach (GameObject o in _village.Building)
 		{
-			_target = _village.AddBuilding(_construction, ChooseEmplacement())
-				.GetComponent<ConstructionSite>();
-			_target.Building = _village.GetPrefab("House");
+			House house = o.GetComponent<House>();
+			if (house != null && house.Villagers.Length < house.MaxCount)
+				return false;
 		}
-		else if (bCornfield == 0)
+		return true;
+	}
+
+	/// <summary>
+	/// Percept for cornfield choice
+	/// </summary>
+	[BuildingChoiceMethod]
+	[BuildingChoiceLink("Cornfield", 2f)]
+	public bool ChoiceCornfield()
+	{
+		int consomation = (int)(_village.Villagers.Length *
+		                  (
+			                  (float) Manager.Instance.Properties.GetElement("Agent.Hunger").Value /
+			                  (float) Manager.Instance.Properties.GetElement("Delay.Hungry").Value
+		                  ) * (float) Manager.Instance.Properties.GetElement("Delay.Season").Value * 5f);
+		int count = _village.GetComponentsInChildren<Cornfield>().Length;
+		int cornfieldProduction = (int)(float)Manager.Instance.Properties.GetElement("Harvest.Cornfield").Value;
+		float cornfieldDuration = (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Seeding").Value +
+		                          (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Growing").Value +
+		                          (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Harvest").Value;
+		int production = (int)(Manager.Instance.SeasonDuration * 3f / cornfieldDuration) * count * cornfieldProduction *
+		                 (int)(float)Manager.Instance.Properties.GetElement("FoodValue.Corn").Value;
+		return consomation > production;
+	}
+	
+	///////////////
+	/// ACTIONS ///
+	///////////////
+	
+	/// <summary>
+	/// Choose the next building
+	/// </summary>
+	[ActionMethod]
+	public void ChooseBuilding()
+	{
+		_buildingDecision.Reset();
+		foreach (System.Reflection.MethodInfo method in this.GetType().GetMethods())
 		{
-			_target = _village.AddBuilding(_construction, ChooseEmplacement())
-				.GetComponent<ConstructionSite>();
-			_target.Building = _village.GetPrefab("Cornfield");
+			if (((BuildingChoiceMethod[])method.GetCustomAttributes(typeof(BuildingChoiceMethod), true)).Length > 0)
+			{
+				DecisionTree<GameObject>.Percept p = _buildingDecision.GetPercept(method.Name);
+				if (p != null && ((Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), this, method))())
+					p.Activate();
+			}
 		}
-		else if (bFishermanHut == 0)
-		{
-			_target = _village.AddBuilding(_construction, ChooseEmplacement(true))
-				.GetComponent<ConstructionSite>();
-			_target.Building = _village.GetPrefab("FishermanHut");
-		}
-		else
-		{
-			return;
-		}
+		GameObject nextBuild = _buildingDecision.Decide();
+		bool water = (nextBuild.name == "FishermanHut");
+		_target = _village.AddBuilding(_construction, ChooseEmplacement(water)).GetComponent<ConstructionSite>();
+		_target.Building = nextBuild;
 		string[] props = Manager.Instance.Properties.GetElement("BuildingCost." + _target.Building.name).GetElements();
 		for (int i = 1; i < props.Length; i++)
 			props[i] = props[i].Remove(0, _target.Building.name.Length + 1);
 		for (int i = 1; i < props.Length - 1; i++)
 			_target.Needed[props[i]] = (int)(float)Manager.Instance.Properties.GetElement("BuildingCost." + _target.Building.name + "." + props[i]).Value;
 		_target.Duration = (float)Manager.Instance.Properties.GetElement("BuildingCost." + _target.Building.name + ".Duration").Value;
-		_action = FindRessources;
 	}
 
-	private Vector3 ChooseEmplacement(bool water = false)
-	{
-		for (int i = 0; i < Manager.Instance.Width; i++)
-		{
-			for (int x = (int)_village.Center.x - i, xmax = (int)_village.Center.x + i; x <= xmax && x >= 0 && x < Manager.Instance.Width; x++)
-			{
-				for (int z = (int)_village.Center.z - i, zmax = (int)_village.Center.z + i; z <= zmax && z >= 0 && z < Manager.Instance.Height; z++)
-				{
-					Patch p = Patch.GetPatch(x, z).GetComponent<Patch>();
-					if ((p.name == "Water(Clone)") == water && p.InnerObjects.Length == 0)
-						return p.transform.position;
-				}
-			}
-		}
-		return new Vector3();
-	}
-
-	private void GotoConstruct()
+	/// <summary>
+	/// Construct building
+	/// </summary>
+	[ActionMethod]
+	public void Construct()
 	{
 		if (_target == null)
-		{
-			_action = ChooseBuilding;
 			return;
-		}
-		foreach (Entity en in _agent.Percepts)
+		bool near = false;
+		foreach (Entity entity in _agent.Percepts)
 		{
-			if (en != null && en.gameObject == _target.gameObject)
-			{
-				_action = Construct;
-				break;
-			}
+			ConstructionSite cs = entity.GetComponent<ConstructionSite>();
+			if (cs == _target)
+				near = true;
 		}
-	}
-
-	private void Construct()
-	{
-		if (_target == null)
+		if (!near)
 		{
-			_action = ChooseBuilding;
+			if (_moving.Direction == Vector3.zero)
+				_moving.SetDestination(_target.transform.position);
 			return;
 		}
 		Dictionary<string, int> need = new Dictionary<string, int>();
@@ -176,7 +226,6 @@ public class Task_Build : Task {
 					inv.AddElement(key, _inventory.RemoveElement(key, need[key]));
 				}
 			}
-			_action = FindRessources;
 		}
 		else
 		{
@@ -184,86 +233,129 @@ public class Task_Build : Task {
 		}
 	}
 
-	private void FindRessources()
+	/// <summary>
+	/// Goto get ressources in stockpile
+	/// </summary>
+	[ActionMethod]
+	public void FindRessources()
 	{
 		if (_target == null)
-		{
-			_action = ChooseBuilding;
 			return;
-		}
-		_stockpile = null;
-		Dictionary<string, int> need = new Dictionary<string, int>();
-		Inventory inv = _target.GetComponent<Inventory>();
-		foreach (string key in _target.Needed.Keys)
+		if (_stockpile == null)
 		{
-			if (inv.GetElement(key) < _target.Needed[key])
-				need.Add(key, _target.Needed[key] - inv.GetElement(key));
-		}
-		if (need.Count == 0)
-		{
-			GetComponent<Moving>().SetDestination(_target.transform.position);
-			_action = GotoConstruct;
-			return;
-		}
-		foreach (GameObject g in _village.Building)
-		{
-			if (g.name == "StockPile(Clone)")
+			foreach (object[] tuple in _memory.DB.Tables["Patch"].Entries)
 			{
-				bool success = false;
-				Inventory ginv = g.GetComponent<Inventory>();
+				if ((string)tuple[1] == "Stock Pile")
+				{
+					_stockpile = new Vector3((int)tuple[2], 0, (int)tuple[3]);
+					break;
+				}
+			}
+			if (_stockpile == null)
+			{
+				if (_moving.Direction == Vector3.zero || _moving.Collision)
+					_moving.Direction = new Vector3(UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
+				return;
+			}
+		}
+		if (_moving.Direction == Vector3.zero || _moving.Collision)
+			_moving.SetDestination(_stockpile.Value);
+		foreach (Entity en in _agent.Percepts)
+		{
+			if (en.Name == "Stock Pile")
+			{
+				Dictionary<string, int> need = new Dictionary<string, int>();
+				Inventory ginv = en.GetComponent<Inventory>();
+				Inventory inv = _target.GetComponent<Inventory>();
+				_inventory.Transfert(en.GetComponent<Inventory>());
+				foreach (string key in _target.Needed.Keys)
+				{
+					if (inv.GetElement(key) < _target.Needed[key])
+						need.Add(key, _target.Needed[key] - inv.GetElement(key));
+				}
 				foreach (string key in need.Keys)
 				{
 					if (ginv.GetElement(key) > 0)
 					{
-						success = true;
-						break;
+						if (ginv.GetElement(key) != _inventory.AddElement(key, ginv.RemoveElement(key, need[key])))
+							break;
 					}
 				}
-				if (success)
-				{
-					_stockpile = g;
-					break;
-				}
+				break;
 			}
 		}
-		if (_stockpile != null)
-		{
-			GetComponent<Moving>().SetDestination(_stockpile.transform.position);
-			_action = GotoStockpile;
-		}
+	}
+	
+	////////////////
+	/// PERCEPTS ///
+	////////////////
+
+	/// <summary>
+	/// Indicate if a building is in construction
+	/// </summary>
+	[PerceptMethod]
+	[ActionLink("Construct", 0f)]
+	[ActionLink("FindRessources", 0f)]
+	public bool NoConstructInProgress()
+	{
+		return _target == null;
 	}
 
-	private void GotoStockpile()
+	/// <summary>
+	/// Indicate if a building is in construction
+	/// </summary>
+	[PerceptMethod]
+	[ActionLink("ChooseBuilding", 0f)]
+	[ActionLink("Construct", 2f)]
+	public bool ConstructInProgress()
+	{
+		return _target != null;
+	}
+
+	[PerceptMethod]
+	[ActionLink("Construct", 0f)]
+	public bool NeedRessources()
 	{
 		if (_target == null)
+			return false;
+		Inventory inv = _target.GetComponent<Inventory>();
+		bool need = false;
+		foreach (string key in _target.Needed.Keys)
 		{
-			_action = ChooseBuilding;
-			return;
-		}
-		if ((_stockpile.transform.position - transform.position).magnitude < 0.5f)
-		{
-			Inventory ginv = _stockpile.GetComponent<Inventory>();
-			foreach (KeyValuePair<string,int> content in _inventory.Content)
-				ginv.AddElement(content.Key, _inventory.RemoveElement(content.Key, content.Value));
-			Dictionary<string, int> need = new Dictionary<string, int>();
-			Inventory inv = _target.GetComponent<Inventory>();
-			foreach (string key in _target.Needed.Keys)
+			if (inv.GetElement(key) < _target.Needed[key])
 			{
-				if (inv.GetElement(key) < _target.Needed[key])
-					need.Add(key, _target.Needed[key] - inv.GetElement(key));
+				need = true;
+				if (_inventory.GetElement(key) > 0)
+					return false;
 			}
-			foreach (string key in need.Keys)
-			{
-				if (ginv.GetElement(key) > 0)
-				{
-					if (ginv.GetElement(key) != _inventory.AddElement(key, ginv.RemoveElement(key, need[key])))
-						break;
-				}
-			}
-			_action = GotoConstruct;
-			GetComponent<Moving>().SetDestination(_target.transform.position);
 		}
+		return need;
 	}
 
+	///////////////
+	/// METHODS ///
+	///////////////
+	
+	/// <summary>
+	/// Choose the next building emplacement
+	/// </summary>
+	/// <param name="water">Indicate if emplacement need to be grass or water</param>
+	/// <returns>The emplacement position</returns>
+	private Vector3 ChooseEmplacement(bool water = false)
+	{
+		for (int i = 0; i < Manager.Instance.Width; i++)
+		{
+			for (int x = (int)_village.Center.x - i, xmax = (int)_village.Center.x + i; x <= xmax && x >= 0 && x < Manager.Instance.Width; x++)
+			{
+				for (int z = (int)_village.Center.z - i, zmax = (int)_village.Center.z + i; z <= zmax && z >= 0 && z < Manager.Instance.Height; z++)
+				{
+					Patch p = Patch.GetPatch(x, z).GetComponent<Patch>();
+					if ((p.name == "Water(Clone)") == water && p.InnerObjects.Length == 0)
+						return p.transform.position;
+				}
+			}
+		}
+		return new Vector3();
+	}
 	
 }
