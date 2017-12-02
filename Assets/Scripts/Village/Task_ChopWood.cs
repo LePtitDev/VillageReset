@@ -19,7 +19,7 @@ public class Task_ChopWood : Task
 	private float _pTreeDelay;
 
 	// Delay for a harvest
-	private float _pCutDelay;
+	private float _pHarvestDelay;
 	
 	//////////////////
 	/// ATTRIBUTES ///
@@ -68,13 +68,12 @@ public class Task_ChopWood : Task
 
 		_pTreeHarvest = (int)(float)Manager.Instance.Properties.GetElement("Harvest.Tree").Value;
 		_pTreeDelay = (float)Manager.Instance.Properties.GetElement("Delay.Tree").Value;
-		_pCutDelay = _pTreeDelay / (float)_pTreeHarvest;
+		_pHarvestDelay = _pTreeDelay / (float)_pTreeHarvest;
 	}
 	
 	///////////////
 	/// ACTIONS ///
 	///////////////
-
 
 	/// <summary>
 	/// Search a tree
@@ -143,9 +142,9 @@ public class Task_ChopWood : Task
 		}
 	    _inventory.AddElement(resName, resValue);
 	    if (Manager.Instance.CurrentSeason != 3)
-			_nextcut = Time.time + _pCutDelay;
+			_nextcut = Time.time + _pHarvestDelay;
 	    else
-		    _nextcut = Time.time + _pCutDelay * 2f;
+		    _nextcut = Time.time + _pHarvestDelay * 2f;
 	}
 
 	/// <summary>
