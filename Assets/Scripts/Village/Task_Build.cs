@@ -256,7 +256,7 @@ public class Task_Build : Task {
 			{
 				if (ginv.GetElement(key) > 0)
 				{
-					if (!_inventory.AddElement(key, ginv.RemoveElement(key, need[key])))
+					if (ginv.GetElement(key) != _inventory.AddElement(key, ginv.RemoveElement(key, need[key])))
 						break;
 				}
 			}

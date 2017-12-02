@@ -141,8 +141,11 @@ public class Task_ChopWood : Task
 			_agent.RemovePercept(_tree.GetComponent<Entity>());
 			_target = null;
 		}
-        _inventory.AddElement(resName, resValue);
-		_nextcut = Time.time + _pCutDelay;
+	    _inventory.AddElement(resName, resValue);
+	    if (Manager.Instance.CurrentSeason != 3)
+			_nextcut = Time.time + _pCutDelay;
+	    else
+		    _nextcut = Time.time + _pCutDelay * 2f;
 	}
 
 	/// <summary>
@@ -174,8 +177,8 @@ public class Task_ChopWood : Task
         {
             if (en.Name == "Stock Pile")
             {
-                en.GetComponent<Inventory>()
-                    .AddElement("Wood", _inventory.RemoveElement("Wood", _inventory.GetElement("Wood")));
+                
+	            _inventory.Transfert(en.GetComponent<Inventory>());
                 if (_target != null)
                     _moving.SetDestination(_target.Value);
                 break;

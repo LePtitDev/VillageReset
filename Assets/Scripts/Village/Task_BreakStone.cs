@@ -74,12 +74,7 @@ public class Task_BreakStone : Task {
 			_target = null;
 			_action = SearchStone;
 		}
-		if (!_inventory.AddElement(resName, resValue))
-		{
-			_stockpile = GameObject.Find("StockPile(Clone)");
-			_moving.SetDestination(_stockpile.transform.position);
-			_action = StockStone;
-		}
+		_inventory.AddElement(resName, resValue);
 		// MODIFIER LA VITESSE DE COUPE
 		_nextbreak = Time.time + 1f;
 		//Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
@@ -92,8 +87,7 @@ public class Task_BreakStone : Task {
 		{
 			if (entity.Collider == stockentity.Collider)
 			{
-				_stockpile.GetComponent<Inventory>()
-					.AddElement("Stone", _inventory.RemoveElement("Stone", _inventory.GetElement("Stone")));
+				_inventory.Transfert(_stockpile.GetComponent<Inventory>());
 				if (_target == null)
 					_action = SearchStone;
 				else

@@ -74,12 +74,7 @@ public class Task_MineIron : Task {
 			_target = null;
 			_action = SearchIron;
 		}
-		if (!_inventory.AddElement(resName, resValue))
-		{
-			_stockpile = GameObject.Find("StockPile(Clone)");
-			_moving.SetDestination(_stockpile.transform.position);
-			_action = StockIron;
-		}
+		_inventory.AddElement(resName, resValue);
 		// MODIFIER LA VITESSE DE COUPE
 		_nextmining = Time.time + 1f;
 		//Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
@@ -92,8 +87,7 @@ public class Task_MineIron : Task {
 		{
 			if (entity.Collider == stockentity.Collider)
 			{
-				_stockpile.GetComponent<Inventory>()
-					.AddElement("Iron", _inventory.RemoveElement("Iron", _inventory.GetElement("Iron")));
+				_inventory.Transfert(_stockpile.GetComponent<Inventory>());
 				if (_target == null)
 					_action = SearchIron;
 				else
