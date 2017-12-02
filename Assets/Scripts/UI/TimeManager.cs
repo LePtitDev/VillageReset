@@ -70,12 +70,6 @@ public class TimeManager : MonoBehaviour
 		}
 	}
 
-    // Update is called once per frame
-    private void Update()
-    {
-        Camera.main.GetComponent<CameraController>().SetUIFocus(false);
-    }
-
     // Refresh speed
     private void Refresh()
 	{
@@ -85,6 +79,7 @@ public class TimeManager : MonoBehaviour
 		_buttonPlay.interactable = _pause;
 		_buttonFaster.interactable = _speed < SpeedLevels.Length - 1;
 		_textSpeed.text = SpeedLevels[_speed].ToString() + "x";
+		Camera.main.GetComponent<CameraController>().SetUIFocus(false);
 	}
 
 	/// <summary>

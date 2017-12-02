@@ -60,7 +60,7 @@ public class CameraController : MonoBehaviour {
 			bool notUi = true;
 			foreach (RectTransform rect in GameObject.Find("Canvas").GetComponentsInChildren<RectTransform>())
 			{
-				if (!IgnoreUI(rect.name) && RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition))
+				if (!IgnoreUI(rect.name) && RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition) && rect.name != "Timing")
 				{
 					notUi = false;
 					_uiFocus = true;
@@ -87,9 +87,9 @@ public class CameraController : MonoBehaviour {
 				_uiFocus = false;
 			}
 		}
-		if (Input.GetMouseButton (1))
+		if (Input.GetMouseButton (1) && !_uiFocus)
 			_rotation += Input.GetAxis ("Mouse X") * RotationSpeed;
-		if (Input.mouseScrollDelta.y != 0.0f)
+		if (Input.mouseScrollDelta.y != 0.0f && !_uiFocus)
 			_zoom = Mathf.Clamp (_zoom + Input.mouseScrollDelta.y * ZoomSpeed, MinZoom > 1f ? MinZoom : -1f / MinZoom, MaxZoom < 1f ? -1f / MaxZoom : MaxZoom);
 		float rad = Mathf.Deg2Rad * _rotation;
 		Vector3 newCenter = (_target != null ? _target.transform.position : _center) - _center;

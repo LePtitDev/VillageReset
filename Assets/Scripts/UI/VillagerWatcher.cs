@@ -79,6 +79,11 @@ public class VillagerWatcher : MonoBehaviour {
 			return;
 		}
 		AgentController agent = _camera.Target.GetComponent<AgentController>();
+		if (agent == null)
+		{
+			gameObject.SetActive(false);
+			return;
+		}
 		_textName.text = agent.FirstName;
 		_textAge.text = agent.Age.ToString();
 		_textGender.text = agent.MaleGender ? "Homme" : "Femme";

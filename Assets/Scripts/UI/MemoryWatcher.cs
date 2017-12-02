@@ -73,6 +73,11 @@ public class MemoryWatcher : MonoBehaviour {
 			return;
 		}
 		Memory memory = _camera.Target.GetComponent<Memory>();
+		if (memory == null)
+		{
+			gameObject.SetActive(false);
+			return;
+		}
 		Memory.Answer answer = memory.Request(_request);
 		if (answer == null)
 		{
