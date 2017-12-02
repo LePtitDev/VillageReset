@@ -140,6 +140,7 @@ public class CameraController : MonoBehaviour {
 				break;
 			case Entity.EntityType.VILLAGER:
 				UIGetEntityInfo("Villager").SetActive(true);
+				UIGetEntityInfo("Fitness").SetActive(true);
 				break;
 		}
 	}

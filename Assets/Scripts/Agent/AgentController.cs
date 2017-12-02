@@ -51,6 +51,21 @@ public class AgentController : MonoBehaviour {
 	public int Health { get { return (int)_health; } }
 
 	/// <summary>
+	/// Niveau de faim maximum
+	/// </summary>
+	public int MaxHunger;
+
+	/// <summary>
+	/// Niveau de faim courant
+	/// </summary>
+	private float _hunger;
+	
+	/// <summary>
+	/// Niveau de faim courant
+	/// </summary>
+	public int Hunger { get { return (int)_hunger; } }
+
+	/// <summary>
 	/// Evènement lors de la mort d'un agent
 	/// </summary>
 	public event Action<GameObject> OnDeath;
@@ -113,6 +128,7 @@ public class AgentController : MonoBehaviour {
 			FirstName = AgentInfo.GetFemaleName();
 		_created = Time.time;
 		_health = MaxHealth;
+		_hunger = MaxHunger;
 		_perceptionCollider = gameObject.AddComponent<SphereCollider> ();
 		_perceptionCollider.isTrigger = true;
 		_perceptionCollider.center = new Vector3 ();
