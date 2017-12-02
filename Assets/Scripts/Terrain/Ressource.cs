@@ -43,10 +43,11 @@ public class Ressource : MonoBehaviour
 	// Use this for initialization
 	private void Start ()
 	{
+		MaxCount = (int)(float) Manager.Instance.Properties.GetElement("Harvest." + GetComponent<Entity>().Name).Value;
 		_count = MaxCount;
         if (Initialized && Manager.Instance.Patches[(int)transform.position.x, (int)transform.position.z] != null)
             Manager.Instance.Patches[(int)transform.position.x, (int)transform.position.z].GetComponent<Patch>().AddInnerObject(this.gameObject);
-    }
+	}
 
 	/// <summary>
 	/// Fixe la ressource sur le patch courant

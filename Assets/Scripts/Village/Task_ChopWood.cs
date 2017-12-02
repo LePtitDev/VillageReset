@@ -5,19 +5,53 @@ using NUnit.Framework;
 using UnityEngine;
 
 [Task.TaskName("Chop tree")]
-public class Task_ChopWood : Task {
+public class Task_ChopWood : Task
+{
+	
+	//////////////////
+	/// PROPERTIES ///
+	//////////////////
 
+	// Ressource count for a tree
+	private int _pTreeHarvest;
+	
+	// Delay for harvest all ressources of a tree
+	private float _pTreeDelay;
+
+	// Delay for a harvest
+	private float _pCutDelay;
+	
+	//////////////////
+	/// ATTRIBUTES ///
+	//////////////////
+
+	// Agent controller
 	private AgentController _agent;
+	
+	// Agent memory
 	private Memory _memory;
+	
+	// Agent moving controller
 	private Moving _moving;
+	
+	// Agent inventory
 	private Inventory _inventory;
 
+	// Position of a supposed tree
 	private Vector3? _target;
+	
+	// Target tree
     private GameObject _tree;
 
+	// Next harvest time
 	private float _nextcut = 0f;
 
+	// Position of supposed stockpile
 	private Vector3? _stockpile;
+	
+	///////////////////
+	/// CONSTRUCTOR ///
+	///////////////////
 
 	// Use this for initialization
 	protected override void Start ()
@@ -31,8 +65,20 @@ public class Task_ChopWood : Task {
 		_target = null;
         _tree = null;
         _stockpile = null;
-    }
 
+		_pTreeHarvest = (int)(float)Manager.Instance.Properties.GetElement("Harvest.Tree").Value;
+		_pTreeDelay = (float)Manager.Instance.Properties.GetElement("Delay.Tree").Value;
+		_pCutDelay = _pTreeDelay / (float)_pTreeHarvest;
+	}
+	
+	///////////////
+	/// ACTIONS ///
+	///////////////
+
+
+	/// <summary>
+	/// Search a tree
+	/// </summary>
     [ActionMethod]
     public void SearchTrees()
 	{
@@ -58,6 +104,9 @@ public class Task_ChopWood : Task {
 			_moving.Direction = new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
 	}
 
+	/// <summary>
+	/// Target a supposed tree
+	/// </summary>
     [ActionMethod]
 	public void TargetTree()
 	{
@@ -75,6 +124,9 @@ public class Task_ChopWood : Task {
         }
 	}
 
+	/// <summary>
+	/// Harvest a tree
+	/// </summary>
     [ActionMethod]
     public void CutTree()
     {
@@ -83,19 +135,19 @@ public class Task_ChopWood : Task {
 
         Ressource res = _tree.GetComponent<Ressource>();
 		string resName = res.Type.ToString();
-		// A MODIFIER, LA VALEUR DE RECOLTE
-		int resValue = res.Harvest(10);
+		int resValue = res.Harvest(1);
 		if (res.Count <= 0)
 		{
 			_agent.RemovePercept(_tree.GetComponent<Entity>());
 			_target = null;
 		}
         _inventory.AddElement(resName, resValue);
-		// MODIFIER LA VITESSE DE COUPE
-		_nextcut = Time.time + 1f;
-		//Debug.Log("Je récolte : " + resName + ", il reste " + res.Count + " unités");
+		_nextcut = Time.time + _pCutDelay;
 	}
 
+	/// <summary>
+	/// Return to stockpile
+	/// </summary>
     [ActionMethod]
 	public void StockWood()
 	{
@@ -130,28 +182,49 @@ public class Task_ChopWood : Task {
             }
         }
 	}
+	
+	////////////////
+	/// PERCEPTS ///
+	////////////////
 
+	/// <summary>
+	/// Indicate the bag is full
+	/// </summary>
     [PerceptMethod]
     [ActionLink("SearchTrees", 0f)]
     [ActionLink("TargetTree", 0f)]
     [ActionLink("CutTree", 0f)]
     public bool BagFull()
     {
-        return _inventory.Weight >= _inventory.MaxWeight - 1f;
+        return _inventory.Weight >= _inventory.MaxWeight / 2f;
     }
 
+	/// <summary>
+	/// Indicate the bag is not full
+	/// </summary>
+	[PerceptMethod]
+	[ActionLink("StockWood", 0f)]
+	public bool BagNotFull()
+	{
+		return _inventory.Weight < _inventory.MaxWeight / 2f;
+	}
+
+	/// <summary>
+	/// Indicate if have supposed target
+	/// </summary>
     [PerceptMethod]
     [ActionLink("SearchTrees", 0f)]
-    [ActionLink("StockWood", 0f)]
     public bool HasTarget()
     {
         return _target != null;
     }
 
+	/// <summary>
+	/// Indicate if have a target tree
+	/// </summary>
     [PerceptMethod]
     [ActionLink("SearchTrees", 0f)]
     [ActionLink("TargetTree", 0f)]
-    [ActionLink("StockWood", 0f)]
     public bool HasTree()
     {
         if (_tree != null && (_tree.transform.position - transform.position).magnitude <= Moving.DISTANCE_THRESHOLD)
@@ -160,6 +233,9 @@ public class Task_ChopWood : Task {
         return false;
     }
 
+	/// <summary>
+	/// Indicate if haven't supposed target
+	/// </summary>
     [PerceptMethod]
     [ActionLink("TargetTree", 0f)]
     public bool NoTarget()
@@ -167,6 +243,9 @@ public class Task_ChopWood : Task {
         return _target == null;
     }
 
+	/// <summary>
+	/// Indicate if haven't tree target
+	/// </summary>
     [PerceptMethod]
     [ActionLink("CutTree", 0f)]
     public bool NoTree()

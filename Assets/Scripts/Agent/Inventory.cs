@@ -10,7 +10,7 @@ public class Inventory : MonoBehaviour
 	/// <summary>
 	/// Inventaire
 	/// </summary>
-	private Dictionary<string, int> _inventory;
+	private Dictionary<string, int> _inventory = new Dictionary<string, int>();
 	
 	/// <summary>
 	/// Contenu de l'inventaire
@@ -25,18 +25,12 @@ public class Inventory : MonoBehaviour
 	/// <summary>
 	/// Poids actuel
 	/// </summary>
-	private float _weight;
+	private float _weight = 0;
 
 	/// <summary>
 	/// Poids actuel
 	/// </summary>
 	public float Weight { get { return _weight; } }
-	
-	// Use this for initialization
-	private void Start () {
-		_inventory = new Dictionary<string, int>();
-		_weight = 0;
-	}
 
 	/// <summary>
 	/// Ajoute un (ou des) élément(s) à l'inventaire
