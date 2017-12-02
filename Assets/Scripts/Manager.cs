@@ -213,7 +213,11 @@ public class Manager : MonoBehaviour {
 				// Durée nécessaire pour que le niveau de vie remonte entièrement
 				new YamlLoader.PropertyElement("Heal", 50f),
 				// Durée nécessaire pour que des vêtements équipés soit détruits
-				new YamlLoader.PropertyElement("Clothes", 80f)
+				new YamlLoader.PropertyElement("Clothes", 80f),
+				// Durée nécessaire pour la conception d'un enfant
+				new YamlLoader.PropertyElement("Child", 240f),
+				// Durée nécessaire pour qu'un enfant devienne adulte
+				new YamlLoader.PropertyElement("Maturity", 480f)
 			}
 		));
 		// VALEURS RELATIVES A L'AGENT

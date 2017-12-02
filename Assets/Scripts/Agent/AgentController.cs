@@ -190,7 +190,10 @@ public class AgentController : MonoBehaviour {
 			if (_percepts[i] == null)
 				_percepts.RemoveAt(i);
 		}
-		_hunger -= Time.deltaTime * (MaxHunger / _pHungryDelay);
+		if (Manager.Instance.CurrentSeason != 3)
+			_hunger -= Time.deltaTime * (MaxHunger / _pHungryDelay);
+		else
+			_hunger -= Time.deltaTime * (MaxHunger / _pHungryDelay) * 2f;
 		float curHealth = _health;
 		if (_hunger < 0f)
 		{

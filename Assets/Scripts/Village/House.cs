@@ -45,6 +45,8 @@ public class House : MonoBehaviour
 	// Use this for initialization
 	private void Start ()
 	{
+		ChildDuration = (float)Manager.Instance.Properties.GetElement("Delay.Child").Value;
+		ChildMaturity = (float)Manager.Instance.Properties.GetElement("Delay.Maturity").Value;
 		_childTimer = ChildDuration;
 		_village = GameObject.Find("Village").GetComponent<Village>();
 		_villagers = new List<GameObject>();

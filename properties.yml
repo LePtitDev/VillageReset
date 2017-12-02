@@ -30,6 +30,8 @@ Delay:
     Freezing: 50
     Heal: 50
     Clothes: 80
+    Child: 240
+    Maturity: 480
 Agent: 
     Health: 50
     Hunger: 50
