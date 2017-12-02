@@ -95,7 +95,8 @@ public class Manager : MonoBehaviour {
 		boxcollider.size = new Vector3 ((float)Width, 2, (float)Height);
 		boxcollider.isTrigger = true;
 		Properties = System.IO.File.Exists(@"properties.yml") ? new YamlLoader(@"properties.yml") : CreateProperties();
-	}
+	    SeasonDuration = (float)Properties.GetElement("Delay.Season").Value;
+    }
 
     // Update is called once per frame
     private void Update()

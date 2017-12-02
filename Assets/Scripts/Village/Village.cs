@@ -46,7 +46,9 @@ public class Village : MonoBehaviour {
 	public GameObject[] SdfList { get { return _sdf.ToArray(); } }
 
 	// Use this for initialization
-	private void Start () {
+	private void Start ()
+	{
+		Instance = this;
 		_building = new List<GameObject>();
 		_villagers = new List<GameObject>();
 		_sdf = new List<GameObject>();

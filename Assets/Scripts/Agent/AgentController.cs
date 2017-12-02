@@ -4,7 +4,19 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class AgentController : MonoBehaviour {
+	
+	//////////////////
+	/// PROPRIETES ///
+	//////////////////
 
+
+	// Delay avant une faim complete
+	private float _pHungryDelay;
+	
+	// Delay avant de mourir de faim
+	private float _pStarvingDelay;
+
+	
 	/////////////////
 	/// ATTRIBUTS ///
 	/////////////////
@@ -121,11 +133,15 @@ public class AgentController : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
+		_pHungryDelay = (float)Manager.Instance.Properties.GetElement("Delay.Hungry").Value;
+		_pStarvingDelay = (float)Manager.Instance.Properties.GetElement("Delay.Starving").Value;
 		MaleGender = AgentInfo.GetGender();
 		if (MaleGender)
 			FirstName = AgentInfo.GetMaleName();
 		else
 			FirstName = AgentInfo.GetFemaleName();
+		MaxHealth = (int)(float)Manager.Instance.Properties.GetElement("Agent.Health").Value;
+		MaxHunger = (int)(float)Manager.Instance.Properties.GetElement("Agent.Hunger").Value;
 		_created = Time.time;
 		_health = MaxHealth;
 		_hunger = MaxHunger;
@@ -144,6 +160,29 @@ public class AgentController : MonoBehaviour {
 		{
 			if (_percepts[i] == null)
 				_percepts.RemoveAt(i);
+		}
+		_hunger -= Time.deltaTime * (MaxHunger / _pHungryDelay);
+		if (_hunger < 0f)
+		{
+			_hunger = 0f;
+			DecreaseHealth(Time.deltaTime * MaxHealth / _pStarvingDelay);
+		}
+		if (_hunger < (float) MaxHunger / 2f)
+		{
+			foreach (GameObject o in Village.Instance.Building)
+			{
+				if (o.name == "StockPile(Clone)")
+				{
+					Inventory inv = o.GetComponent<Inventory>();
+					foreach (YamlLoader.PropertyElement element in (List<YamlLoader.PropertyElement>)Manager.Instance.Properties.GetElement("FoodValue").Value)
+					{
+						_hunger += (float) element.Value *
+						           inv.RemoveElement(element.Name, (int) ((MaxHunger - _hunger) / (float) element.Value));
+						if (_hunger >= MaxHunger * 0.8f)
+							break;
+					}
+				}
+			}
 		}
 	}
 
@@ -177,7 +216,7 @@ public class AgentController : MonoBehaviour {
 	/// </summary>
 	/// <param name="count">Quantité à réduire</param>
 	/// <returns>Indique si l'agent est toujours en vie</returns>
-	bool DecreaseHealth(int count) {
+	bool DecreaseHealth(float count) {
 		_health -= count;
 		if (_health <= 0.0f) {
 			if (OnDeath != null)
