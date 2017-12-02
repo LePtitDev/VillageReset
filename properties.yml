@@ -39,6 +39,8 @@ RessourcesWeight:
     Stone: 1.5
     Iron: 2
     Corn: 0.1
+    Fish: 0.2
+    Meat: 0.5
     Clothes: 0.5
 BuildingCost: 
     StockPile: 

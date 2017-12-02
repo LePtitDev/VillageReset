@@ -236,6 +236,8 @@ public class Manager : MonoBehaviour {
 				new YamlLoader.PropertyElement("Stone", 1.5f),
 				new YamlLoader.PropertyElement("Iron", 2f),
 				new YamlLoader.PropertyElement("Corn", 0.1f),
+				new YamlLoader.PropertyElement("Fish", 0.2f),
+				new YamlLoader.PropertyElement("Meat", 0.5f),
 				new YamlLoader.PropertyElement("Clothes", 0.5f)
 			}
 		));

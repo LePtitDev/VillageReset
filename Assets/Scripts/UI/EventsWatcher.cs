@@ -6,6 +6,11 @@ using UnityEngine.UI;
 public class EventsWatcher : MonoBehaviour
 {
 
+	/// <summary>
+	/// Instance courante de l'event watcher
+	/// </summary>
+	public static EventsWatcher Instance;
+	
 	// Scrollview
 	private ScrollRect _scrollview;
 
@@ -27,6 +32,7 @@ public class EventsWatcher : MonoBehaviour
 	// Use this for initialization
 	private void Start ()
 	{
+		Instance = this;
 		_scrollview = GetComponentInChildren<ScrollRect>();
 		_textContent = _scrollview.GetComponentInChildren<Text>();
 		_scrollbar = _scrollview.verticalScrollbar;
@@ -78,10 +84,11 @@ public class EventsWatcher : MonoBehaviour
 		string[] amsg = msg.Split(' ');
 		for (int i = 0; i < amsg.Length; i++)
 		{
-			str += " ";
 			Vector2 v = _style.CalcSize(new GUIContent(str + amsg[i]));
 			if (v.x > _textContent.rectTransform.rect.width)
 				str += '\n';
+			else
+				str += " ";
 			str += amsg[i];
 		}
 		_textContent.text += str;

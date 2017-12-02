@@ -110,7 +110,8 @@ public class Task_BreakStone : Task {
 		{
 			foreach (Entity en in _agent.Percepts)
 			{
-				if (en.Name != "Stone") continue;
+				if (en.Name != "Stone" || (en.transform.position - transform.position).magnitude > Moving.DISTANCE_THRESHOLD)
+					continue;
 				_stone = en.gameObject;
 				return;
 			}

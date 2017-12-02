@@ -111,16 +111,17 @@ public class Task_ChopWood : Task
 	{
         if (_target == null)
             return;
-        if ((_target.Value - transform.position).magnitude < Moving.DISTANCE_THRESHOLD)
-        {
-            foreach (Entity en in _agent.Percepts)
-            {
-                if (en.Name != "Tree") continue;
-                _tree = en.gameObject;
-                return;
-            }
-            _target = null;
-        }
+		if ((_target.Value - transform.position).magnitude <= Moving.DISTANCE_THRESHOLD)
+		{
+			foreach (Entity en in _agent.Percepts)
+			{
+				if (en.Name != "Tree" || (en.transform.position - transform.position).magnitude > Moving.DISTANCE_THRESHOLD)
+					continue;
+				_tree = en.gameObject;
+				return;
+			}
+			_target = null;
+		}
 	}
 
 	/// <summary>

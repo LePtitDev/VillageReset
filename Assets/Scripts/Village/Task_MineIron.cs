@@ -110,7 +110,8 @@ public class Task_MineIron : Task {
 		{
 			foreach (Entity en in _agent.Percepts)
 			{
-				if (en.Name != "Iron") continue;
+				if (en.Name != "Iron" || (en.transform.position - transform.position).magnitude > Moving.DISTANCE_THRESHOLD)
+					continue;
 				_iron = en.gameObject;
 				return;
 			}

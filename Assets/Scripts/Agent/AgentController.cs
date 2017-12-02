@@ -195,7 +195,11 @@ public class AgentController : MonoBehaviour {
 		if (_hunger < 0f)
 		{
 			_hunger = 0f;
-			DecreaseHealth(Time.deltaTime * MaxHealth / _pStarvingDelay);
+			if (!DecreaseHealth(Time.deltaTime * MaxHealth / _pStarvingDelay))
+			{
+				EventsWatcher.Instance.SendEvent(FirstName + " est mort de faim.");
+				return;
+			}
 		}
 		if (_hunger < (float) MaxHunger / 2f)
 		{
@@ -215,12 +219,17 @@ public class AgentController : MonoBehaviour {
 			}
 		}
 		if (Age >= _pMaxAge)
+		{
 			DecreaseHealth(MaxHealth);
+			EventsWatcher.Instance.SendEvent(FirstName + " est mort de vieillesse.");
+			return;
+		}
 		if (Manager.Instance.CurrentSeason == 3)
 		{
 			if (!HasHouse())
 			{
 				DecreaseHealth(MaxHealth);
+				EventsWatcher.Instance.SendEvent(FirstName + " est mort de froid car il était sans abri.");
 				return;
 			}
 			if (!HasClothes)
@@ -241,7 +250,8 @@ public class AgentController : MonoBehaviour {
 				}
 				if (!HasClothes && !DecreaseHealth(Time.deltaTime * MaxHealth / _pFreezingDelay))
 				{
-					// Mort de l'agent
+					EventsWatcher.Instance.SendEvent(FirstName + " est mort de froid.");
+					return;
 				}
 			}
 		}
