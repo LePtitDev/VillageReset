@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 //using System.Runtime.Serialization.Configuration;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -556,6 +557,11 @@ public class Memory : MonoBehaviour {
                 tuple[4] = Time.time;
             }
         }
+	    foreach (Entity en in _agent.Percepts)
+	    {
+		    if (en.Type == Entity.EntityType.VILLAGER)
+			    Syncronize(en.GetComponent<Memory>());
+	    }
 
     }
 
@@ -679,6 +685,38 @@ public class Memory : MonoBehaviour {
 			}
 		}
 		return new Answer(anames, atypes, tuples.ToArray());
+	}
+
+	/// <summary>
+	/// Syncronize memories
+	/// </summary>
+	/// <param name="other">Other memory</param>
+	public void Syncronize(Memory other)
+	{
+		foreach (KeyValuePair<string, Database.Table> pair in _db.Tables)
+		{
+			Database.Table t = other._db.Tables[pair.Key];
+			if (t == null) continue;
+			int updt = new List<string>(t.Names).IndexOf("LastUpdate");
+			if (updt == -1) continue;
+			object[][] en1 = pair.Value.Entries;
+			object[][] en2 = t.Entries;
+			for (int i = 0; i < en1.Length && i < en2.Length; i++)
+			{
+				object[] tuple1 = en1[i];
+				object[] tuple2 = en2[i];
+				if ((float) tuple1[updt] < (float) tuple2[updt])
+				{
+					for (int j = 0; j < tuple1.Length; j++)
+						tuple1[j] = tuple2[j];
+				}
+				else
+				{
+					for (int j = 0; j < tuple1.Length; j++)
+						tuple2[j] = tuple1[j];
+				}
+			}
+		}
 	}
 
 }
