@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Manager : MonoBehaviour {
 
@@ -86,6 +87,10 @@ public class Manager : MonoBehaviour {
     // Use this for initialization
     private void Awake () {
 		Instance = this;
+	    VillagersCount = (int)Launcher.Instance.Values["Villagers"];
+	    Width = (int)Launcher.Instance.Values["Width"];
+	    Height = (int)Launcher.Instance.Values["Height"];
+	    Seed = (int)Launcher.Instance.Values["Seed"];
         _gameStart = Time.time;
         LeavesMaterial.color = LeavesColorNormal;
         Randomizer = new System.Random(Seed);
@@ -95,10 +100,15 @@ public class Manager : MonoBehaviour {
 		boxcollider.size = new Vector3 ((float)Width, 2, (float)Height);
 		boxcollider.isTrigger = true;
 		Properties = System.IO.File.Exists(@"properties.yml") ? new YamlLoader(@"properties.yml") : CreateProperties();
-	    SeasonDuration = (float)Properties.GetElement("Delay.Season").Value;
+	    SeasonDuration = Launcher.Instance.Values["Winter"];
     }
 
-    // Update is called once per frame
+	private void Start()
+	{
+		SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainGame"));
+	}
+
+	// Update is called once per frame
     private void Update()
     {
         if (CurrentSeason != 3)

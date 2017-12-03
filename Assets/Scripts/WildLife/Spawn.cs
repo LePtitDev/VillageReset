@@ -16,9 +16,9 @@ public class Spawn : MonoBehaviour {
 	void Start () {
 		SpawnZone = Manager.Instance;
 
-		RandomNumberPrefab (prefabSheep);
-		RandomNumberPrefab (prefabWolf);
-		RandomNumberPrefab (prefabBrigand);
+		RandomNumberPrefab (prefabSheep, (int)Launcher.Instance.Values["NbSheep"]);
+		RandomNumberPrefab (prefabWolf, (int)Launcher.Instance.Values["NbWolf"]);
+		RandomNumberPrefab (prefabBrigand, (int)Launcher.Instance.Values["NbBrigand"]);
 	
 
 	}
@@ -40,12 +40,12 @@ public class Spawn : MonoBehaviour {
 		
 	//generate a random number of prefab
 	//instantiate prefabs
-	void RandomNumberPrefab(GameObject prefab)
+	void RandomNumberPrefab(GameObject prefab, int nb)
 	{
-		int MaxNb;
+		//int MaxNb;
 		//MaxNb = Random.Range (5, 10);
-		MaxNb = 4;
-		for(int i=0; i< MaxNb; i++)
+		//MaxNb = 4;
+		for(int i=0; i< nb; i++)
 		{
 			//Creation 
 			Instantiate(prefab,SpawnMe(),transform.rotation);
