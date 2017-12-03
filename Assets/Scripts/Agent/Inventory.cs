@@ -10,7 +10,7 @@ public class Inventory : MonoBehaviour
 	/// <summary>
 	/// Inventaire
 	/// </summary>
-	private Dictionary<string, int> _inventory;
+	private Dictionary<string, int> _inventory = new Dictionary<string, int>();
 	
 	/// <summary>
 	/// Contenu de l'inventaire
@@ -25,38 +25,37 @@ public class Inventory : MonoBehaviour
 	/// <summary>
 	/// Poids actuel
 	/// </summary>
-	private float _weight;
+	private float _weight = 0;
 
 	/// <summary>
 	/// Poids actuel
 	/// </summary>
 	public float Weight { get { return _weight; } }
-	
-	// Use this for initialization
-	private void Start () {
-		_inventory = new Dictionary<string, int>();
-		_weight = 0;
-	}
 
 	/// <summary>
 	/// Ajoute un (ou des) élément(s) à l'inventaire
 	/// </summary>
 	/// <param name="elementName">Nom de l'élément</param>
 	/// <param name="value">Quantité</param>
-	/// <returns>True si réussi et false sinon</returns>
-	public bool AddElement(string elementName, int value)
+	/// <returns>Quantité ajoutée</returns>
+	public int AddElement(string elementName, int value)
 	{
 		if (!_inventory.ContainsKey(elementName))
 			_inventory.Add(elementName, 0);
 		YamlLoader.PropertyElement prop = Manager.Instance.Properties.GetElement("RessourcesWeight." + elementName);
 		if (prop == null)
-			return false;
+			return 0;
 		float w = (float)prop.Value;
 		if (w * value + _weight > MaxWeight)
-			return false;
+		{
+			int nv = (int) ((MaxWeight - _weight) / w);
+			_inventory[elementName] += nv;
+			_weight += w * nv;
+			return nv;
+		}
 		_inventory[elementName] += value;
 		_weight += w * value;
-		return true;
+		return value;
 	}
 
 	/// <summary>
@@ -94,6 +93,50 @@ public class Inventory : MonoBehaviour
 		_inventory[elementName] -= value;
 		_weight -= value * (float)Manager.Instance.Properties.GetElement("RessourcesWeight." + elementName).Value;
 		return value;
+	}
+
+	/// <summary>
+	/// Transfert toutes les ressources vers un autre inventaire
+	/// </summary>
+	/// <param name="inv">L'autre inventaire</param>
+	/// <returns>true si tout a été transféré et faux sinon</returns>
+	public bool Transfert(Inventory inv)
+	{
+		foreach (string key in new List<string>(_inventory.Keys))
+		{
+			int count = GetElement(key);
+			if (Transfert(inv, key) != count)
+				return false;
+		}
+		return true;
+	}
+
+	/// <summary>
+	/// Transfert une ressource vers un autre inventaire
+	/// </summary>
+	/// <param name="inv">L'autre inventaire</param>
+	/// <param name="res">La ressource</param>
+	/// <returns>Quantité transférée</returns>
+	public int Transfert(Inventory inv, string res)
+	{
+		return Transfert(inv, res, GetElement(res));
+	}
+
+	/// <summary>
+	/// Transfert une quantité d'une ressource vers un autre inventaire
+	/// </summary>
+	/// <param name="inv">L'autre inventaire</param>
+	/// <param name="res">La ressource</param>
+	/// <param name="value">La quantité</param>
+	/// <returns>Quantité transférée</returns>
+	public int Transfert(Inventory inv, string res, int value)
+	{
+		int count = GetElement(res);
+		if (count < value)
+			return 0;
+		int v = inv.AddElement(res, value);
+		RemoveElement(res, v);
+		return v;
 	}
 	
 }

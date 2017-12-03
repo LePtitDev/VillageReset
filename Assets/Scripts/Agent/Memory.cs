@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 //using System.Runtime.Serialization.Configuration;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -523,10 +524,10 @@ public class Memory : MonoBehaviour {
 		_db = new Database ();
 		_db.Add("Patch", new Database.Table(new string[]
 		{
-			"Type", "Ressource", "Quantity", "PosX", "PosZ", "Explored"
+			"Type", "Above", "PosX", "PosZ", "LastUpdate"
 		}, new Type[]
 		{
-			typeof(bool), typeof(string), typeof(int), typeof(int), typeof(int), typeof(bool)
+			typeof(bool), typeof(string), typeof(int), typeof(int), typeof(float)
 		}));
         int mapWidth = Manager.Instance.GetComponent<Manager>().Width;
         int mapHeight = Manager.Instance.GetComponent<Manager>().Height;
@@ -534,8 +535,7 @@ public class Memory : MonoBehaviour {
         foreach (Patch patch in GameObject.Find("Ground").GetComponentsInChildren<Patch>())
         {
             t.Insert(new object[] {
-                patch.name == "Grass(Clone)", "None", 0,
-                (int)patch.transform.position.x, (int)patch.transform.position.z, false
+                patch.name == "Grass(Clone)", "None", (int)patch.transform.position.x, (int)patch.transform.position.z, 0f
             });
         }
     }
@@ -552,12 +552,16 @@ public class Memory : MonoBehaviour {
                     continue;
                 object[] tuple = GetPatch(i, j);
                 Patch patch = Patch.GetPatch(i, j).GetComponent<Patch>();
-                Ressource res = patch.InnerObjects.Length == 0 ? null : patch.InnerObjects[0] == null ? null : patch.InnerObjects[0].GetComponent<Ressource>();
-                tuple[1] = res == null ? "None" : Enum.GetName(typeof(Ressource.RessourceType), res.Type);
-                tuple[2] = res == null ? 0 : res.Count;
-                tuple[5] = true;
+                Entity en = patch.InnerObjects.Length == 0 ? null : patch.InnerObjects[0] == null ? null : patch.InnerObjects[0].GetComponent<Entity>();
+                tuple[1] =  en == null ? "None" : en.Name;
+                tuple[4] = Time.time;
             }
         }
+	    foreach (Entity en in _agent.Percepts)
+	    {
+		    if (en.Type == Entity.EntityType.VILLAGER)
+			    Syncronize(en.GetComponent<Memory>());
+	    }
 
     }
 
@@ -567,7 +571,7 @@ public class Memory : MonoBehaviour {
         Database.Table t = _db.Tables["Patch"];
         foreach (object[] tuple in t.Entries)
         {
-            if ((int)tuple[3] == x && (int)tuple[4] == z)
+            if ((int)tuple[2] == x && (int)tuple[3] == z)
                 return tuple;
         }
         return null;
@@ -681,6 +685,38 @@ public class Memory : MonoBehaviour {
 			}
 		}
 		return new Answer(anames, atypes, tuples.ToArray());
+	}
+
+	/// <summary>
+	/// Syncronize memories
+	/// </summary>
+	/// <param name="other">Other memory</param>
+	public void Syncronize(Memory other)
+	{
+		foreach (KeyValuePair<string, Database.Table> pair in _db.Tables)
+		{
+			Database.Table t = other._db.Tables[pair.Key];
+			if (t == null) continue;
+			int updt = new List<string>(t.Names).IndexOf("LastUpdate");
+			if (updt == -1) continue;
+			object[][] en1 = pair.Value.Entries;
+			object[][] en2 = t.Entries;
+			for (int i = 0; i < en1.Length && i < en2.Length; i++)
+			{
+				object[] tuple1 = en1[i];
+				object[] tuple2 = en2[i];
+				if ((float) tuple1[updt] < (float) tuple2[updt])
+				{
+					for (int j = 0; j < tuple1.Length; j++)
+						tuple1[j] = tuple2[j];
+				}
+				else
+				{
+					for (int j = 0; j < tuple1.Length; j++)
+						tuple2[j] = tuple1[j];
+				}
+			}
+		}
 	}
 
 }

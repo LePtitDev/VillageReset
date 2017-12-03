@@ -1,5 +1,10 @@
 ### YamlLoader C# Class ###
 
+Start:
+    Villagers: 4
+    Ressources:
+        Corn: 200
+        Clothes: 20
 FoodValue: 
     Corn: 8
     Fish: 10
@@ -22,15 +27,25 @@ Delay:
     Log: 50
     Hungry: 50
     Starving: 50
+    Freezing: 50
     Heal: 50
+    Clothes: 80
+    Child: 240
+    Maturity: 480
 Agent: 
     Health: 50
     Hunger: 50
+    Speed: 2
     Life: 60
+    HouseCapacity: 10
 RessourcesWeight: 
     Wood: 1
     Stone: 1.5
     Iron: 2
+    Corn: 0.1
+    Fish: 0.2
+    Meat: 0.5
+    Clothes: 0.5
 BuildingCost: 
     StockPile: 
         Wood: 20

@@ -5,6 +5,19 @@ using UnityEngine;
 public class Cornfield : MonoBehaviour
 {
 
+	//////////////////
+	/// PROPERTIES ///
+	//////////////////
+	
+
+	// Harvest quantity of a cornfield
+	private int _pHarvestCount;
+	
+	
+	//////////////////
+	/// ATTRIBUTES ///
+	//////////////////
+
 	/// <summary>
 	/// Cornfiel states
 	/// </summary>
@@ -59,6 +72,20 @@ public class Cornfield : MonoBehaviour
 	/// </summary>
 	public float Harvest { get { return (HarvestDuration - _harvest) / HarvestDuration; } }
 
+	// Village
+	private Village _village;
+
+	// Current agents list
+	private List<GameObject> _agentList;
+	
+	/// <summary>
+	/// Current agents list
+	/// </summary>
+	public GameObject[] Villagers { get { return _agentList.ToArray(); } }
+
+	// Indicate if an agent use a growing action this frame
+	private bool _growingAction;
+
 	/// <summary>
 	/// Current cornfield state
 	/// </summary>
@@ -78,6 +105,10 @@ public class Cornfield : MonoBehaviour
 	// Use this for initialization
 	private void Start ()
 	{
+		_pHarvestCount = (int) (float) Manager.Instance.Properties.GetElement("Harvest.Cornfield").Value;
+		SeedDuration = (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Seeding").Value;
+		GrowningDuration = (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Growing").Value;
+		HarvestDuration = (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Harvest").Value;
 		_seeding = SeedDuration;
 		_growing = GrowningDuration;
 		_harvest = HarvestDuration;
@@ -87,11 +118,27 @@ public class Cornfield : MonoBehaviour
 			if (t.name == "Cornraw")
 				_corn.Add(t.gameObject);
 		}
+		_village = GameObject.Find("Village").GetComponent<Village>();
+		_agentList = new List<GameObject>();
+		_growingAction = false;
 	}
 	
 	// Update is called once per frame
 	private void Update ()
 	{
+		_agentList.Clear();
+		foreach (Task_FarmCorn agent in _village.GetComponentsInChildren<Task_FarmCorn>())
+		{
+			if (agent.CurrentCornfield == this)
+				_agentList.Add(agent.gameObject);
+		}
+		if (Manager.Instance.CurrentSeason == 3)
+		{
+			_seeding = SeedDuration;
+			_growing = GrowningDuration;
+			_harvest = HarvestDuration;
+		}
+		_growingAction = false;
 		float count;
 		switch (FieldState)
 		{
@@ -121,5 +168,34 @@ public class Cornfield : MonoBehaviour
 				}
 				break;
 		}
+	}
+
+	/// <summary>
+	/// Progress seeding
+	/// </summary>
+	public void ActionSeeding()
+	{
+		_seeding -= Time.deltaTime;
+	}
+
+	/// <summary>
+	/// Progress seeding
+	/// </summary>
+	public void ActionGrowing()
+	{
+		if (_growingAction) return;
+		_growing -= Time.deltaTime;
+		_growingAction = true;
+	}
+
+	/// <summary>
+	/// Progress seeding
+	/// </summary>
+	public int ActionHarvest()
+	{
+		float render = _pHarvestCount / HarvestDuration;
+		int lastCount = (int)(_harvest * render);
+		_harvest -= Time.deltaTime;
+		return lastCount - (int)(_harvest * render);
 	}
 }
