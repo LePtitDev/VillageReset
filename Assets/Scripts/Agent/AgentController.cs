@@ -184,6 +184,7 @@ public class AgentController : MonoBehaviour {
 		CurrentTask = GetComponent<Task>();
 		_lastSeason = Manager.Instance.CurrentSeason;
 		GameObject.Find("Village").GetComponent<Village>().AddVillager(gameObject);
+		EventsWatcher.Instance.SendEvent(FirstName + " est devenu un adulte.");
 	}
 	
 	// Update is called once per frame

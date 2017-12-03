@@ -89,6 +89,7 @@ public class House : MonoBehaviour
 		{
 			_childs.Add(Time.time + ChildMaturity);
 			_childTimer = ChildDuration;
+			EventsWatcher.Instance.SendEvent("Un enfant est né.");
 		}
 	}
 	

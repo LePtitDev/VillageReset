@@ -172,6 +172,7 @@ public class Village : MonoBehaviour {
 				villagerparent = t;
 		}
 		GameObject v = Instantiate(GetPrefab("Villager"), pos, Quaternion.identity, villagerparent);
+		v.SetActive(true);
 		return v;
 	}
 
