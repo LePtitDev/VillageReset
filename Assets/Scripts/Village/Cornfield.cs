@@ -184,7 +184,7 @@ public class Cornfield : MonoBehaviour
 	public void ActionGrowing()
 	{
 		if (_growingAction) return;
-		_seeding -= Time.deltaTime;
+		_growing -= Time.deltaTime;
 		_growingAction = true;
 	}
 

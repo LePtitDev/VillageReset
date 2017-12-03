@@ -35,6 +35,7 @@ Delay:
 Agent: 
     Health: 50
     Hunger: 50
+    Speed: 2
     Life: 60
     HouseCapacity: 10
 RessourcesWeight: 

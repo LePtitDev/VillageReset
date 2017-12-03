@@ -162,6 +162,16 @@ public class Task_FarmCorn : Task {
 	}
 
 	/// <summary>
+	/// Indicate if bag is full
+	/// </summary>
+	[PerceptMethod]
+	[ActionLink("StockCorn", 0f)]
+	public bool BagNotFull()
+	{
+		return (_inventory.Weight <= _inventory.MaxWeight / 2);
+	}
+
+	/// <summary>
 	/// Indicate if a cornfield is assigned
 	/// </summary>
 	[PerceptMethod]

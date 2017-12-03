@@ -228,8 +228,12 @@ public class Manager : MonoBehaviour {
 				new YamlLoader.PropertyElement("Health", 50f),
 				// Niveau de faim
 				new YamlLoader.PropertyElement("Hunger", 50f),
+				// Vitesse de l'agent
+				new YamlLoader.PropertyElement("Speed", 2f),
 				// Age maximum avant le décès naturel
-				new YamlLoader.PropertyElement("Life", 60f)
+				new YamlLoader.PropertyElement("Life", 60f),
+				// Capacité totale d'une maison
+				new YamlLoader.PropertyElement("HouseCapacity", 10f)
 			}
 		));
 		// POIDS DES ELEMENTS

@@ -35,7 +35,9 @@ public class Moving : MonoBehaviour {
 	public Vector3[] Path { get { return _path.ToArray(); } }
 
 	// Use this for initialization
-	private void Start () {
+	private void Start ()
+	{
+		Speed = (float) Manager.Instance.Properties.GetElement("Agent.Speed").Value;
 		Direction = new Vector3 ();
 		this.Collision = false;
 	}
@@ -62,7 +64,7 @@ public class Moving : MonoBehaviour {
 				Direction = _path[0] - transform.position;
 			}
 		}
-		transform.position += Direction.normalized * Speed;
+		transform.position += Direction.normalized * Speed * Time.deltaTime;
 		GameObject patch = Patch.GetPatch (transform.position);
 		if (patch != null && patch.name == "Water(Clone)" || !Manager.Instance.GetComponent<BoxCollider> ().bounds.Contains (transform.position)) {
 			transform.position = current;

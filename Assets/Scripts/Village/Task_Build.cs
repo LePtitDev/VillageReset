@@ -157,6 +157,28 @@ public class Task_Build : Task {
 		                 (int)(float)Manager.Instance.Properties.GetElement("FoodValue.Corn").Value;
 		return consomation > production;
 	}
+
+	/// <summary>
+	/// Percept for cornfield choice
+	/// </summary>
+	[BuildingChoiceMethod]
+	[BuildingChoiceLink("Cornfield", 0f)]
+	public bool NoChoiceCornfield()
+	{
+		int consomation = (int)(_village.Villagers.Length *
+		                        (
+			                        (float) Manager.Instance.Properties.GetElement("Agent.Hunger").Value /
+			                        (float) Manager.Instance.Properties.GetElement("Delay.Hungry").Value
+		                        ) * (float) Manager.Instance.Properties.GetElement("Delay.Season").Value * 5f);
+		int count = _village.GetComponentsInChildren<Cornfield>().Length;
+		int cornfieldProduction = (int)(float)Manager.Instance.Properties.GetElement("Harvest.Cornfield").Value;
+		float cornfieldDuration = (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Seeding").Value +
+		                          (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Growing").Value +
+		                          (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Harvest").Value;
+		int production = (int)(Manager.Instance.SeasonDuration * 3f / cornfieldDuration) * count * cornfieldProduction *
+		                 (int)(float)Manager.Instance.Properties.GetElement("FoodValue.Corn").Value;
+		return consomation <= production;
+	}
 	
 	///////////////
 	/// ACTIONS ///
@@ -201,6 +223,7 @@ public class Task_Build : Task {
 		bool near = false;
 		foreach (Entity entity in _agent.Percepts)
 		{
+			if (entity == null) continue;
 			ConstructionSite cs = entity.GetComponent<ConstructionSite>();
 			if (cs == _target)
 				near = true;

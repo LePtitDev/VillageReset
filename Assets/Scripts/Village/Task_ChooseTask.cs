@@ -48,6 +48,13 @@ public class Task_ChooseTask : Task
         Destroy(this);
     }
 
+    [ActionMethod]
+    public void ChooseFarmCorn()
+    {
+        gameObject.AddComponent<Task_FarmCorn>();
+        Destroy(this);
+    }
+
     [PerceptMethod]
     [ActionLink("ChooseBuild", 4f)]
     public bool NoBuilder()
@@ -85,7 +92,7 @@ public class Task_ChooseTask : Task
     }
 
     [PerceptMethod]
-    [ActionLink("ChooseMineIron", 2f)]
+    [ActionLink("ChooseMineIron", 1.5f)]
     public bool NoMiner()
     {
         foreach (AgentController a in agents)
@@ -94,6 +101,25 @@ public class Task_ChooseTask : Task
                 return false;
         }
         return true;
+    }
+
+    [PerceptMethod]
+    [ActionLink("ChooseFarmCorn", 2f)]
+    public bool NoFarmer()
+    {
+        foreach (AgentController a in agents)
+        {
+            if (a.GetComponent<Task_FarmCorn>() != null)
+                return false;
+        }
+        return true;
+    }
+
+    [PerceptMethod]
+    [ActionLink("ChooseFarmCorn", 0f)]
+    public bool NoCornfield()
+    {
+        return GameObject.Find("Cornfield(Clone)") == null;
     }
 
     [PerceptMethod]
@@ -120,6 +146,13 @@ public class Task_ChooseTask : Task
                 count += inv.GetElement("Stone");
         }
         return count < 50;
+    }
+
+    [PerceptMethod]
+    [ActionLink("ChooseFarmCorn", 0f)]
+    public bool Winter()
+    {
+        return Manager.Instance.CurrentSeason == 3;
     }
 
 }
