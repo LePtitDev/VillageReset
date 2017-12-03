@@ -135,6 +135,7 @@ public class Task_FarmCorn : Task {
 			_moving.SetDestination(_stockpile.Value);
 		foreach (Entity en in _agent.Percepts)
 		{
+			if (en == null) continue;
 			if (en.Name == "Stock Pile")
 			{
                 

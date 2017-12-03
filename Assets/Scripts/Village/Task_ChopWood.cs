@@ -115,6 +115,7 @@ public class Task_ChopWood : Task
 		{
 			foreach (Entity en in _agent.Percepts)
 			{
+				if (en == null) continue;
 				if (en.Name != "Tree" || (en.transform.position - transform.position).magnitude > Moving.DISTANCE_THRESHOLD)
 					continue;
 				_tree = en.gameObject;
@@ -175,9 +176,9 @@ public class Task_ChopWood : Task
             _moving.SetDestination(_stockpile.Value);
         foreach (Entity en in _agent.Percepts)
         {
+	        if (en == null) continue;
             if (en.Name == "Stock Pile")
             {
-                
 	            _inventory.Transfert(en.GetComponent<Inventory>());
                 if (_target != null)
                     _moving.SetDestination(_target.Value);
