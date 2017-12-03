@@ -45,7 +45,6 @@ public class CameraController : MonoBehaviour {
 
 	// Use this for initialization
 	private void Start () {
-		MapCenter = new Vector3(Launcher.Instance.Values["Width"] / 2, 0, Launcher.Instance.Values["Height"] / 2);
 		_target = null;
 		_rotation = 0;
 		_uiFocus = false;
@@ -78,6 +77,15 @@ public class CameraController : MonoBehaviour {
 					foreach (RaycastHit hit in hits)
 					{
 						if (hit.collider.gameObject.GetComponent<Entity>() != null)
+						{
+							_target = hit.collider.gameObject;
+							UIRefresh();
+							break;
+						}
+					}
+					foreach (RaycastHit hit in hits)
+					{
+						if (hit.collider.gameObject.name == "Villager(Clone)")
 						{
 							_target = hit.collider.gameObject;
 							UIRefresh();

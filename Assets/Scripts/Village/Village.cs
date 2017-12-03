@@ -83,7 +83,6 @@ public class Village : MonoBehaviour {
 				    0.2f * density [i].IronDensity
 				);
 			Center = density [Array.IndexOf (ratios, Mathf.Max (ratios))].transform.position;
-			GroundSegregation.DrawLine (Center, Center + new Vector3 (0f, 1f, 0f), Color.cyan, 100f, 0.3f);
 			Debug.Log ("Placement du village en " + Center);
 			PlaceVillage();
 		}

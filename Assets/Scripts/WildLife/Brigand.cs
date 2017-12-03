@@ -22,6 +22,8 @@ public class Brigand : MonoBehaviour {
 	public float MyVision = 1.5f;
 	public LayerMask brigandLayer;
 	public LayerMask villagerLayer;
+	private float attackTime = 0;
+	private float targetTime = 0;
 
 	private List<Brigand> SeeBrigandsAroundMe;
 	// Use this for initialization
@@ -33,8 +35,12 @@ public class Brigand : MonoBehaviour {
 	}
 
 	// Update is called once per frame
-	void Update () {
-		SeeHuman ();
+	void Update ()
+	{
+		if (Manager.Instance.CurrentSeason == 3)
+			action = GoHome;
+		else
+			SeeHuman ();
 		action ();
 
 	}
@@ -78,7 +84,7 @@ public class Brigand : MonoBehaviour {
 	public void OnTriggerEnter(Collider other)	{
 
 		//if i see a tree and mytreehome is null, this tree is mytreehome
-		if (myTreeHome == null && other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk") {
+		if (myTreeHome == null && (other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk")) {
 			myTreeHome = other.gameObject;
 		}
 	     
@@ -119,7 +125,11 @@ public class Brigand : MonoBehaviour {
 
 	//go in my tree home
 	public void GoHome(){
-		move.Direction = myTreeHome.transform.position - transform.position;
+		//move.Direction = myTreeHome.transform.position - transform.position;
+		if (myTreeHome != null)
+			move.SetDestination(myTreeHome.transform.position);
+		else if (move.Direction == Vector3.zero || move.Collision)
+			move.Direction = new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f));
 	}
 
 	//if i see other brigand :
@@ -147,26 +157,49 @@ public class Brigand : MonoBehaviour {
 		
 		Collider[] closeEnoughtToKill = Physics.OverlapSphere(transform.position, Moving.DISTANCE_THRESHOLD);
 
+		if (villagers.Count > 0)
+		{
+			bool villager = false;
+			foreach (GameObject coll in villagers)
+			{
+				if (coll.name == "Villager(Clone)")
+					villager = true;
+			}
+			if (villager)
+			{
+				if (targetTime > 3f)
+				{
+					targetTime = 10f;
+					return;
+				}
+				targetTime += Time.deltaTime;
+			}
+		}
 		if(villagers.Count > 0){
 			foreach (GameObject theVillager in villagers) {
-				Debug.Log ("je me dirige vers lui");
 				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0 , theVillager.gameObject.transform.position.z - transform.position.z );
 
 
 				if (closeEnoughtToKill.Length > 0) {
 					foreach (Collider theVillagerDied in closeEnoughtToKill) {
 						if(theVillagerDied.gameObject.name == "Villager(Clone)"){
-							Debug.Log ("je le tue MOUAHHAHAHA");
-							//baisser la vie au lieud e tuer
-							theVillagerDied.GetComponent<AgentController>()
-								.DecreaseHealth((float)Manager.Instance.Properties.GetElement("Brigant.Damage").Value);
+							if (Time.time > attackTime)
+							{
+								theVillagerDied.GetComponent<AgentController>()
+									.DecreaseHealth((float) Manager.Instance.Properties.GetElement("Brigant.Damage").Value);
+								attackTime = Time.time + 0.5f;
+							}
 						}
 					}
 				}
-
 			}
 		}
-
+		else
+		{
+			targetTime -= Time.deltaTime;
+			if (targetTime < 0)
+				targetTime = 0;
+		}
 
 		//brigands
 		if (brigants.Count > 0) {
@@ -208,7 +241,7 @@ public class Brigand : MonoBehaviour {
 				if (br.gameObject == Chief)
 					seeChief = true;
 			}
-			if (!seeChief)
+			if (!seeChief && Chief != null)
 				return Chief.transform.position - transform.position; // si il le perd il retrouve le chef
 			separation /= ViewRadius.Length;
 			center /= ViewRadius.Length;

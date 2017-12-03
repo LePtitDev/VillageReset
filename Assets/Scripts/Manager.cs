@@ -105,7 +105,9 @@ public class Manager : MonoBehaviour {
 
 	private void Start()
 	{
+		Camera.main.gameObject.SetActive(false);
 		SceneManager.SetActiveScene(SceneManager.GetSceneByName("MainGame"));
+		Camera.main.GetComponent<CameraController>().MapCenter = new Vector3(Launcher.Instance.Values["Width"] / 2, 0, Launcher.Instance.Values["Height"] / 2);
 	}
 
 	// Update is called once per frame
