@@ -125,11 +125,6 @@ public class AgentController : MonoBehaviour {
 	/// </summary>
 	public Entity[] Percepts { get { return _percepts.ToArray (); } }
 
-	/// <summary>
-	/// Sphere de perception
-	/// </summary>
-	private SphereCollider _perceptionCollider;
-
 
 	/// GESTION DE TACHES
 
@@ -177,10 +172,6 @@ public class AgentController : MonoBehaviour {
 		_hunger = MaxHunger;
 		_clothesTakenTime = 0f;
 		_clothesTaken = false;
-		_perceptionCollider = gameObject.AddComponent<SphereCollider> ();
-		_perceptionCollider.isTrigger = true;
-		_perceptionCollider.center = new Vector3 ();
-		_perceptionCollider.radius = PerceptionRadius;
 		CurrentTask = GetComponent<Task>();
 		_lastSeason = Manager.Instance.CurrentSeason;
 		GameObject.Find("Village").GetComponent<Village>().AddVillager(gameObject);
@@ -189,7 +180,7 @@ public class AgentController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		_perceptionCollider.radius = PerceptionRadius;
+		UpdatePercepts();
 		for (int i = _percepts.Count - 1; i >= 0; i--)
 		{
 			if (_percepts[i] == null)
@@ -289,7 +280,7 @@ public class AgentController : MonoBehaviour {
 	/// </summary>
 	/// <param name="count">Quantité à augmenter</param>
 	/// <returns>Indique si l'agent est au maximum de sa santé</returns>
-	bool IncreaseHealth(float count) {
+	public bool IncreaseHealth(float count) {
 		_health += count;
 		if (_health >= (float)MaxHealth) {
 			_health = (float)MaxHealth;
@@ -303,7 +294,7 @@ public class AgentController : MonoBehaviour {
 	/// </summary>
 	/// <param name="count">Quantité à réduire</param>
 	/// <returns>Indique si l'agent est toujours en vie</returns>
-	bool DecreaseHealth(float count) {
+	public bool DecreaseHealth(float count) {
 		_health -= count;
 		if (_health <= 0.0f) {
 			if (OnDeath != null)
@@ -325,21 +316,16 @@ public class AgentController : MonoBehaviour {
 	/// Appelée lorsqu'un objet entre dans le champs de vision de l'agent
 	/// </summary>
 	/// <param name="other">Le collider</param>
-	void OnTriggerEnter(Collider other) {
-		Entity en = other.GetComponent<Entity> ();
-		if (en != null && !_percepts.Contains (en) && en.Collider == other) {
-			_percepts.Add (en);
-		}
-	}
-
-	/// <summary>
-	/// Appelée lorsqu'un objet sort du champs de vision de l'agent
-	/// </summary>
-	/// <param name="other">Le collider</param>
-	void OnTriggerExit(Collider other) {
-		Entity en = other.GetComponent<Entity> ();
-		if (en != null && _percepts.Contains (en) && en.Collider == other) {
-			_percepts.Remove (en);
+	void UpdatePercepts()
+	{
+		_percepts.Clear();
+		foreach (Collider other in Physics.OverlapSphere(transform.position, PerceptionRadius))
+		{
+			if (other.gameObject == gameObject) continue;
+			Entity en = other.GetComponent<Entity> ();
+			if (en != null && !_percepts.Contains (en) && en.Collider == other) {
+				_percepts.Add (en);
+			}
 		}
 	}
 

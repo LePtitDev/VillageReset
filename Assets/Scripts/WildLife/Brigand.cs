@@ -144,8 +144,8 @@ public class Brigand : MonoBehaviour {
 			}
 		}
 
-		/*
-		Collider[] closeEnoughtToKill = Physics.OverlapSphere(transform.position, LifeSpace, villagerLayer);
+		
+		Collider[] closeEnoughtToKill = Physics.OverlapSphere(transform.position, Moving.DISTANCE_THRESHOLD);
 
 		if(villagers.Count > 0){
 			foreach (GameObject theVillager in villagers) {
@@ -154,17 +154,18 @@ public class Brigand : MonoBehaviour {
 
 
 				if (closeEnoughtToKill.Length > 0) {
-				//	foreach (Collider theVillagerDied in closeEnoughtToKill) {
-						if(theVillager.gameObject.name == "Villager(Clone)"){
+					foreach (Collider theVillagerDied in closeEnoughtToKill) {
+						if(theVillagerDied.gameObject.name == "Villager(Clone)"){
 							Debug.Log ("je le tue MOUAHHAHAHA");
 							//baisser la vie au lieud e tuer
-						Destroy (theVillager.gameObject);
+							theVillagerDied.GetComponent<AgentController>()
+								.DecreaseHealth((float)Manager.Instance.Properties.GetElement("Brigant.Damage").Value);
 						}
-					//}
+					}
 				}
 
 			}
-		}*/
+		}
 
 
 		//brigands
@@ -192,7 +193,7 @@ public class Brigand : MonoBehaviour {
 
 	//flocking
 	//follow other brigant white life space
-	private Vector3 Separate(){
+	private Vector3 Separate() {
 		
 		Collider[] ViewRadius = Physics.OverlapSphere(transform.position, LifeSpace, brigandLayer);
 
@@ -217,8 +218,9 @@ public class Brigand : MonoBehaviour {
 			align.y = 0;
 			center.y = 0;
 			return separation * 0.8f + align.normalized * 0.8f + center * 0.5f;
-		} else
+		} else if (Chief != null)
 			return Chief.transform.position - transform.position; // si il le perd il retrouve le chef
+		return new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
 	}
 
 

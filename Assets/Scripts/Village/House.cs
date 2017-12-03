@@ -78,6 +78,7 @@ public class House : MonoBehaviour
 		bool male = false, female = false;
 		foreach (GameObject villager in _villagers)
 		{
+			if (villager == null) continue;
 			if (villager.GetComponent<AgentController>().MaleGender)
 				male = true;
 			else

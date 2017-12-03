@@ -78,6 +78,7 @@ public class Task_MineIron : Task {
 	{
 		foreach (Entity en in _agent.Percepts)
 		{
+			if (en == null) continue;
 			if (en.Name != "Iron") continue;
 			_target = en.transform.position;
 			_moving.SetDestination(_target.Value);

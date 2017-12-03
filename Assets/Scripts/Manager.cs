@@ -286,6 +286,16 @@ public class Manager : MonoBehaviour {
 				})
 			}
 		));
+		// PROPRIETES DU BRIGANT
+		loader.AddElement(new YamlLoader.PropertyElement("Brigant",
+			new YamlLoader.PropertyElement[]
+			{
+				new YamlLoader.PropertyElement("Health", 50f),
+				new YamlLoader.PropertyElement("Speed", 2f),
+				new YamlLoader.PropertyElement("Speedrun", 3f),
+				new YamlLoader.PropertyElement("Damage", 5f)
+			}
+		));
 		loader.Save(@"properties.yml");
 		return loader;
 	}

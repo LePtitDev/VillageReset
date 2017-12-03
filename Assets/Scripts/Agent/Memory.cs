@@ -559,7 +559,7 @@ public class Memory : MonoBehaviour {
         }
 	    foreach (Entity en in _agent.Percepts)
 	    {
-		    if (en.Type == Entity.EntityType.VILLAGER)
+		    if (en != null && en.Type == Entity.EntityType.VILLAGER)
 			    Syncronize(en.GetComponent<Memory>());
 	    }
 
