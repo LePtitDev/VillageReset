@@ -116,7 +116,21 @@ public class Village : MonoBehaviour {
 	private void PlaceVillage()
 	{
 		AddBuilding(GetPrefab("StockPile"), Center);
-	}
+        GameObject prefab = GetPrefab("Villager");
+        Transform villagerParent = null;
+        foreach (Transform t in GetComponentsInChildren<Transform>())
+        {
+            if (t.name == "Villagers")
+                villagerParent = t;
+        }
+        int side = (int)Mathf.Ceil(Mathf.Sqrt(Manager.Instance.VillagersCount));
+		Debug.Log (villagerParent);
+        for (int i = 0, sz = Manager.Instance.VillagersCount; i < sz; i++)
+        {
+            int x = i / side, z = i % side;
+            Instantiate(prefab, Center + new Vector3((float)(side / 2 - x) / (float)side - 0.5f, 0f, (float)(side / 2 - z) / (float)side - 0.5f), Quaternion.identity, villagerParent).SetActive(true);
+        }
+    }
 
 	/// <summary>
 	/// Add a building to the village
@@ -159,7 +173,7 @@ public class Village : MonoBehaviour {
 			if (t.name == "Villagers")
 				villagerparent = t;
 		}
-		GameObject v = Instantiate(VillagerPrefab, pos, Quaternion.identity, villagerparent);
+		GameObject v = Instantiate(GetPrefab("Villager"), pos, Quaternion.identity, villagerparent);
 		return v;
 	}
 

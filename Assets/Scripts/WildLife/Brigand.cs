@@ -6,25 +6,22 @@ public class Brigand : MonoBehaviour {
 
 	private System.Action action;
 
-	//temporaire a suppr a l'utilisation de Moving
+
 	public GameObject patch;
 	private RaycastHit Hit;
 	public GameObject myTreeHome;
-	private int numchef = 0;
+	public int numchef = 0;
 	[SerializeField] GameObject prefabBrigand;
 	Moving move;
-
-
-
 	private GameObject otherBrigand;
 	public GameObject Chief;
-
 	public float Health;
 	public int Life = 3;
 	public float waiting = 0.0f;
 	public float LifeSpace = 1f;
-	public float MyVision = 3f;
+	public float MyVision = 1.5f;
 	public LayerMask brigandLayer;
+	public LayerMask villagerLayer;
 
 	private List<Brigand> SeeBrigandsAroundMe;
 	// Use this for initialization
@@ -33,9 +30,6 @@ public class Brigand : MonoBehaviour {
 		move = GetComponent<Moving> ();
 		action = Wiggle;
 		move.Direction = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
-
-
-
 	}
 
 	// Update is called once per frame
@@ -83,58 +77,22 @@ public class Brigand : MonoBehaviour {
     //if tree -> if health <4 -> eating
 	public void OnTriggerEnter(Collider other)	{
 
+		//if i see a tree and mytreehome is null, this tree is mytreehome
 		if (myTreeHome == null && other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk") {
 			myTreeHome = other.gameObject;
 		}
-	
-			
-		/*
-		if (other.gameObject.name == "Brigand(Clone)") {
-			//si l'autre na pas de chef 
-			//et que mon chef est a null
-			//alors je suis le chef
-			//Sinon si il y a un chef
-			//mais que son numchef est inferieur au mien je suis le chef
-			//sinon c'ets lui
-			if (other.gameObject.GetComponent<Brigand> ().Chief == null) {
-				if (Chief == null) {
-					Chief = gameObject;
-					move.Direction = new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f));
-					action = Wiggle;
-				}
-				other.gameObject.GetComponent<Brigand> ().Chief = Chief;
-			} else if (Chief != gameObject) {
-				otherBrigand = other.gameObject;
-				action = FollowBrigand;
-
-			} 
-
-
-		}*/
-
+	     
+		//if i see a tree and my health <4
+		//eating
 		if (other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk") {
 
 			if(Health < 4){
-				/*
-				if (myTreeHome != null) {
-					GoHome ();
-					if (prefabBrigand.transform.position == myTreeHome.transform.position) {
-						Debug.Log ("je qsuis chez moi je bouge plus");
-						move.Direction = new Vector3 ();
-						waiting = Time.time + 1.0f;
-						action = Eating;
-					}
-				}*/
-
 				GetComponent<Moving> ().Direction = new Vector3 ();
 				waiting = Time.time + 1.0f;
 				//Debug.Log ("j'ai vu un arbre et je mange");
 				//action = Waiting;
 				action = Eating;
-
 			}
-
-		
 		}
 
 
@@ -142,65 +100,89 @@ public class Brigand : MonoBehaviour {
 	}
 
 
+	//follow brigand chief
 	public void FollowBrigand()
 	{
 		move.Direction = Separate ();
-		//move.Direction = Chief.transform.position - transform.position;
 
 	}
 
 
+	//if there is a collision then i change direction
 	public void Wiggle()
 	{
-		
 		if (move.Collision) {
-
 			move.Direction = new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f));
 		}
 
 	}
 
-
+	//go in my tree home
 	public void GoHome(){
 		move.Direction = myTreeHome.transform.position - transform.position;
 	}
 
+	//if i see other brigand :
+	//if i am chief -> wiggle
+	//if not -> follow the chief
+	//if i see villagers
+	//if we are > 2 
+	//kill him!
+	//else: wiggle
 	public void SeeHuman(){
+		
 		Collider[] ViewRadius = Physics.OverlapSphere(transform.position, MyVision);
+
 		List<GameObject> villagers = new List<GameObject> ();
 		List<GameObject> brigants = new List<GameObject> ();
+
 		foreach (Collider obj in ViewRadius) {
 			if (obj.name == "Villager(Clone)") {
-				Debug.Log ("add");
 				villagers.Add (obj.gameObject);
 			} else if (obj.name == "Brigand(Clone)" && obj.gameObject != gameObject) {
 				brigants.Add (obj.gameObject);
 			}
 		}
 
+		/*
+		Collider[] closeEnoughtToKill = Physics.OverlapSphere(transform.position, LifeSpace, villagerLayer);
+
 		if(villagers.Count > 0){
-			Debug.Log("un villageois! faut que je le tue!");
-		}
+			foreach (GameObject theVillager in villagers) {
+				Debug.Log ("je me dirige vers lui");
+				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0 , theVillager.gameObject.transform.position.z - transform.position.z );
 
 
+				if (closeEnoughtToKill.Length > 0) {
+				//	foreach (Collider theVillagerDied in closeEnoughtToKill) {
+						if(theVillager.gameObject.name == "Villager(Clone)"){
+							Debug.Log ("je le tue MOUAHHAHAHA");
+							//baisser la vie au lieud e tuer
+						Destroy (theVillager.gameObject);
+						}
+					//}
+				}
+
+			}
+		}*/
+
+
+		//brigands
 		if (brigants.Count > 0) {
-			//Debug.Log (brigants.Count);
-			//si l'autre na pas de chef 
-			//et que mon chef est a null
-			//alors je suis le chef
-			//Sinon si il y a un chef
-			//mais que son numchef est inferieur au mien je suis le chef
-			//sinon c'ets lui
 			foreach (GameObject other in brigants) {
 				if (other.GetComponent<Brigand> ().Chief == null) {
 					if (Chief == null) {
+						numchef = numchef++;
 						Chief = gameObject;
 						move.Direction = new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f));
 						action = Wiggle;
 					}
 					other.GetComponent<Brigand> ().Chief = Chief;
 				} else if (Chief != gameObject) {
-					otherBrigand = other;
+					if (Chief != other.GetComponent<Brigand> ().Chief) {
+						other.GetComponent<Brigand> ().Chief = Chief;
+					}
+					//otherBrigand = other;
 					action = FollowBrigand;
 				}
 			}
@@ -208,11 +190,11 @@ public class Brigand : MonoBehaviour {
 
 	}
 
-
+	//flocking
+	//follow other brigant white life space
 	private Vector3 Separate(){
-	//	Debug.Log ("t'es trop pret trou du");
+		
 		Collider[] ViewRadius = Physics.OverlapSphere(transform.position, LifeSpace, brigandLayer);
-		//Debug.Log (ViewRadius.Length);
 
 		if (ViewRadius.Length > 0) {
 			bool seeChief = false;
@@ -234,7 +216,7 @@ public class Brigand : MonoBehaviour {
 			separation.y = 0;
 			align.y = 0;
 			center.y = 0;
-			return separation * 0.5f + align.normalized * 0.8f + center * 0.5f;
+			return separation * 0.8f + align.normalized * 0.8f + center * 0.5f;
 		} else
 			return Chief.transform.position - transform.position; // si il le perd il retrouve le chef
 	}

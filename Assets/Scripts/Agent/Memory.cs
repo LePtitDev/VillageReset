@@ -511,61 +511,74 @@ public class Memory : MonoBehaviour {
 	// Memory database
 	private Database _db = null;
 
+    // Agent controller
+    private AgentController _agent;
+
 	/// Database accessor
 	public Database DB { get { return _db; } }
 
 	// Use this for initialization
 	private void Start () {
+        _agent = GetComponent<AgentController>();
 		_db = new Database ();
-		_db.Add("Ressource", new Database.Table(new string[]
+		_db.Add("Patch", new Database.Table(new string[]
 		{
-			"Name", "Quantity", "PosX", "PosY"
+			"Type", "Ressource", "Quantity", "PosX", "PosZ", "Explored"
 		}, new Type[]
 		{
-			typeof(string), typeof(int), typeof(int), typeof(int)
+			typeof(bool), typeof(string), typeof(int), typeof(int), typeof(int), typeof(bool)
 		}));
-		_db.Add("Villagers", new Database.Table(new string[]
-		{
-			"ID", "Name", "Age", "Gender"
-		}, new Type[]
-		{
-			typeof(int), typeof(string), typeof(int), typeof(bool)
-		}));
-		_db.Tables["Villagers"].Insert(new object[] { 1, "Jean", 18, true });
-		_db.Tables["Villagers"].Insert(new object[] { 2, "Alice", 22, false });
-		_db.Tables["Villagers"].Insert(new object[] { 3, "Arnaud", 20, true });
-		_db.Tables["Villagers"].Insert(new object[] { 4, "Eve", 24, false });/*
-		Answer answer = Request("SELECT Name, Age FROM Villagers WHERE Age < 22");
-		if (answer != null)
-		{
-			string str = "";
-			foreach (string[] name in answer.Names)
-			{
-				if (name[0] != "")
-					str += name[0] + ".";
-				str += name[1] + "    ";
-			}
-			Debug.Log(str);
-			foreach (object[] obj in answer.Columns)
-			{
-				str = "";
-				foreach (object o in obj)
-				{
-					str += o.ToString() + "    ";
-				}
-				Debug.Log(str);
-			}
-		}
-		else
-			Debug.Log(answer);*/
-	}
+        int mapWidth = Manager.Instance.GetComponent<Manager>().Width;
+        int mapHeight = Manager.Instance.GetComponent<Manager>().Height;
+        Database.Table t = _db.Tables["Patch"];
+        foreach (Patch patch in GameObject.Find("Ground").GetComponentsInChildren<Patch>())
+        {
+            t.Insert(new object[] {
+                patch.name == "Grass(Clone)", "None", 0,
+                (int)patch.transform.position.x, (int)patch.transform.position.z, false
+            });
+        }
+    }
 
-	/// <summary>
-	/// Request informations in memory
-	/// </summary>
-	/// <param name="request">The formated request</param>
-	/// <returns>The request answer if success and null otherwise</returns>
-	public Answer Request(string request)
+    // Update is called once per frame
+    private void Update()
+    {
+        int perc = (int)_agent.PerceptionRadius;
+        for (int i = (int)transform.position.x - perc, _i = (int)transform.position.x + perc; i <= _i; i++)
+        {
+            for (int j = (int)transform.position.z - perc, _j = (int)transform.position.z + perc; j <= _j; j++)
+            {
+                if (i < 0 || i >= Manager.Instance.Width || j < 0 || j >= Manager.Instance.Height)
+                    continue;
+                object[] tuple = GetPatch(i, j);
+                Patch patch = Patch.GetPatch(i, j).GetComponent<Patch>();
+                Ressource res = patch.InnerObjects.Length == 0 ? null : patch.InnerObjects[0] == null ? null : patch.InnerObjects[0].GetComponent<Ressource>();
+                tuple[1] = res == null ? "None" : Enum.GetName(typeof(Ressource.RessourceType), res.Type);
+                tuple[2] = res == null ? 0 : res.Count;
+                tuple[5] = true;
+            }
+        }
+
+    }
+
+    // Get a patch tuple
+    private object[] GetPatch(int x, int z)
+    {
+        Database.Table t = _db.Tables["Patch"];
+        foreach (object[] tuple in t.Entries)
+        {
+            if ((int)tuple[3] == x && (int)tuple[4] == z)
+                return tuple;
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// Request informations in memory
+    /// </summary>
+    /// <param name="request">The formated request</param>
+    /// <returns>The request answer if success and null otherwise</returns>
+    public Answer Request(string request)
 	{
 		string req = request.ToLower();
 		if (!RequestPatern.Match(req).Success)
@@ -615,7 +628,7 @@ public class Memory : MonoBehaviour {
 			{
 				if (selections[i, 0] != "" && selections[i, 0] != table)
 					continue;
-				for (int j = 0, _j = t.Count; j < _j; j++)
+				for (int j = 0, _j = t.Names.Length; j < _j; j++)
 				{
 					if (selections[i, 1] != t.Names[j])
 						continue;

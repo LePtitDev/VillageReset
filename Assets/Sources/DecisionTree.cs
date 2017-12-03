@@ -101,7 +101,7 @@ public class DecisionTree<T> where T : class
         {
             _name = name;
             _content = content;
-            _weight = 0.0f;
+            _weight = 1f;
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ public class DecisionTree<T> where T : class
         /// </summary>
         public void Reset()
         {
-            _weight = 0.0f;
+            _weight = 1f;
         }
 
         /// <summary>

@@ -95,7 +95,7 @@ public abstract class Task : MonoBehaviour
 	/// <summary>
 	/// Decision tree
 	/// </summary>
-	public DecisionTree<Action> Decision;
+	public DecisionTree<Action> Decision { get { return _decision; } }
 	
 	// Use this for initialization
 	protected virtual void Start()
@@ -128,16 +128,18 @@ public abstract class Task : MonoBehaviour
 	protected virtual void Update()
 	{
 		_decision.Reset();
-		foreach (System.Reflection.MethodInfo method in this.GetType().GetMethods()) {
-			if (((PerceptMethod[])method.GetCustomAttributes(typeof(PerceptMethod), true)).Length > 0) {
-				DecisionTree<Action>.Percept p = _decision.GetPercept(method.Name);
+        foreach (System.Reflection.MethodInfo method in this.GetType().GetMethods())
+        {
+            if (((PerceptMethod[])method.GetCustomAttributes(typeof(PerceptMethod), true)).Length > 0)
+            {
+                DecisionTree<Action>.Percept p = _decision.GetPercept(method.Name);
 				if (p != null && ((Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), this, method))())
 					p.Activate();
 			}
-		}
-		Action action = _decision.Decide();
-		if (action != null)
-			action();
+        }
+        Action action = _decision.Decide();
+        if (action != null)
+            action();
 	}
 
 }

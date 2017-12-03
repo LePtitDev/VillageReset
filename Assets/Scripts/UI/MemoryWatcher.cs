@@ -76,7 +76,7 @@ public class MemoryWatcher : MonoBehaviour {
 		Memory.Answer answer = memory.Request(_request);
 		if (answer == null)
 		{
-			_textError.SetActive(true);
+            Error();
 			return;
 		}
 		_textError.SetActive(false);
@@ -92,13 +92,6 @@ public class MemoryWatcher : MonoBehaviour {
 				_additionalEntry.Add(new List<Text>());
 			}
 			_additionalHeader[i].text = answer.Names[i][1];
-		}
-		if (answer.Names.Length < _additionalHeader.Count)
-		{
-			for (int i = answer.Names.Length; i < _additionalHeader.Count; i++)
-				Destroy(_additionalHeader[i].gameObject);
-			_additionalHeader.RemoveRange(answer.Names.Length, _additionalHeader.Count - answer.Names.Length);
-			_additionalEntry.RemoveRange(answer.Names.Length, _additionalEntry.Count - answer.Names.Length);
 		}
 		if (answer.Columns.Length > 0)
 		{
@@ -120,10 +113,10 @@ public class MemoryWatcher : MonoBehaviour {
 			}
 			if (answer.Columns.Length < _additionalEntry[0].Count)
 			{
-				for (int i = answer.Columns[0].Length; i < _additionalEntry.Count; i++)
+				for (int i = answer.Columns.Length; i <= _additionalEntry[0].Count; i++)
 				{
-					for (int j = 0; j < answer.Columns.Length; j++)
-						Destroy(_additionalEntry[i][j].gameObject);
+					for (int j = 0; j < answer.Columns[0].Length; j++)
+						Destroy(_additionalEntry[j][i].gameObject);
 				}
 				for (int j = 0; j < answer.Columns[0].Length; j++)
 					_additionalEntry[j].RemoveRange(answer.Columns.Length, _additionalEntry[j].Count - answer.Columns.Length);
@@ -131,14 +124,21 @@ public class MemoryWatcher : MonoBehaviour {
 		}
 		else
 		{
-			foreach (List<Text> texts in _additionalEntry)
+			for (int i = 0; i < _additionalEntry.Count; i++)
 			{
-				foreach (Text text in texts)
+				foreach (Text text in _additionalEntry[i])
 					Destroy(text.gameObject);
-			}
-			_additionalEntry = new List<List<Text>>();
-		}
-		RectTransform header = _textHeader.GetComponent<RectTransform>();
+                _additionalEntry[i] = new List<Text>();
+            }
+        }
+        if (answer.Names.Length < _additionalHeader.Count)
+        {
+            for (int i = answer.Names.Length; i < _additionalHeader.Count; i++)
+                Destroy(_additionalHeader[i].gameObject);
+            _additionalHeader.RemoveRange(answer.Names.Length, _additionalHeader.Count - answer.Names.Length);
+            _additionalEntry.RemoveRange(answer.Names.Length, _additionalEntry.Count - answer.Names.Length);
+        }
+        RectTransform header = _textHeader.GetComponent<RectTransform>();
 		RectTransform entry = _textEntry.GetComponent<RectTransform>();
 		if (_additionalEntry.Count > 0)
 			_content.sizeDelta = new Vector2(header.position.x + header.sizeDelta.x * _additionalHeader.Count,
@@ -146,6 +146,23 @@ public class MemoryWatcher : MonoBehaviour {
 		else
 			_content.sizeDelta = _basicSize;
 	}
+
+    /// <summary>
+    /// Remove entries and display error
+    /// </summary>
+    private void Error()
+    {
+        _textError.SetActive(true);
+        for (int i = 0; i < _additionalEntry.Count; i++)
+            Destroy(_additionalHeader[i].gameObject);
+        _additionalHeader = new List<Text>();
+        for (int i = 0; i < _additionalEntry.Count; i++)
+        {
+            foreach (Text text in _additionalEntry[i])
+                Destroy(text.gameObject);
+        }
+        _additionalEntry = new List<List<Text>>();
+    }
 
 	/// <summary>
 	/// Close panel

@@ -67,7 +67,7 @@ public class AgentController : MonoBehaviour {
 	/// <summary>
 	/// Percepts courants
 	/// </summary>
-	private List<Entity> _percepts;
+	private List<Entity> _percepts = new List<Entity>();
 
 	/// <summary>
 	/// Accesseur des percepts courants
@@ -113,7 +113,6 @@ public class AgentController : MonoBehaviour {
 			FirstName = AgentInfo.GetFemaleName();
 		_created = Time.time;
 		_health = MaxHealth;
-		_percepts = new List<Entity> ();
 		_perceptionCollider = gameObject.AddComponent<SphereCollider> ();
 		_perceptionCollider.isTrigger = true;
 		_perceptionCollider.center = new Vector3 ();

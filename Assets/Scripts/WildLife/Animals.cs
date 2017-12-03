@@ -7,7 +7,7 @@ public class Animals : MonoBehaviour {
 	private RaycastHit Hit;
     public int Life;
 	float waiting = 0.0f;
-
+	public Vector3 nextpos;
 	private Manager SpawnZone;
 	public GameObject patch;
 	private System.Action action;
@@ -44,7 +44,8 @@ public class Animals : MonoBehaviour {
 		}
 
 		//move
-		Vector3 nextpos = transform.position + transform.forward * 2 * Time.deltaTime;
+		//vector3
+		nextpos = transform.position + transform.forward * 2 * Time.deltaTime;
 		patch = Patch.GetPatch (nextpos);
 
 		if (!Manager.Instance.GetComponent<BoxCollider> ().bounds.Contains (nextpos)) {
@@ -59,8 +60,9 @@ public class Animals : MonoBehaviour {
 		//avoid water
 		else if (patch == null || patch.name == "Water(Clone)") {
 			transform.Rotate (Vector3.up * Random.Range (90, 270));
-		} else
+		} else {
 			transform.position = nextpos;
+		}
 		
 	}
 		

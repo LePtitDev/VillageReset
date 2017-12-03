@@ -35,6 +35,10 @@ public class Manager : MonoBehaviour {
 	[Range(0, 10)]
 	public int MinimumIronDistance;
 
+    // Villagers count on start
+    [Range(1, 20)]
+    public int VillagersCount;
+
 	[Header("Displaying")]
 
 	// Display patches density
@@ -51,11 +55,40 @@ public class Manager : MonoBehaviour {
 	// Properties
 	[HideInInspector]
 	public YamlLoader Properties;
-	
-	// Use this for initialization
-	private void Awake () {
+
+    [Header("Winter")]
+
+    // Season duration
+    public float SeasonDuration;
+
+    // Time when game start
+    private float _gameStart;
+
+    // Current season
+    // (0: Printemps, 1: Ete, 2: Automne, 3: Hiver)
+    public int CurrentSeason { get { return (int)((Time.time - _gameStart) / SeasonDuration) % 4; } }
+
+    // Passed year count
+    public int YearCount { get { return (int)((Time.time - _gameStart) / (SeasonDuration * 4f)); } }
+
+    // Grass material
+    public Material GrassMaterial;
+
+    // Grass color
+    public Color GrassColorNormal, GrassColorWinter;
+
+    // Leaves material
+    public Material LeavesMaterial;
+
+    // Leaves color
+    public Color LeavesColorNormal, LeavesColorWinter;
+
+    // Use this for initialization
+    private void Awake () {
 		Instance = this;
-		Randomizer = new System.Random(Seed);
+        _gameStart = Time.time;
+        LeavesMaterial.color = LeavesColorNormal;
+        Randomizer = new System.Random(Seed);
 		Patches = new GameObject[Width, Height];
 		BoxCollider boxcollider = gameObject.AddComponent<BoxCollider> ();
 		boxcollider.center = new Vector3 ((float)Width / 2.0f - 0.5f, 0.5f, (float)Height / 2.0f - 0.5f);
@@ -64,11 +97,40 @@ public class Manager : MonoBehaviour {
 		Properties = System.IO.File.Exists(@"properties.yml") ? new YamlLoader(@"properties.yml") : CreateProperties();
 	}
 
-	/// <summary>
-	/// Create properties
-	/// </summary>
-	/// <returns>Properties</returns>
-	private static YamlLoader CreateProperties()
+    // Update is called once per frame
+    private void Update()
+    {
+        if (CurrentSeason != 3)
+        {
+            if (GrassColorNormal != GrassMaterial.color || LeavesColorNormal != LeavesMaterial.color)
+            {
+                float seasonBegin = (Time.time - _gameStart) / SeasonDuration;
+                seasonBegin = Mathf.Min(1f, (seasonBegin - (int)seasonBegin) * 5f);
+                if (GrassColorNormal != GrassMaterial.color)
+                    GrassMaterial.color = Color.Lerp(GrassColorWinter, GrassColorNormal, seasonBegin);
+                if (LeavesColorNormal != LeavesMaterial.color)
+                    LeavesMaterial.color = Color.Lerp(LeavesColorWinter, LeavesColorNormal, seasonBegin);
+            }
+        }
+        else
+        {
+            if (GrassColorWinter != GrassMaterial.color || LeavesColorWinter != LeavesMaterial.color)
+            {
+                float seasonBegin = (Time.time - _gameStart) / SeasonDuration;
+                seasonBegin = Mathf.Min(1f, (seasonBegin - (int)seasonBegin) * 5f);
+                if (GrassColorWinter != GrassMaterial.color)
+                    GrassMaterial.color = Color.Lerp(GrassColorNormal, GrassColorWinter, seasonBegin);
+                if (LeavesColorWinter != LeavesMaterial.color)
+                    LeavesMaterial.color = Color.Lerp(LeavesColorNormal, LeavesColorWinter, seasonBegin);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Create properties
+    /// </summary>
+    /// <returns>Properties</returns>
+    private static YamlLoader CreateProperties()
 	{
 		YamlLoader loader = new YamlLoader();
 		// VALEURS DE NOURRITURE
