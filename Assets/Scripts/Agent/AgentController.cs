@@ -137,7 +137,10 @@ public class AgentController : MonoBehaviour {
 	/// <summary>
 	/// Tâche courante
 	/// </summary>
-	public Task Task;
+	public Task CurrentTask;
+
+	// Saison traitée à la frame précédente
+	private int _lastSeason;
 
 
 	/// EDITEUR
@@ -178,7 +181,8 @@ public class AgentController : MonoBehaviour {
 		_perceptionCollider.isTrigger = true;
 		_perceptionCollider.center = new Vector3 ();
 		_perceptionCollider.radius = PerceptionRadius;
-		Task = null;
+		CurrentTask = GetComponent<Task>();
+		_lastSeason = Manager.Instance.CurrentSeason;
 		GameObject.Find("Village").GetComponent<Village>().AddVillager(gameObject);
 	}
 	
@@ -195,6 +199,12 @@ public class AgentController : MonoBehaviour {
 		else
 			_hunger -= Time.deltaTime * (MaxHunger / _pHungryDelay) * 2f;
 		float curHealth = _health;
+		if (_lastSeason != Manager.Instance.CurrentSeason)
+		{
+			_lastSeason = Manager.Instance.CurrentSeason;
+			Destroy(CurrentTask);
+			CurrentTask = gameObject.AddComponent<Task_ChooseTask>();
+		}
 		if (_hunger < 0f)
 		{
 			_hunger = 0f;

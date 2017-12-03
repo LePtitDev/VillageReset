@@ -58,7 +58,7 @@ public class Task_ChopWood : Task
 	{
 		base.Start();
 		_agent = GetComponent<AgentController> ();
-		_agent.Task = this;
+		_agent.CurrentTask = this;
 		_memory = GetComponent<Memory> ();
 		_moving = GetComponent<Moving> ();
 		_inventory = GetComponent<Inventory>();

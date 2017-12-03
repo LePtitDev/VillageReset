@@ -45,13 +45,14 @@ public class Task_Build : Task {
 	{
 		base.Start();
 		_agent = GetComponent<AgentController> ();
-		_agent.Task = this;
+		_agent.CurrentTask = this;
 		_memory = GetComponent<Memory> ();
 		_moving = GetComponent<Moving> ();
 		_inventory = GetComponent<Inventory>();
 		_village = GameObject.Find("Village").GetComponent<Village>();
 		_construction = _village.GetPrefab("ConstructionSite");
 		_target = null;
+		_stockpile = null;
 		_buildingDecision = new DecisionTree<GameObject>();
 		System.Reflection.MethodInfo[] methods = this.GetType().GetMethods();
 		foreach (YamlLoader.PropertyElement element in (List<YamlLoader.PropertyElement>)Manager.Instance.Properties.GetElement("BuildingCost").Value)
@@ -289,6 +290,39 @@ public class Task_Build : Task {
 	////////////////
 	/// PERCEPTS ///
 	////////////////
+
+	/// <summary>
+	/// Try to find a construction site
+	/// </summary>
+	[PerceptMethod]
+	[ActionLink("Construct", 1f)]
+	public bool AlreadyConstruction()
+	{
+		if (_target == null)
+		{
+			foreach (object[] tuple in _memory.DB.Tables["Patch"].Entries)
+			{
+				if ((string) tuple[1] == "Construction Site")
+				{
+					Patch p = Patch.GetPatch((int) tuple[2], (int) tuple[3]).GetComponent<Patch>();
+					if (p.InnerObjects.Length > 0 && p.InnerObjects[0] != null)
+					{
+						_target = p.InnerObjects[0].GetComponent<ConstructionSite>();
+						if (_target != null)
+							break;
+						tuple[1] = p.InnerObjects[0].GetComponent<Entity>().Name;
+						tuple[4] = Time.time;
+					}
+					else
+					{
+						tuple[1] = "None";
+						tuple[4] = Time.time;
+					}
+				}
+			}
+		}
+		return _target != null;
+	}
 
 	/// <summary>
 	/// Indicate if a building is in construction
