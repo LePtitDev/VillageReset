@@ -82,6 +82,11 @@ public class Animals : MonoBehaviour {
 		Life = Life + 7;	
 	}
 
+	public void LifeTimeMoreMore()
+	{
+		Life = Life + 14;	
+	}
+
 	public int GetLife(){
 		return Life;
 	}

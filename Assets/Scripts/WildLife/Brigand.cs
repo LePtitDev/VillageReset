@@ -16,7 +16,7 @@ public class Brigand : MonoBehaviour {
 	private GameObject otherBrigand;
 	public GameObject Chief;
 	public float Health;
-	public int Life = 3;
+	public int Life = 50;
 	public float waiting = 0.0f;
 	public float LifeSpace = 1f;
 	public float MyVision = 1.5f;
@@ -28,6 +28,7 @@ public class Brigand : MonoBehaviour {
     public float timeToRunForEating = 0.0f;
     private Vector3 nextPosRunEating;
     private bool winterAttack;
+	private GameObject TheLastTree;
 
 	public float MaxHealth;
 	private float _lifeLevel;
@@ -55,6 +56,8 @@ public class Brigand : MonoBehaviour {
         {
             SeeHuman();
             SeeSheepEatHim();
+			EatNowOrNot ();
+		
         }
 		if (action != null)
 			action ();
@@ -78,12 +81,24 @@ public class Brigand : MonoBehaviour {
 		return true;
 	}
 		
+
+
+	public void EatNowOrNot(){
+		if (Health < 2 || _lifeLevel < 25) {
+			if (TheLastTree != null)
+				move.SetDestination(TheLastTree.transform.position);
+			if(transform.position == TheLastTree.transform.position)
+				Eating ();
+		}
+	}
+
+
 	//increase Health
 	public void Eating()
 	{
 		if (Time.time > waiting) {
 			Health = Health + 1f;
-			if (Health > 8f) {
+			if (Health > 20f) {
 				//si j'ai un chef 
 				if (Chief != null && Chief != gameObject) {
 					action = FollowBrigand;
@@ -120,12 +135,17 @@ public class Brigand : MonoBehaviour {
 		if (myTreeHome == null && (other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk")) {
 			myTreeHome = other.gameObject;
 		}
+
+		if (other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk") {
+			TheLastTree = other.gameObject;
+		}
+
 	     
 		//if i see a tree and my health <4
 		//eating
 		if (other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk") {
 
-			if(Health < 4){
+			if(Health < 10){
 				GetComponent<Moving> ().Direction = new Vector3 ();
 				waiting = Time.time + 1.0f;
 				//Debug.Log ("j'ai vu un arbre et je mange");
@@ -208,7 +228,7 @@ public class Brigand : MonoBehaviour {
 				targetTime += Time.deltaTime;
 			}
 		}
-		if(villagers.Count > 0){
+		if(villagers.Count > 0 && _lifeLevel > 25){
 			foreach (GameObject theVillager in villagers) {
 				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0 , theVillager.gameObject.transform.position.z - transform.position.z );
 
