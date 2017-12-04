@@ -13,6 +13,9 @@ public class Launcher : MonoBehaviour
 	// Values dictionnary
 	public Dictionary<string, float> Values;
 
+    // Indicate if brigands attacks on winter
+    public bool WinterAttack;
+
 	// Use this for initialization
 	private void Start()
 	{
@@ -33,6 +36,7 @@ public class Launcher : MonoBehaviour
 			Values[slider.name] = slider.value;
             GameObject.Find(slider.name + "Value").GetComponent<Text>().text = slider.value.ToString();
 		}
+        WinterAttack = GameObject.Find("WinterAttack").GetComponent<Toggle>().isOn;
 	}
 
 	/// <summary>

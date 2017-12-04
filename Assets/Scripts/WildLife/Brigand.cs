@@ -24,6 +24,7 @@ public class Brigand : MonoBehaviour {
 	public LayerMask villagerLayer;
 	private float attackTime = 0;
 	private float targetTime = 0;
+    private bool winterAttack;
 
 	private List<Brigand> SeeBrigandsAroundMe;
 	// Use this for initialization
@@ -32,17 +33,17 @@ public class Brigand : MonoBehaviour {
 		move = GetComponent<Moving> ();
 		action = Wiggle;
 		move.Direction = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
+        winterAttack = Launcher.Instance.WinterAttack;
 	}
 
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Manager.Instance.CurrentSeason == 3)
+		if (Manager.Instance.CurrentSeason == 3 && !winterAttack)
 			action = GoHome;
 		else
 			SeeHuman ();
 		action ();
-
 	}
 		
 	//increase Health
@@ -129,7 +130,7 @@ public class Brigand : MonoBehaviour {
 		if (myTreeHome != null)
 			move.SetDestination(myTreeHome.transform.position);
 		else if (move.Direction == Vector3.zero || move.Collision)
-			move.Direction = new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f));
+			move.Direction = new Vector3 (Random.Range (-1f, 1f), 0.09f, Random.Range (-1f, 1f));
 	}
 
 	//if i see other brigand :
@@ -177,7 +178,7 @@ public class Brigand : MonoBehaviour {
 		}
 		if(villagers.Count > 0){
 			foreach (GameObject theVillager in villagers) {
-				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0 , theVillager.gameObject.transform.position.z - transform.position.z );
+				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0, theVillager.gameObject.transform.position.z - transform.position.z );
 
 
 				if (closeEnoughtToKill.Length > 0) {

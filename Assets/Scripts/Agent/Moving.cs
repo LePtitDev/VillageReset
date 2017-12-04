@@ -64,7 +64,8 @@ public class Moving : MonoBehaviour {
 				Direction = _path[0] - transform.position;
 			}
 		}
-		transform.position += Direction.normalized * Speed * Time.deltaTime;
+        Direction.y = 0;
+        transform.position += Direction.normalized * Speed * Time.deltaTime;
 		GameObject patch = Patch.GetPatch (transform.position);
 		if (patch != null && patch.name == "Water(Clone)" || !Manager.Instance.GetComponent<BoxCollider> ().bounds.Contains (transform.position)) {
 			transform.position = current;
