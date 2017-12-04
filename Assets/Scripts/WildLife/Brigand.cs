@@ -16,7 +16,7 @@ public class Brigand : MonoBehaviour {
 	private GameObject otherBrigand;
 	public GameObject Chief;
 	public float Health;
-	public int Life = 50;
+	public float Life = 50;
 	public float waiting = 0.0f;
 	public float LifeSpace = 1f;
 	public float MyVision = 1.5f;
@@ -31,15 +31,13 @@ public class Brigand : MonoBehaviour {
 	private GameObject TheLastTree;
 
 	public float MaxHealth;
-	private float _lifeLevel;
-	public int LifeLevel { get { return (int)_lifeLevel; } }
 
 	private List<Brigand> SeeBrigandsAroundMe;
 	// Use this for initialization
 	void Start ()
 	{
 		MaxHealth = (float) Manager.Instance.Properties.GetElement("Brigand.Health").Value;
-		_lifeLevel = MaxHealth;
+		Life = MaxHealth;
 		Health = Mathf.Round(Random.Range (2f,10f) * 100f) / 100f;
 		move = GetComponent<Moving> ();
 		action = Wiggle;
@@ -64,17 +62,17 @@ public class Brigand : MonoBehaviour {
 	}
 	
 	public bool IncreaseHealth(float count) {
-		_lifeLevel += count;
-		if (_lifeLevel >= MaxHealth) {
-			_lifeLevel = MaxHealth;
+		Life += count;
+		if (Life >= MaxHealth) {
+			Life = MaxHealth;
 			return true;
 		}
 		return false;
 	}
 
 	public bool DecreaseHealth(float count) {
-		_lifeLevel -= count;
-		if (_lifeLevel <= 0.0f) {
+		Life -= count;
+		if (Life <= 0.0f) {
 			Destroy (gameObject);
 			return false;
 		}
@@ -84,7 +82,7 @@ public class Brigand : MonoBehaviour {
 
 
 	public void EatNowOrNot(){
-		if (Health < 2 || _lifeLevel < 25) {
+		if (Health < 2 || Life < 25) {
 			if (TheLastTree != null)
 				move.SetDestination(TheLastTree.transform.position);
 			if(transform.position == TheLastTree.transform.position)
