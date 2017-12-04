@@ -42,6 +42,17 @@ public class House : MonoBehaviour
 	/// </summary>
 	public int ChildCount { get { return _childs.Count; } }
 
+	// Indicate the last heating
+	private float _lastHeating;
+
+	/// Indicate if house is heated
+	private bool _heated;
+
+	/// <summary>
+	/// Indicate if house is heated
+	/// </summary>
+	public bool Heated { get { return _heated; } }
+
 	// Use this for initialization
 	private void Start ()
 	{
@@ -52,6 +63,7 @@ public class House : MonoBehaviour
 		_village = GameObject.Find("Village").GetComponent<Village>();
 		_villagers = new List<GameObject>();
 		_childs = new List<float>();
+		_heated = true;
 	}
 	
 	// Update is called once per frame
@@ -91,6 +103,40 @@ public class House : MonoBehaviour
 			_childs.Add(Time.time + ChildMaturity);
 			_childTimer = ChildDuration;
 			EventsWatcher.Instance.SendEvent("Un enfant est né.");
+		}
+		if (Manager.Instance.CurrentSeason != 3)
+		{
+			_lastHeating = Time.time;
+			_heated = true;
+		}
+		else if (_lastHeating < Time.time)
+		{
+			_heated = false;
+			foreach (GameObject o in Village.Instance.Building)
+			{
+				if (o.name == "StockPile(Clone)")
+				{
+					Inventory inv = o.GetComponent<Inventory>();
+					int count = inv.GetElement("Wood");
+					if (count > 0)
+					{
+						inv.RemoveElement("Wood", 1);
+						_lastHeating = Time.time + (float)Manager.Instance.Properties.GetElement("Delay.Firewood").Value;
+						_heated = true;
+						break;
+					}
+				}
+			}
+			if (!_heated)
+			{
+				float _prop = Time.deltaTime * (float)Manager.Instance.Properties.GetElement("Agent.Health").Value /
+				              (float)Manager.Instance.Properties.GetElement("Delay.Freezing").Value;
+				foreach (GameObject o in Villagers)
+				{
+					if (!o.GetComponent<AgentController>().DecreaseHealth(_prop))
+						EventsWatcher.Instance.SendEvent(o.GetComponent<AgentController>().FirstName + "est mort de froid.");
+				}
+			}
 		}
 	}
 	

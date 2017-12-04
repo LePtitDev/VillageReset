@@ -29,9 +29,16 @@ public class Brigand : MonoBehaviour {
     private Vector3 nextPosRunEating;
     private bool winterAttack;
 
+	public float MaxHealth;
+	private float _lifeLevel;
+	public int LifeLevel { get { return (int)_lifeLevel; } }
+
 	private List<Brigand> SeeBrigandsAroundMe;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
+		MaxHealth = (float) Manager.Instance.Properties.GetElement("Brigand.Health").Value;
+		_lifeLevel = MaxHealth;
 		Health = Mathf.Round(Random.Range (2f,10f) * 100f) / 100f;
 		move = GetComponent<Moving> ();
 		action = Wiggle;
@@ -49,7 +56,26 @@ public class Brigand : MonoBehaviour {
             SeeHuman();
             SeeSheepEatHim();
         }
-		action ();
+		if (action != null)
+			action ();
+	}
+	
+	public bool IncreaseHealth(float count) {
+		_lifeLevel += count;
+		if (_lifeLevel >= MaxHealth) {
+			_lifeLevel = MaxHealth;
+			return true;
+		}
+		return false;
+	}
+
+	public bool DecreaseHealth(float count) {
+		_lifeLevel -= count;
+		if (_lifeLevel <= 0.0f) {
+			Destroy (gameObject);
+			return false;
+		}
+		return true;
 	}
 		
 	//increase Health
@@ -193,7 +219,7 @@ public class Brigand : MonoBehaviour {
 							if (Time.time > attackTime)
 							{
 								theVillagerDied.GetComponent<AgentController>()
-									.DecreaseHealth((float) Manager.Instance.Properties.GetElement("Brigant.Damage").Value);
+									.DecreaseHealth((float) Manager.Instance.Properties.GetElement("Brigand.Damage").Value);
 								attackTime = Time.time + 0.5f;
 							}
 						}

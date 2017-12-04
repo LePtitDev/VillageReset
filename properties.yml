@@ -32,6 +32,7 @@ Delay:
     Clothes: 80
     Child: 240
     Maturity: 480
+    Firewood: 1
 Agent: 
     Health: 50
     Hunger: 50
@@ -66,7 +67,7 @@ BuildingCost:
         Wood: 50
         Stone: 10
         Duration: 20
-Brigant:
+Brigand:
     Health: 50
     Speed: 2
     Speedrun: 3

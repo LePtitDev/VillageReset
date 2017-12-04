@@ -298,8 +298,8 @@ public class Manager : MonoBehaviour {
 				})
 			}
 		));
-		// PROPRIETES DU BRIGANT
-		loader.AddElement(new YamlLoader.PropertyElement("Brigant",
+		// PROPRIETES DU BRIGAND
+		loader.AddElement(new YamlLoader.PropertyElement("Brigand",
 			new YamlLoader.PropertyElement[]
 			{
 				new YamlLoader.PropertyElement("Health", 50f),
