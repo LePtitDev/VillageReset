@@ -24,6 +24,9 @@ public class Brigand : MonoBehaviour {
 	public LayerMask villagerLayer;
 	private float attackTime = 0;
 	private float targetTime = 0;
+    private GameObject myFood;
+    public float timeToRunForEating = 0.0f;
+    private Vector3 nextPosRunEating;
     private bool winterAttack;
 
 	private List<Brigand> SeeBrigandsAroundMe;
@@ -39,10 +42,13 @@ public class Brigand : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
 	{
-		if (Manager.Instance.CurrentSeason == 3 && !winterAttack)
-			action = GoHome;
-		else
-			SeeHuman ();
+        if (Manager.Instance.CurrentSeason == 3 && !winterAttack)
+            action = GoHome;
+        else
+        {
+            SeeHuman();
+            SeeSheepEatHim();
+        }
 		action ();
 	}
 		
@@ -178,7 +184,7 @@ public class Brigand : MonoBehaviour {
 		}
 		if(villagers.Count > 0){
 			foreach (GameObject theVillager in villagers) {
-				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0, theVillager.gameObject.transform.position.z - transform.position.z );
+				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0 , theVillager.gameObject.transform.position.z - transform.position.z );
 
 
 				if (closeEnoughtToKill.Length > 0) {
@@ -257,5 +263,58 @@ public class Brigand : MonoBehaviour {
 		return new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
 	}
 
+    public void SeeSheepEatHim()
+    {
+        Collider[] ViewRadius = Physics.OverlapSphere(transform.position, 2f);
+        if (ViewRadius.Length > 0)
+        {
+            foreach (Collider sh in ViewRadius)
+            {
+                if (sh.gameObject.name == "Sheep(Clone)" || sh.gameObject.name == "Wolf(Clone)")
+                {
+                    //Debug.Log ("a sheep!");
+                    myFood = sh.gameObject;
+                    timeToRunForEating = Time.time + 5.0f;
+                    action = KillTheSheep;
+                    //a fonctionner une fois et puis non
+                    //transform.Translate((sh.transform.position - transform.position).normalized * 2*  Time.deltaTime);
+
+                    //	Vector3 nextpos= new Vector3 ((sh.transform.position.x - transform.position.x) , transform.position.y ,(sh.transform.position.z - transform.position.z));
+
+                }
+            }
+        }
+    }
+
+
+    public void KillTheSheep()
+    {
+        if (Time.time < timeToRunForEating)
+        {
+
+            if (myFood != null)
+                move.Direction = myFood.transform.position - transform.position;
+
+            Collider[] ViewRadiusEat = Physics.OverlapSphere(transform.position, 0.1f);
+            if (ViewRadiusEat.Length > 0)
+            {
+                foreach (Collider sh in ViewRadiusEat)
+                {
+                    if (sh.gameObject.name == "Sheep(Clone)" || sh.gameObject.name == "Wolf(Clone)")
+                    {
+                        //Debug.Log ("je vais te manger");
+                        // dont work
+                        if (sh == null || sh.gameObject != null)
+                        {
+                            //	Debug.Log ("tu es tjrs la et je vais te manger");
+                            Destroy(myFood);
+                            action = Wiggle;
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
 }
