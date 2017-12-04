@@ -68,6 +68,11 @@ public class House : MonoBehaviour
 	
 	// Update is called once per frame
 	private void Update () {
+		for (int i = _villagers.Count - 1; i >= 0; i--)
+		{
+			if (_villagers[i] == null)
+				_villagers.RemoveAt(i);
+		}
 		for (int i = _childs.Count - 1; i >= 0; i--)
 		{
 			if (Time.time >= _childs[i])
@@ -75,11 +80,6 @@ public class House : MonoBehaviour
 				_childs.RemoveAt(i);
 				_village.CreateVillager(transform.position);
 			}
-		}
-		for (int i = _villagers.Count - 1; i >= 0; i--)
-		{
-			if (_villagers[i] == null)
-				_villagers.RemoveAt(i);
 		}
 		GameObject[] sdf = _village.SdfList;
 		for (int i = sdf.Length - 1; i >= 0 && _villagers.Count < MaxCount; i--)

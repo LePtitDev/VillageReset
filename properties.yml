@@ -24,13 +24,14 @@ Delay:
         Growing: 100
         Harvest: 30
     Fishing: 2
+    Hunting: 2
     Log: 50
     Hungry: 50
     Starving: 50
     Freezing: 50
     Heal: 50
     Clothes: 80
-    Child: 240
+    Child: 480
     Maturity: 480
     Firewood: 1
 Agent: 

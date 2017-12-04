@@ -9,9 +9,13 @@ public class Task_ChooseTask : Task
     // Agents lists
     private AgentController[] agents;
 
+    // Agents vaillge
+    private Village _village;
+
 	// Use this for initialization
 	protected override void Start () {
         base.Start();
+	    _village = GameObject.Find("Village").GetComponent<Village>();
 	}
 
     protected override void Update()
@@ -52,6 +56,13 @@ public class Task_ChooseTask : Task
     public void ChooseFarmCorn()
     {
         gameObject.AddComponent<Task_FarmCorn>();
+        Destroy(this);
+    }
+
+    [ActionMethod]
+    public void ChooseHunt()
+    {
+        gameObject.AddComponent<Task_Hunt>();
         Destroy(this);
     }
 
@@ -116,6 +127,46 @@ public class Task_ChooseTask : Task
     }
 
     [PerceptMethod]
+    [ActionLink("ChooseBuild", 0f)]
+    public bool NoBuildNeeded()
+    {
+        bool need = true;
+        foreach (GameObject o in _village.Building)
+        {
+            House house = o.GetComponent<House>();
+            if (house != null && house.Villagers.Length < house.MaxCount)
+                need = false;
+        }
+        if (need)
+            return false;
+        int consomation = (int)(_village.Villagers.Length *
+                                (
+                                    (float) Manager.Instance.Properties.GetElement("Agent.Hunger").Value /
+                                    (float) Manager.Instance.Properties.GetElement("Delay.Hungry").Value
+                                ) * (float) Manager.Instance.Properties.GetElement("Delay.Season").Value * 5f);
+        int count = _village.GetComponentsInChildren<Cornfield>().Length;
+        int cornfieldProduction = (int)(float)Manager.Instance.Properties.GetElement("Harvest.Cornfield").Value;
+        float cornfieldDuration = (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Seeding").Value +
+                                  (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Growing").Value +
+                                  (float) Manager.Instance.Properties.GetElement("Delay.Cornfield.Harvest").Value;
+        int production = (int)(Manager.Instance.SeasonDuration * 3f / cornfieldDuration) * count * cornfieldProduction *
+                         (int)(float)Manager.Instance.Properties.GetElement("FoodValue.Corn").Value;
+        if (consomation > production)
+            return false;
+        float countFree = 0;
+        foreach (GameObject o in _village.Building)
+        {
+            StockPile stocks = o.GetComponent<StockPile>();
+            if (stocks != null)
+            {
+                Inventory inv = stocks.GetComponent<Inventory>();
+                countFree += inv.MaxWeight - inv.Weight;
+            }
+        }
+        return countFree > 100f;
+    }
+
+    [PerceptMethod]
     [ActionLink("ChooseFarmCorn", 0f)]
     public bool NoCornfield()
     {
@@ -170,6 +221,7 @@ public class Task_ChooseTask : Task
     [ActionLink("ChooseChopWood", 1.5f)]
     [ActionLink("ChooseFarmCorn", 0f)]
     [ActionLink("ChooseBuild", 0f)]
+    [ActionLink("ChooseHunt", 0f)]
     public bool Winter()
     {
         return Manager.Instance.CurrentSeason == 3;

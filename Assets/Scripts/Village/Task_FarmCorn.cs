@@ -27,7 +27,6 @@ public class Task_FarmCorn : Task {
 	// Supposed position of stockpile
 	private Vector3? _stockpile;
 
-
 	/// <summary>
 	/// Current cornfield
 	/// </summary>
@@ -63,7 +62,16 @@ public class Task_FarmCorn : Task {
 			{
 				Patch p = Patch.GetPatch((int) tuple[2], (int) tuple[3]).GetComponent<Patch>();
 				if (p.InnerObjects.Length > 0 && p.InnerObjects[0].name == "Cornfield(Clone)")
-					list.Add(p.InnerObjects[0].GetComponent<Cornfield>());
+				{
+					Cornfield cornfield = p.InnerObjects[0].GetComponent<Cornfield>();
+					if (cornfield.Villagers.Length == 0 &&
+					    (cornfield.FieldState != Cornfield.State.SEEDING || cornfield.Seeding < cornfield.SeedDuration - 1f))
+					{
+						_cornfield = cornfield;
+						return;
+					}
+					list.Add(cornfield);
+				}
 			}
 		}
 		if (list.Count == 0)

@@ -124,6 +124,26 @@ public class Task_Build : Task {
 	/// Percept for house choice
 	/// </summary>
 	[BuildingChoiceMethod]
+	[BuildingChoiceLink("StockPile", 1.5f)]
+	public bool ChoiceStockPile()
+	{
+		float countFree = 0;
+		foreach (GameObject o in _village.Building)
+		{
+			StockPile stocks = o.GetComponent<StockPile>();
+			if (stocks != null)
+			{
+				Inventory inv = stocks.GetComponent<Inventory>();
+				countFree += inv.MaxWeight - inv.Weight;
+			}
+		}
+		return countFree < 100f;
+	}
+
+	/// <summary>
+	/// Percept for house choice
+	/// </summary>
+	[BuildingChoiceMethod]
 	[BuildingChoiceLink("House", 3f)]
 	public bool ChoiceHouse()
 	{

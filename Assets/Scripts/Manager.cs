@@ -214,6 +214,8 @@ public class Manager : MonoBehaviour {
 					}),
 				// Durée de pêche d'un poisson
 				new YamlLoader.PropertyElement("Fishing", 2f),
+				// Durée de chasse d'un gibier
+				new YamlLoader.PropertyElement("Hunting", 2f),
 				// Durée de plantage d'un arbre
 				new YamlLoader.PropertyElement("Log", 50f),
 				// Durée nécessaire pour que le niveau de faim tombe à zero
@@ -227,9 +229,11 @@ public class Manager : MonoBehaviour {
 				// Durée nécessaire pour que des vêtements équipés soit détruits
 				new YamlLoader.PropertyElement("Clothes", 80f),
 				// Durée nécessaire pour la conception d'un enfant
-				new YamlLoader.PropertyElement("Child", 240f),
+				new YamlLoader.PropertyElement("Child", 480f),
 				// Durée nécessaire pour qu'un enfant devienne adulte
-				new YamlLoader.PropertyElement("Maturity", 480f)
+				new YamlLoader.PropertyElement("Maturity", 480f),
+				// Durée nécessaire pour qu'un feu de cheminée soit nécessaire
+				new YamlLoader.PropertyElement("Firewood", 1f)
 			}
 		));
 		// VALEURS RELATIVES A L'AGENT
