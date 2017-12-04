@@ -234,7 +234,7 @@ public class AgentController : MonoBehaviour {
 			if (!HasHouse())
 			{
 				DecreaseHealth(MaxHealth);
-				EventsWatcher.Instance.SendEvent(FirstName + " est mort de froid car il était sans abri.");
+				EventsWatcher.Instance.SendEvent(FirstName + " est mort de froid.");
 				return;
 			}
 			if (!HasClothes)
@@ -281,32 +281,32 @@ public class AgentController : MonoBehaviour {
 	/// <param name="count">Quantité à augmenter</param>
 	/// <returns>Indique si l'agent est au maximum de sa santé</returns>
 	public bool IncreaseHealth(float count) {
-		_health += count;
-		if (_health >= (float)MaxHealth) {
-			_health = (float)MaxHealth;
-			return true;
-		}
-		return false;
-	}
-
-	/// <summary>
-	/// Diminue le niveau de vie
-	/// </summary>
-	/// <param name="count">Quantité à réduire</param>
-	/// <returns>Indique si l'agent est toujours en vie</returns>
-	public bool DecreaseHealth(float count) {
-		_health -= count;
-		if (_health <= 0.0f) {
-			if (OnDeath != null)
-				OnDeath (gameObject);
-			Village village = GameObject.Find("Village").GetComponent<Village>();
-			village.RemoveVillager(gameObject);
-			village.RemoveSdf(gameObject);
-			Destroy (gameObject);
-			return false;
-		}
-		return true;
-	}
+     		_health += count;
+     		if (_health >= (float)MaxHealth) {
+     			_health = (float)MaxHealth;
+     			return true;
+     		}
+     		return false;
+     	}
+     
+     	/// <summary>
+     	/// Diminue le niveau de vie
+     	/// </summary>
+     	/// <param name="count">Quantité à réduire</param>
+     	/// <returns>Indique si l'agent est toujours en vie</returns>
+     	public bool DecreaseHealth(float count) {
+     		_health -= count;
+     		if (_health <= 0.0f) {
+     			if (OnDeath != null)
+     				OnDeath (gameObject);
+     			Village village = GameObject.Find("Village").GetComponent<Village>();
+     			village.RemoveVillager(gameObject);
+     			village.RemoveSdf(gameObject);
+     			Destroy (gameObject);
+     			return false;
+     		}
+     		return true;
+     	}
 
 
 	/// GESTION DES PERCEPTS

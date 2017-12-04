@@ -9,6 +9,10 @@ public class Launcher : MonoBehaviour
 
 	// Instance courante
 	public static Launcher Instance;
+	
+	// Launcher camera
+	[HideInInspector]
+	public Camera LauncherCamera;
 
 	// Values dictionnary
 	public Dictionary<string, float> Values;
@@ -29,6 +33,7 @@ public class Launcher : MonoBehaviour
 	/// </summary>
 	public void Refresh()
 	{
+		LauncherCamera = Camera.main;
 		foreach (Slider slider in GetComponentsInChildren<Slider>())
 		{
 			if (!Values.ContainsKey(slider.name))

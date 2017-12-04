@@ -149,7 +149,27 @@ public class Task_ChooseTask : Task
     }
 
     [PerceptMethod]
+    public bool Spring()
+    {
+        return Manager.Instance.CurrentSeason == 0;
+    }
+
+    [PerceptMethod]
+    public bool Summer()
+    {
+        return Manager.Instance.CurrentSeason == 1;
+    }
+
+    [PerceptMethod]
+    public bool Automn()
+    {
+        return Manager.Instance.CurrentSeason == 2;
+    }
+
+    [PerceptMethod]
+    [ActionLink("ChooseChopWood", 1.5f)]
     [ActionLink("ChooseFarmCorn", 0f)]
+    [ActionLink("ChooseBuild", 0f)]
     public bool Winter()
     {
         return Manager.Instance.CurrentSeason == 3;

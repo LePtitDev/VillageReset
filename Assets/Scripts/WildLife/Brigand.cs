@@ -30,9 +30,16 @@ public class Brigand : MonoBehaviour {
     private bool winterAttack;
 	private GameObject TheLastTree;
 
+	public float MaxHealth;
+	private float _lifeLevel;
+	public int LifeLevel { get { return (int)_lifeLevel; } }
+
 	private List<Brigand> SeeBrigandsAroundMe;
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
+		MaxHealth = (float) Manager.Instance.Properties.GetElement("Brigand.Health").Value;
+		_lifeLevel = MaxHealth;
 		Health = Mathf.Round(Random.Range (2f,10f) * 100f) / 100f;
 		move = GetComponent<Moving> ();
 		action = Wiggle;
@@ -52,13 +59,32 @@ public class Brigand : MonoBehaviour {
 			EatNowOrNot ();
 		
         }
-		action ();
+		if (action != null)
+			action ();
+	}
+	
+	public bool IncreaseHealth(float count) {
+		_lifeLevel += count;
+		if (_lifeLevel >= MaxHealth) {
+			_lifeLevel = MaxHealth;
+			return true;
+		}
+		return false;
+	}
+
+	public bool DecreaseHealth(float count) {
+		_lifeLevel -= count;
+		if (_lifeLevel <= 0.0f) {
+			Destroy (gameObject);
+			return false;
+		}
+		return true;
 	}
 		
 
 
 	public void EatNowOrNot(){
-		if (Health < 2 || Life < 25) {
+		if (Health < 2 || _lifeLevel < 25) {
 			if (TheLastTree != null)
 				move.SetDestination(TheLastTree.transform.position);
 			if(transform.position == TheLastTree.transform.position)
@@ -67,23 +93,12 @@ public class Brigand : MonoBehaviour {
 	}
 
 
-	public void LostLife(){
-		if (Health < 2) {
-			Life = Life - 1;
-		}
-	}
-
-	public void WinLife()
-	{
-		Life = Life + 1;
-		
-	}
 	//increase Health
 	public void Eating()
 	{
 		if (Time.time > waiting) {
 			Health = Health + 1f;
-			if (Health > 8f) {
+			if (Health > 20f) {
 				//si j'ai un chef 
 				if (Chief != null && Chief != gameObject) {
 					action = FollowBrigand;
@@ -130,7 +145,7 @@ public class Brigand : MonoBehaviour {
 		//eating
 		if (other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk") {
 
-			if(Health < 4){
+			if(Health < 10){
 				GetComponent<Moving> ().Direction = new Vector3 ();
 				waiting = Time.time + 1.0f;
 				//Debug.Log ("j'ai vu un arbre et je mange");
@@ -213,7 +228,7 @@ public class Brigand : MonoBehaviour {
 				targetTime += Time.deltaTime;
 			}
 		}
-		if(villagers.Count > 0 && Life > 25){
+		if(villagers.Count > 0 && _lifeLevel > 25){
 			foreach (GameObject theVillager in villagers) {
 				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0 , theVillager.gameObject.transform.position.z - transform.position.z );
 
@@ -224,7 +239,7 @@ public class Brigand : MonoBehaviour {
 							if (Time.time > attackTime)
 							{
 								theVillagerDied.GetComponent<AgentController>()
-									.DecreaseHealth((float) Manager.Instance.Properties.GetElement("Brigant.Damage").Value);
+									.DecreaseHealth((float) Manager.Instance.Properties.GetElement("Brigand.Damage").Value);
 								attackTime = Time.time + 0.5f;
 							}
 						}

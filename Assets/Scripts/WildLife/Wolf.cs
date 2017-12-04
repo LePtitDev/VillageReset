@@ -51,7 +51,7 @@ public class Wolf : MonoBehaviour {
 			animalW.enabled = false;
 
 			if (myFood != null)
-				transform.position = Vector3.MoveTowards (transform.position, myFood.transform.position, 3 * Time.deltaTime);
+				transform.position = Vector3.MoveTowards (transform.position, myFood.transform.position, 2.5f * Time.deltaTime);
 
 			Collider[] ViewRadiusEat = Physics.OverlapSphere (transform.position, 0.1f);
 			if (ViewRadiusEat.Length > 0) {
@@ -62,6 +62,7 @@ public class Wolf : MonoBehaviour {
 						if(sh == null || sh.gameObject != null){
 						//	Debug.Log ("tu es tjrs la et je vais te manger");
 						Destroy (myFood);
+						animalW.LifeTimeMoreMore ();
 						animalW.enabled = true;
 						action = SeeSheepEatHim;
 						}
