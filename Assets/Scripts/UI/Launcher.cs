@@ -31,6 +31,7 @@ public class Launcher : MonoBehaviour
 			if (!Values.ContainsKey(slider.name))
 				Values.Add(slider.name, 0f);
 			Values[slider.name] = slider.value;
+            GameObject.Find(slider.name + "Value").GetComponent<Text>().text = slider.value.ToString();
 		}
 	}
 
