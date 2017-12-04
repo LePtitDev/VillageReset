@@ -226,7 +226,7 @@ public class Brigand : MonoBehaviour {
 				targetTime += Time.deltaTime;
 			}
 		}
-		if(villagers.Count > 0 && _lifeLevel > 25){
+		if(villagers.Count > 0 && Life > 25){
 			foreach (GameObject theVillager in villagers) {
 				move.Direction = new Vector3 (theVillager.gameObject.transform.position.x - transform.position.x, 0 , theVillager.gameObject.transform.position.z - transform.position.z );
 
