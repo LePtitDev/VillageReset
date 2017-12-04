@@ -38,7 +38,7 @@ public class Brigand : MonoBehaviour {
 	{
 		MaxHealth = (float) Manager.Instance.Properties.GetElement("Brigand.Health").Value;
 		Life = MaxHealth;
-		Health = Mathf.Round(Random.Range (2f,10f) * 100f) / 100f;
+		Health = Mathf.Round(Random.Range (5f,10f) * 100f) / 100f;
 		move = GetComponent<Moving> ();
 		action = Wiggle;
 		move.Direction = new Vector3(Random.Range(-1f, 1f), 0, Random.Range(-1f, 1f));
@@ -96,7 +96,7 @@ public class Brigand : MonoBehaviour {
 	{
 		if (Time.time > waiting) {
 			Health = Health + 1f;
-			if (Health > 20f) {
+			if (Health > 8f) {
 				//si j'ai un chef 
 				if (Chief != null && Chief != gameObject) {
 					action = FollowBrigand;
@@ -143,7 +143,7 @@ public class Brigand : MonoBehaviour {
 		//eating
 		if (other.gameObject.name == "Tree(Clone)" || other.gameObject.name == "Trunk") {
 
-			if(Health < 10){
+			if(Health < 4){
 				GetComponent<Moving> ().Direction = new Vector3 ();
 				waiting = Time.time + 1.0f;
 				//Debug.Log ("j'ai vu un arbre et je mange");
@@ -272,6 +272,9 @@ public class Brigand : MonoBehaviour {
 				}
 			}
 		}
+			
+
+
 
 	}
 
@@ -292,6 +295,7 @@ public class Brigand : MonoBehaviour {
 				if (br.gameObject == Chief)
 					seeChief = true;
 			}
+
 			if (!seeChief && Chief != null)
 				return Chief.transform.position - transform.position; // si il le perd il retrouve le chef
 			separation /= ViewRadius.Length;
@@ -305,6 +309,7 @@ public class Brigand : MonoBehaviour {
 		} else if (Chief != null)
 			return Chief.transform.position - transform.position; // si il le perd il retrouve le chef
 		return new Vector3 (UnityEngine.Random.Range(-1f, 1f), 0f, UnityEngine.Random.Range(-1f, 1f));
+
 	}
 
     public void SeeSheepEatHim()
