@@ -11,6 +11,7 @@ public class Animals : MonoBehaviour {
 	private Manager SpawnZone;
 	public GameObject patch;
 	private System.Action action;
+	public float timeToRun = 0.0f;
 
 	/// Use this for initialization
 	private void Start () {
@@ -22,6 +23,7 @@ public class Animals : MonoBehaviour {
 	// Update is called once per frame
 	public void Update () {
 		action ();
+		AvoiHumans ();
 	}
 		
 	//time to eat
@@ -88,4 +90,56 @@ public class Animals : MonoBehaviour {
 
 
 
-}
+	public void AvoiHumans(){
+
+		Collider[] ViewRadius = Physics.OverlapSphere(transform.position, 1.9f);
+		if (ViewRadius.Length > 0) {
+			foreach (Collider avoidThis in ViewRadius) {
+				if (avoidThis.gameObject.name == "Villager(Clone)" || avoidThis.gameObject.name == "Brigand(Clone)") {
+					timeToRun = Time.time + 5.0f;
+					action = Run;	
+				}
+
+			}
+		}
+	}
+
+
+
+	public void Run(){
+
+		if (Time.time < timeToRun) {
+			
+			//I run !
+			nextpos = transform.position + transform.forward * 4 * Time.deltaTime;
+			//nextPosRun = transform.Translate (Vector3.forward * 3 * Time.deltaTime);
+			patch = Patch.GetPatch (nextpos);
+
+			if (!Manager.Instance.GetComponent<BoxCollider> ().bounds.Contains (nextpos)) {
+				//avoid bounds
+				transform.Rotate (Vector3.up * Random.Range (180, 200));
+
+			} else if (Physics.Raycast (nextpos, transform.forward, out Hit, 0.2f)) {
+				//random rotate bewteen 40 and 200 (avoid object)
+				transform.Rotate (Vector3.up * Random.Range (40, 200));
+			}
+
+			//avoid water
+			else if (patch == null || patch.name == "Water(Clone)") {
+				transform.Rotate (Vector3.up * Random.Range (90, 270));
+			} else {
+				transform.position = nextpos;
+			}
+
+		} else {
+			action = AvoidObjects;
+		}
+		}
+
+	}
+
+
+
+
+
+
