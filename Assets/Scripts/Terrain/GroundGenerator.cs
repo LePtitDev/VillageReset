@@ -128,7 +128,7 @@ public class GroundGenerator : MonoBehaviour {
 
 	// Stop the segregation
 	void StopSegregation() {
-		Debug.Log ("Segregation du terrain terminée en " + count + " passes");
+		//Debug.Log ("Segregation du terrain terminée en " + count + " passes");
 		NeedSegregate = false;
 		if (SwapEnding) {
 			foreach (GameObject g in VoidList) {

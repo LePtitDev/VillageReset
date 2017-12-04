@@ -54,20 +54,29 @@ public class CameraController : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	private void Update () {
+	private void Update ()
+	{
+		if (Input.GetKeyUp(KeyCode.Escape))
+		{
+			PauseWatcher.Instance.TogglePause();
+			return;
+		}
+		if (PauseWatcher.Instance.gameObject.activeSelf)
+			return;
+		bool notUi = true;
+		foreach (RectTransform rect in GameObject.Find("Canvas").GetComponentsInChildren<RectTransform>())
+		{
+			if (!IgnoreUI(rect.name) && RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition) && rect.name != "Timing")
+			{
+				notUi = false;
+				break;
+			}
+		}
 		if (Input.GetMouseButtonDown (0))
 		{
-			bool notUi = true;
-			foreach (RectTransform rect in GameObject.Find("Canvas").GetComponentsInChildren<RectTransform>())
-			{
-				if (!IgnoreUI(rect.name) && RectTransformUtility.RectangleContainsScreenPoint(rect, Input.mousePosition) && rect.name != "Timing")
-				{
-					notUi = false;
-					_uiFocus = true;
-					break;
-				}
-			}
-			if (notUi)
+			if (!notUi)
+				_uiFocus = true;
+			else
 			{
 				_target = null;
 				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -96,9 +105,9 @@ public class CameraController : MonoBehaviour {
 				_uiFocus = false;
 			}
 		}
-		if (Input.GetMouseButton (1) && !_uiFocus)
+		if (Input.GetMouseButton (1) && notUi)
 			_rotation += Input.GetAxis ("Mouse X") * RotationSpeed;
-		if (Input.mouseScrollDelta.y != 0.0f && !_uiFocus)
+		if (Input.mouseScrollDelta.y != 0.0f && notUi)
 			_zoom = Mathf.Clamp (_zoom + Input.mouseScrollDelta.y * ZoomSpeed, MinZoom > 1f ? MinZoom : -1f / MinZoom, MaxZoom < 1f ? -1f / MaxZoom : MaxZoom);
 		float rad = Mathf.Deg2Rad * _rotation;
 		Vector3 newCenter = (_target != null ? _target.transform.position : _center) - _center;
@@ -168,7 +177,7 @@ public class CameraController : MonoBehaviour {
 	// Return true if UI GameObject is ignored
 	private bool IgnoreUI(string uiName)
 	{
-		return uiName == "Canvas" || uiName == "EntityInfo";
+		return uiName == "Canvas" || uiName == "EntityInfo" || uiName == "Pause";
 	}
 
     /// <summary>

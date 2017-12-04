@@ -83,7 +83,7 @@ public class Village : MonoBehaviour {
 				    0.2f * density [i].IronDensity
 				);
 			Center = density [Array.IndexOf (ratios, Mathf.Max (ratios))].transform.position;
-			Debug.Log ("Placement du village en " + Center);
+			//Debug.Log ("Placement du village en " + Center);
 			PlaceVillage();
 		}
 	}

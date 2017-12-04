@@ -135,7 +135,7 @@ public class RessourcesGenerator : MonoBehaviour {
 			g.GetComponent<Ressource> ().FixRessource();
 		foreach (GameObject g in IronList)
 			g.GetComponent<Ressource> ().FixRessource();
-		Debug.Log ("Segregation des arbres terminée en " + count + " passes");
+		//Debug.Log ("Segregation des arbres terminée en " + count + " passes");
 		GameObject.Find ("Village").AddComponent<Village> ();
 		Manager.Instance.GetComponent<Spawn>().enabled = true;
 	}
