@@ -168,7 +168,7 @@ public class Brigand : MonoBehaviour {
 	//if there is a collision then i change direction
 	public void Wiggle()
 	{
-		if (move.Collision) {
+		if (move.Direction == Vector3.zero || move.Collision) {
 			move.Direction = new Vector3 (Random.Range (-1f, 1f), 0, Random.Range (-1f, 1f));
 		}
 
@@ -297,7 +297,15 @@ public class Brigand : MonoBehaviour {
 			}
 
 			if (!seeChief && Chief != null)
-				return Chief.transform.position - transform.position; // si il le perd il retrouve le chef
+			{
+				if (move.Collision)
+					move.SetDestination(Chief.transform.position);
+				else
+				{
+					move.ResetPath();
+					return Chief.transform.position - transform.position; // si il le perd il retrouve le chef
+				}
+			}
 			separation /= ViewRadius.Length;
 			center /= ViewRadius.Length;
 			center = (center - transform.position);
