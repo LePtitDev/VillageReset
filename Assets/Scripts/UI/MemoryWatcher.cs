@@ -72,6 +72,7 @@ public class MemoryWatcher : MonoBehaviour {
 			gameObject.SetActive(false);
 			return;
 		}
+		_textTitle.text = "Mémoire de " + _camera.Target.GetComponent<AgentController>().FirstName;
 		Memory memory = _camera.Target.GetComponent<Memory>();
 		if (memory == null)
 		{
