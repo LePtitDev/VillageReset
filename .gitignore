@@ -6,6 +6,30 @@
 /Assets/AssetStoreTools*
 /Build/
 
+# FMOD Directories
+/FMOD/.unsaved
+/FMOD/.user
+/FMOD/village-reset/.unsaved
+/FMOD/village-reset/.user
+/Assets/Editor
+/Assets/Editor.meta
+/Assets/Editor Default Resources
+/Assets/Editor Default Resources.meta
+/Assets/Gizmos
+/Assets/Gizmos.meta
+/Assets/GoogleVR
+/Assets/GoogleVR.meta
+/Assets/Plugins
+/Assets/ResonanceAudio
+/Assets/ResonanceAudio.meta
+/Assets/Resources
+/Assets/Resources.meta
+/Assets/StreamingAssets
+/Assets/StreamingAssets.meta
+/Assets/FMODStudioCache.asset
+/Assets/FMODStudioCache.asset.meta
+fmod_editor.log
+
 # Visual Studio 2015 cache directory
 /.vs/
 
