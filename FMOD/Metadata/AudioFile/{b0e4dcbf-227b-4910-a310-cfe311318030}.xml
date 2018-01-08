@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.09.00">
+    <object class="AudioFile" id="{b0e4dcbf-227b-4910-a310-cfe311318030}">
+        <property name="assetPath">
+            <value>mouton03.wav</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>2.2987755102040817</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{5f6a4c52-6599-4bf5-be0d-8da701b141d3}</destination>
+        </relationship>
+    </object>
+</objects>

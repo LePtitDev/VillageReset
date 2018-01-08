@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 public class Village : MonoBehaviour {
@@ -85,6 +86,14 @@ public class Village : MonoBehaviour {
 			Center = density [Array.IndexOf (ratios, Mathf.Max (ratios))].transform.position;
 			//Debug.Log ("Placement du village en " + Center);
 			PlaceVillage();
+		}
+		if (Initialized)
+		{
+			StudioEventEmitter fmodEmitter = GameObject.Find("Main Camera").GetComponent<StudioEventEmitter>();
+			if (_villagers.Count <= 3)
+				fmodEmitter.EventInstance.setParameterValue("GameOver", 0.7f + (Manager.Instance.CurrentSeason * 0.2f / 3f) + (3 - _villagers.Count) * 0.2f);
+			else
+				fmodEmitter.EventInstance.setParameterValue("GameOver", 0f);
 		}
 	}
 

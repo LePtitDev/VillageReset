@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO.Compression;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.Experimental.UIElements;
 using UnityEngine.UI;
@@ -43,6 +44,12 @@ public class CameraController : MonoBehaviour {
 	// Indicate if UI has focus
 	private bool _uiFocus;
 
+	// Sound radius
+	public float SoundRadius;
+	
+	// Instant when last sound is played
+	private float _soundPlayed;
+
 	// Use this for initialization
 	private void Start () {
 		_target = null;
@@ -51,6 +58,7 @@ public class CameraController : MonoBehaviour {
 		_zoom = MinZoom;
 		_center = MapCenter;
 		transform.position = MapCenter + new Vector3 (0f, 1f, -1f) * Distance * (_zoom > 0 ? 1f / (1f + _zoom) : 1f - _zoom);
+		_soundPlayed = 0f;
 	}
 	
 	// Update is called once per frame
@@ -129,6 +137,25 @@ public class CameraController : MonoBehaviour {
 		_center += newCenter;
 		transform.position = _center + new Vector3 (-Mathf.Sin(rad), (_zoom >= 0 ? 1f / (1f + _zoom) : 2f - 1f / (1f - _zoom)), -Mathf.Cos(rad)) * Distance * (_zoom > 0 ? 1f / (1f + _zoom) : 1f - _zoom);
 		transform.rotation = Quaternion.LookRotation (new Vector3 (Mathf.Sin(rad), -Mathf.Deg2Rad * 45f * (_zoom >= 0 ? 1f / (1f + _zoom) : 2f - 1f / (1f - _zoom)), Mathf.Cos(rad)));
+		_SoundCheck();
+	}
+
+	// Sound checking
+	private void _SoundCheck()
+	{
+		if (_soundPlayed + 5f > Time.realtimeSinceStartup)
+			return;
+		List<Collider> hits = new List<Collider>();
+		foreach (Collider c in Physics.OverlapSphere(transform.position, SoundRadius))
+		{
+			if (c.name == "Wolf(Clone)" || c.name == "Sheep(Clone)")
+				hits.Add(c);
+		}
+		if (hits.Count > 0)
+		{
+			hits[0].GetComponent<StudioEventEmitter>().Play();
+			_soundPlayed = Time.realtimeSinceStartup;
+		}
 	}
 
 	// Refresh watchers
@@ -157,6 +184,7 @@ public class CameraController : MonoBehaviour {
 				}
 				break;
 			case Entity.EntityType.VILLAGER:
+				_target.GetComponent<StudioEventEmitter>().Play();
 				UIGetEntityInfo("Villager").SetActive(true);
 				UIGetEntityInfo("Fitness").SetActive(true);
 				break;

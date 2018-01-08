@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 [Task.TaskName("Chop tree")]
@@ -80,6 +81,7 @@ public class Task_ChopWood : Task
     [ActionMethod]
     public void SearchTrees()
 	{
+		StopSound();
 		foreach (Entity en in _agent.Percepts)
 		{
 			if (en == null) continue;
@@ -109,6 +111,7 @@ public class Task_ChopWood : Task
     [ActionMethod]
 	public void TargetTree()
 	{
+		StopSound();
         if (_target == null)
             return;
 		if ((_target.Value - transform.position).magnitude <= Moving.DISTANCE_THRESHOLD)
@@ -131,6 +134,7 @@ public class Task_ChopWood : Task
     [ActionMethod]
     public void CutTree()
     {
+	    PlaySound();
         if (_tree == null || _nextcut > Time.time)
 			return;
 
@@ -155,6 +159,7 @@ public class Task_ChopWood : Task
     [ActionMethod]
 	public void StockWood()
 	{
+		StopSound();
         if (_stockpile == null)
         {
             foreach (object[] tuple in _memory.DB.Tables["Patch"].Entries)
@@ -185,6 +190,20 @@ public class Task_ChopWood : Task
                 break;
             }
         }
+	}
+
+	// Play sound if not playing
+	private void PlaySound()
+	{
+		if (_tree != null && !_tree.GetComponent<StudioEventEmitter>().IsPlaying())
+			_tree.GetComponent<StudioEventEmitter>().Play();
+	}
+
+	// Stop sound if playing
+	private void StopSound()
+	{
+		if (_tree != null && _tree.GetComponent<StudioEventEmitter>().IsPlaying())
+			_tree.GetComponent<StudioEventEmitter>().Stop();
 	}
 	
 	////////////////

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.01.09.00">
+    <object class="AudioFile" id="{8dce2c9f-2f30-4bb3-8ebe-177b08418c17}">
+        <property name="assetPath">
+            <value>fairy.ogg</value>
+        </property>
+        <property name="isStreaming">
+            <value>true</value>
+        </property>
+        <property name="frequencyInKHz">
+            <value>44.0999985</value>
+        </property>
+        <property name="channelCount">
+            <value>2</value>
+        </property>
+        <property name="length">
+            <value>51.587460317460319</value>
+        </property>
+        <relationship name="masterAssetFolder">
+            <destination>{5f6a4c52-6599-4bf5-be0d-8da701b141d3}</destination>
+        </relationship>
+    </object>
+</objects>

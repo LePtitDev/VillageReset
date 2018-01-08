@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using FMODUnity;
 using UnityEngine;
 
 [Task.TaskName("Break stone")]
@@ -76,6 +77,7 @@ public class Task_BreakStone : Task {
 	[ActionMethod]
 	public void SearchStone()
 	{
+		StopSound();
 		foreach (Entity en in _agent.Percepts)
 		{
 			if (en == null) continue;
@@ -105,6 +107,7 @@ public class Task_BreakStone : Task {
 	[ActionMethod]
 	public void TargetStone()
 	{
+		StopSound();
 		if (_target == null)
 			return;
 		if ((_target.Value - transform.position).magnitude < Moving.DISTANCE_THRESHOLD)
@@ -127,6 +130,7 @@ public class Task_BreakStone : Task {
 	[ActionMethod]
 	public void BreakStone()
 	{
+		PlaySound();
 		if (_stone == null || _nextmining > Time.time)
 			return;
 
@@ -151,6 +155,7 @@ public class Task_BreakStone : Task {
     [ActionMethod]
 	public void StockStone()
 	{
+		StopSound();
         if (_stockpile == null)
         {
             foreach (object[] tuple in _memory.DB.Tables["Patch"].Entries)
@@ -181,6 +186,20 @@ public class Task_BreakStone : Task {
                 break;
             }
         }
+	}
+
+	// Play sound if not playing
+	private void PlaySound()
+	{
+		if (_stone != null && !_stone.GetComponent<StudioEventEmitter>().IsPlaying())
+			_stone.GetComponent<StudioEventEmitter>().Play();
+	}
+
+	// Stop sound if playing
+	private void StopSound()
+	{
+		if (_stone != null && _stone.GetComponent<StudioEventEmitter>().IsPlaying())
+			_stone.GetComponent<StudioEventEmitter>().Stop();
 	}
 	
 	////////////////

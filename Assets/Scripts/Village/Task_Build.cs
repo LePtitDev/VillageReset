@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.XR.WSA;
 
@@ -210,6 +211,7 @@ public class Task_Build : Task {
 	[ActionMethod]
 	public void ChooseBuilding()
 	{
+		StopSound();
 		_buildingDecision.Reset();
 		foreach (System.Reflection.MethodInfo method in this.GetType().GetMethods())
 		{
@@ -238,6 +240,7 @@ public class Task_Build : Task {
 	[ActionMethod]
 	public void Construct()
 	{
+		PlaySound();
 		if (_target == null)
 			return;
 		bool near = false;
@@ -283,6 +286,7 @@ public class Task_Build : Task {
 	[ActionMethod]
 	public void FindRessources()
 	{
+		StopSound();
 		if (_target == null)
 			return;
 		if (_stockpile == null)
@@ -328,6 +332,20 @@ public class Task_Build : Task {
 				break;
 			}
 		}
+	}
+
+	// Play sound if not playing
+	private void PlaySound()
+	{
+		if (_target != null && !_target.GetComponent<StudioEventEmitter>().IsPlaying())
+			_target.GetComponent<StudioEventEmitter>().Play();
+	}
+
+	// Stop sound if playing
+	private void StopSound()
+	{
+		if (_target != null && _target.GetComponent<StudioEventEmitter>().IsPlaying())
+			_target.GetComponent<StudioEventEmitter>().Stop();
 	}
 	
 	////////////////

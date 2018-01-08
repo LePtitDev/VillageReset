@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using FMODUnity;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -137,7 +139,42 @@ public class Manager : MonoBehaviour {
                     LeavesMaterial.color = Color.Lerp(LeavesColorNormal, LeavesColorWinter, seasonBegin);
             }
         }
+	    StudioEventEmitter fmodEmitter = GameObject.Find("Main Camera").GetComponent<StudioEventEmitter>();
+	    // Winter
+	    float param = (Time.time - _gameStart) / (SeasonDuration * 4f);
+	    param = param - (int)param;
+	    fmodEmitter.EventInstance.setParameterValue("Winter", _toWinterParameter(param));
+	    // Selector
+	    param = (Time.realtimeSinceStartup - _gameStart) / 50f;
+	    param = param - (int)param;
+	    if (param < 0.25f)
+		    param = 0.5f - param;
+	    else if (param > 0.75f)
+		    param = 1.5f - param;
+	    fmodEmitter.EventInstance.setParameterValue("Selector", param);
     }
+
+	/// <summary>
+	/// Calculate winter parameter
+	/// </summary>
+	/// <param name="param">Year value</param>
+	private static float _toWinterParameter(float param)
+	{
+		if (param < 0.75f)
+		{
+			if (param < 0.125f)
+				return 0.5f - (param * 0.5f / 0.125f);
+			if (param > 0.625f)
+				return (param - 0.625f) * 0.5f / 0.125f;
+			return 0f;
+		}
+		else
+		{
+			if (param < 0.875f)
+				return 0.5f + ((param - 0.75f) * 0.5f / 0.125f);
+			return 1f - ((param - 0.875f) * 0.5f / 0.125f);
+		}
+	}
 
     /// <summary>
     /// Create properties
